@@ -1,0 +1,274 @@
+<?php
+
+namespace pallo\web\cms\controller\widget;
+
+use pallo\library\cms\widget\Widget;
+use pallo\library\system\file\File;
+use pallo\library\widget\WidgetProperties;
+
+use pallo\web\base\controller\AbstractController;
+use pallo\web\mvc\view\TemplateView;
+
+/**
+ * Abstract implementation for a widget
+ */
+class AbstractWidget extends AbstractController implements Widget {
+
+    /**
+     * Path to the default icon of the widget
+     * @var string
+     */
+    const ICON =  'img/cms/widget.png';
+
+    /**
+     * Unique identifier of this widget
+     * @var string
+     */
+    protected $id;
+
+    /**
+     * Properties of this widget
+     * @var pallo\library\cms\widget\WidgetProperties
+     */
+    protected $properties;
+
+    /**
+     * Code of the locale for the widget request
+     * @var string
+     */
+    protected $locale;
+
+    /**
+     * Name of the region for the widget request
+     * @var string
+     */
+    protected $region;
+
+    /**
+     * Breadcrumbs of the page holding this widget
+     * @var array
+     */
+    private $breadcrumbs = array();
+
+    /**
+     * Flag to set whether to display this widget as page
+     * @var boolean
+     */
+    private $isContent = false;
+
+    /**
+     * Flag to set whether this is the only widget to be displayed in the
+     * containing region
+     * @var boolean
+     */
+    private $isRegion = false;
+
+    /**
+     * Flag to set whether this widget displays user specific content
+     * @var boolean
+     */
+    private $containsUserContent = false;
+
+    /**
+     * Gets the machine name of the widget
+     * @return string
+     */
+    public function getName() {
+        return static::NAME;
+    }
+
+    /**
+     * Gets the path to the icon of the widget
+     * @return string|boolean
+     */
+    public function getIcon() {
+        return static::ICON;
+    }
+
+    /**
+     * Sets the unique identifier of the widget
+     * @param string $identifier Unique identifier
+     * @return null
+     */
+    public function setIdentifier($identifier) {
+        $this->id = $identifier;
+    }
+
+    /**
+     * Sets the code of the locale for the widget request
+     * @param string $locale Code of the locale
+     * @return null
+     */
+    public function setLocale($locale) {
+        $this->locale = $locale;
+    }
+
+    /**
+     * Gets the callback for the widget action
+     * @return callback Callback for the action
+     */
+    public function getCallback() {
+        return array($this, 'indexAction');
+    }
+
+    /**
+     * Sets the region for the widget request
+     * @param string $region Name of the region
+     * @return null
+     */
+    public function setRegion($region) {
+        $this->region = $region;
+    }
+
+    /**
+     * Gets the additional sub routes of this widget
+     * @return array|null Array with Route objects
+     * @see pallo\library\router\Route
+     */
+    public function getRoutes() {
+        return null;
+    }
+
+    /**
+     * Gets the templates used by this widget
+     * @return array Array with the resource names of the templates
+     */
+    public function getTemplates() {
+        if (defined('static::TEMPLATE')) {
+            return array(static::TEMPLATE);
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets the properties of the widget instance
+     * @param pallo\library\widget\WidgetProperties $properties Properties for
+     * the widget instance
+     * @return null
+     */
+    public function setProperties(WidgetProperties $properties) {
+        $this->properties = $properties;
+    }
+
+    /**
+     * Gets the callback for the properties action
+     * @return null|callback Null if the widget does not implement a properties
+     * action, a callback for the action otherwise
+     */
+    public function getPropertiesCallback() {
+        return null;
+    }
+
+    /**
+     * Gets a human preview of the set properties
+     * @return string
+     */
+    public function getPropertiesPreview() {
+        return null;
+    }
+
+    /**
+     * Get the breadcrumbs of the page
+     * @return array Array with the URL as key and the label as value
+     */
+    public function getBreadcrumbs() {
+        return $this->breadcrumbs;
+    }
+
+    /**
+     * Add a breadcrumb to the page
+     * @param string $url URL for the breadcrumb
+     * @param string $label Label for the breadcrumb
+     * @return null
+     */
+    protected function addBreadcrumb($url, $label) {
+        $this->breadcrumbs[$url] = $label;
+    }
+
+    /**
+     * Sets whether to display this widget as page
+     * @param boolean $isContent True to only display this widget
+     * @return null
+     */
+    protected function setIsContent($isContent) {
+        $this->isContent = $isContent;
+    }
+
+    /**
+     * Gets whether to display this widget as page
+     * @return boolean True to only display this widget
+     */
+    public function isContent() {
+        return $this->isContent;
+    }
+
+    /**
+     * Sets if this is the only widget to be displayed in the containing region
+     * @param boolean $isRegion True to only display this widget in the region
+     * @return null
+     */
+    protected function setIsRegion($isRegion) {
+        $this->isRegion = $isRegion;
+    }
+
+    /**
+     * Gets whether this is the only widget to be displayed in the containing region
+     * @return boolean True to only display this widget in the region
+     */
+    public function isRegion() {
+        return $this->isRegion;
+    }
+
+    /**
+     * Sets whether this widget contains user content
+     * @param boolean $containsUserContent
+     * @return null
+     */
+    protected function setContainsUserContent($containsUserContent) {
+        $this->containsUserContent = $containsUserContent;
+    }
+
+    /**
+     * Gets whether this widget contains user content
+     * @return boolean
+     */
+    public function containsUserContent() {
+        return $this->containsUserContent;
+    }
+
+    /**
+     * Sets a template view to the response
+     * @param string $resource Resource to the template
+     * @param array $variables Variables for the template
+     * @return pallo\web\base\view\BaseTemplateView
+     */
+    protected function setTemplateView($resource, array $variables = null) {
+        $templateFacade = $this->dependencyInjector->get('pallo\\library\\template\\TemplateFacade');
+
+        $template = $templateFacade->createTemplate($resource, $variables);
+
+        $view = new TemplateView($template);
+        $view->setTemplateFacade($templateFacade);
+
+        $this->response->setView($view);
+
+        return $view;
+    }
+
+    /**
+     * Sets a download view for the provided file to the response
+     * @param pallo\library\system\file\File $file File which needs to be
+     * offered for download
+     * @param string $name Name for the download
+     * @param boolean $cleanUp Set to true to register an event to clean up the
+     * file after the response has been sent
+     * @return null
+     */
+    protected function setDownloadView(File $file, $name = null, $cleanUp = false) {
+        parent::setDownloadView($file, $name, $cleanUp);
+
+        $this->setIsContent(true);
+    }
+
+}
