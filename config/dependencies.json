@@ -1,0 +1,247 @@
+{
+    "dependencies": [
+        {
+            "class": "pallo\\library\\system\\file\\File",
+            "id": "cms.node",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "system.directory.cms"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\node\\io\\NodeIO",
+            "class": "pallo\\library\\cms\\node\\io\\IniNodeIO",
+            "id": "ini",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\library\\system\\file\\File",
+                                "id": "cms.node"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "pallo\\library\\cms\\node\\type\\NodeTypeManager",
+            "id": "generic",
+            "calls": [
+                {
+                    "method": "addNodeType",
+                    "arguments": [
+                        {
+                            "name": "nodeType",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\web\\cms\\node\\type\\SiteNodeType"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeType",
+                    "arguments": [
+                        {
+                            "name": "nodeType",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\web\\cms\\node\\type\\PageNodeType"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeType",
+                    "arguments": [
+                        {
+                            "name": "nodeType",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\web\\cms\\node\\type\\FolderNodeType"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeType",
+                    "arguments": [
+                        {
+                            "name": "nodeType",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\web\\cms\\node\\type\\RedirectNodeType"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "pallo\\web\\cms\\controller\\backend\\action\\node\\NodeActionManager",
+            "id": "generic",
+            "calls": [
+                {
+                    "method": "addNodeAction",
+                    "arguments": [
+                        {
+                            "name": "nodeAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\GoNodeAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeAction",
+                    "arguments": [
+                        {
+                            "name": "nodeAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeAction",
+                    "arguments": [
+                        {
+                            "name": "nodeAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\VisibilityNodeAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeAction",
+                    "arguments": [
+                        {
+                            "name": "nodeAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\StructureNodeAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeAction",
+                    "arguments": [
+                        {
+                            "name": "nodeAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\AdvancedNodeAction"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },        
+        {
+            "interfaces": "pallo\\library\\cms\\node\\structure\\NodeStructureParser",
+            "class": "pallo\\library\\cms\\node\\structure\\GenericNodeStructureParser",
+            "id": "generic"
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\node\\validator\\NodeValidator",
+            "class": "pallo\\library\\cms\\node\\validator\\GenericNodeValidator",
+            "id": "generic"
+        },
+        {
+            "interfaces": "pallo\\web\\router\\io\\RouteContainerIO", 
+            "class": "pallo\\web\\cms\\router\\CmsRouteContainerIO",
+            "id": "cms",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "locales",
+                            "type": "call",
+                            "properties": {
+                                "interface": "pallo\\library\\i18n\\I18n",
+                                "method": "getLocaleCodeList"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },        
+        {
+            "interfaces": "pallo\\library\\cms\\layout\\Layout",
+            "class": "pallo\\library\\cms\\layout\\SingleColumnLayout",
+            "id": "single"
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\layout\\Layout",
+            "class": "pallo\\library\\cms\\layout\\DoubleColumnHorizontal5050Layout",
+            "id": "double-h5050"
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\layout\\Layout",
+            "class": "pallo\\library\\cms\\layout\\DoubleColumnHorizontal2575Layout",
+            "id": "double-h2575"
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\layout\\Layout",
+            "class": "pallo\\library\\cms\\layout\\DoubleColumnHorizontal7525Layout",
+            "id": "double-h7525"
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\layout\\Layout",
+            "class": "pallo\\library\\cms\\layout\\DoubleColumnVerticalLayout",
+            "id": "double-v"
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\layout\\LayoutModel",
+            "class": "pallo\\web\\cms\\layout\\DependencyLayoutModel",
+            "id": "dependency"
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\theme\\ThemeModel",
+            "class": "pallo\\library\\cms\\theme\\TemplateThemeModel",
+            "id": "template"
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\widget\\WidgetModel",
+            "class": "pallo\\web\\cms\\widget\\DependencyWidgetModel",
+            "id": "dependency"
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\widget\\Widget",
+            "class": "pallo\\web\\cms\\controller\\widget\\LanguageSelectWidget",
+            "id": "language.select"
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\widget\\Widget",
+            "class": "pallo\\web\\cms\\controller\\widget\\MenuWidget",
+            "id": "menu"
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\widget\\Widget",
+            "class": "pallo\\web\\cms\\controller\\widget\\TitleWidget",
+            "id": "title"
+        }
+    ]
+}

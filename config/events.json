@@ -1,0 +1,14 @@
+{
+    "app.taskbar": [
+        {
+            "interface": "pallo\\web\\cms\\ApplicationListener",
+            "method": "prepareTaskbar"
+        }
+    ],
+    "app.response.pre": [
+        {
+            "interface": "pallo\\web\\cms\\ApplicationListener",
+            "method": "prepareTemplateView"
+        }    
+    ]
+}
