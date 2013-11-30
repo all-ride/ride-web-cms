@@ -1,3 +1,4 @@
 {
-    "system.directory.cms": "%application%/data/cms"
+    "cms.directory.node": "%application%/data/cms",
+    "cms.file.expired": "%application%/data/cms/expired.xml"
 }

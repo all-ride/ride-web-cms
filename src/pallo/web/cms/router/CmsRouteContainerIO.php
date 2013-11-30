@@ -2,6 +2,7 @@
 
 namespace pallo\web\cms\router;
 
+use pallo\library\cms\expired\ExpiredRouteModel;
 use pallo\library\cms\node\NodeModel;
 use pallo\library\router\RouteContainer;
 use pallo\library\router\Route;
@@ -26,6 +27,12 @@ class CmsRouteContainerIO implements RouteContainerIO {
     private $nodeModel;
 
     /**
+     * Instance of the expired route model
+     * @var pallo\library\cms\expired\ExpiredRouteModel
+     */
+    private $expiredRouteModel;
+
+    /**
      * Available locales
      * @var array
      */
@@ -36,12 +43,14 @@ class CmsRouteContainerIO implements RouteContainerIO {
      * @param pallo\web\router\io\RouteContainerIO $io Parent route container
      * I/O implementation
      * @param pallo\library\cms\node\NodeModel $nodeModel
+     * @param pallo\library\cms\expired\ExpiredRouteModel $expiredRouteModel
      * @param array $locales Array with the locale codes
      * @return null
      */
-    public function __construct(RouteContainerIO $io, NodeModel $nodeModel, array $locales) {
+    public function __construct(RouteContainerIO $io, NodeModel $nodeModel, ExpiredRouteModel $expiredRouteModel, array $locales) {
         $this->io = $io;
         $this->nodeModel = $nodeModel;
+        $this->expiredRouteModel = $expiredRouteModel;
         $this->locales = $locales;
     }
 
@@ -98,28 +107,26 @@ class CmsRouteContainerIO implements RouteContainerIO {
             }
         }
 
-//         $expiredRouteModel = $this->joppa->getExpiredRouteModel();
+        $expiredCallback = array('pallo\\web\\cms\\controller\\frontend\\ExpiredController', 'indexAction');
 
-//         $expiredRoutes = $expiredRouteModel->getExpiredRoutes();
-//         foreach ($expiredRoutes as $expiredRoute) {
-//             if (isset($registeredPaths[$expiredRoute->getPath()])) {
-//                 continue;
-//             }
+        $expiredRoutes = $this->expiredRouteModel->getExpiredRoutes();
+        foreach ($expiredRoutes as $expiredRoute) {
+            if (isset($registeredPaths[$expiredRoute->getPath()])) {
+                continue;
+            }
 
-//             $callback = array('joppa\\controller\\frontend\\ExpiredController', 'indexAction');
+            $route = new Route($expiredRoute->getPath(), $expiredCallback);
+            $route->setIsDynamic(true);
+            $route->setPredefinedArguments(array('node' => $expiredRoute->getNode()));
+            $route->setLocale($expiredRoute->getLocale());
 
-//             $route = new Route($expiredRoute->getPath(), $callback);
-//             $route->setIsDynamic(true);
-//             $route->setPredefinedArguments(array('node' => $expiredRoute->getNode()));
-//             $route->setLocale($expiredRoute->getLocale());
+            $baseUrl = $expiredRoute->getBaseUrl();
+            if ($baseUrl) {
+                $route->setBaseUrl($baseUrl);
+            }
 
-//             $baseUrl = $expiredRoute->getBaseUrl();
-//             if ($baseUrl) {
-//                 $route->setBaseUrl($baseUrl);
-//             }
-
-//             $container->addRoute($route);
-//         }
+            $container->addRoute($route);
+        }
 
         return $container;
     }
