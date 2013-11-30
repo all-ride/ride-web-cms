@@ -68,7 +68,7 @@ class NodeActionManager {
      * @param string $name Name of the node action
      * @return null
      */
-    public function unregisterNodeAction($name) {
+    public function removeNodeAction($name) {
         if ($this->hasNodeAction($name)) {
             unset($this->nodeActions[$name]);
         }

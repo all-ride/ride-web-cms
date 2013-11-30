@@ -262,6 +262,24 @@
             "id": "template"
         },
         {
+            "class": "pallo\\web\\cms\\controller\\backend\\action\\widget\\WidgetActionManager",
+            "id": "generic",
+            "calls": [
+                {
+                    "method": "addWidgetAction",
+                    "arguments": [
+                        {
+                            "name": "widgetAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\widget\\PropertiesWidgetAction"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "interfaces": "pallo\\library\\cms\\widget\\WidgetModel",
             "class": "pallo\\web\\cms\\widget\\DependencyWidgetModel",
             "id": "dependency"

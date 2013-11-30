@@ -24,8 +24,8 @@ interface NodeAction extends Controller {
 
     /**
      * Checks if this action is available for the node
-     * @param joppa\model\Node $node
-     * @return boolean true if available
+     * @param pallo\library\cms\node\Node $node
+     * @return boolean True if available
      */
     public function isAvailableForNode(Node $node);
 
