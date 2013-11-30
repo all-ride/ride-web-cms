@@ -2,7 +2,6 @@
 
 namespace pallo\web\cms\controller\backend;
 
-use pallo\library\cms\expired\ExpiredRouteModel;
 use pallo\library\cms\layout\LayoutModel;
 use pallo\library\cms\node\exception\NodeNotFoundException;
 use pallo\library\cms\node\Node;
@@ -17,7 +16,7 @@ use pallo\library\validation\exception\ValidationException;
 
 class PageController extends AbstractNodeTypeController {
 
-    public function formAction(I18n $i18n, $locale, ImageUrlGenerator $imageUrlGenerator, LayoutModel $layoutModel, ThemeModel $themeModel, ExpiredRouteModel $expiredRouteModel, NodeModel $nodeModel, $site, $node = null) {
+    public function formAction(I18n $i18n, $locale, ImageUrlGenerator $imageUrlGenerator, LayoutModel $layoutModel, ThemeModel $themeModel, NodeModel $nodeModel, $site, $node = null) {
         $themes = $themeModel->getThemes();
         $layouts = $layoutModel->getLayouts();
         $locales = $i18n->getLocaleCodeList();
@@ -96,8 +95,6 @@ class PageController extends AbstractNodeTypeController {
             try {
                 $form->validate();
 
-                $oldRoute = $data['route'];
-
                 $data = $form->getData();
 
                 $node->setName($locale, $data['name']);
@@ -107,15 +104,6 @@ class PageController extends AbstractNodeTypeController {
                 $node->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
 
                 $nodeModel->setNode($node);
-
-                if ($oldRoute) {
-                    $newRoute = $node->getRoute($locale, false);
-                    if ($newRoute && $oldRoute != $newRoute) {
-                        $baseUrl = $site->getBaseUrl($locale);
-
-                        $expiredRouteModel->addExpiredRoute($node->getId(), $locale, $oldRoute, $baseUrl);
-                    }
-                }
 
                 $this->addSuccess('success.node.saved', array(
                 	'node' => $node->getName($locale),
