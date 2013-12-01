@@ -66,24 +66,33 @@ class NodeDispatcher {
     private $regions;
 
     /**
+     * Breadcrumbs set by the node
+     * @var array
+     */
+    private $nodeBreadcrumbs;
+
+    /**
      * Breadcrumbs set by the widgets
      * @var array
      */
-    private $breadcrumbs;
+    private $widgetBreadcrumbs;
 
     /**
      * Construct the dispatcher
      * @param pallo\library\cms\node\Node $node
      * @param pallo\web\cms\view\NodeTemplateView $view View for the node
      * @param pallo\library\router\Router $router
+     * @param array $breadcrumbs Array with the URL as key and the name as
+     * value
      * @return null
      */
-    public function __construct(Node $node, NodeTemplateView $view, Router $router) {
+    public function __construct(Node $node, NodeTemplateView $view, Router $router, array $breadcrumbs) {
         $this->node = $node;
         $this->view = $view;
         $this->router = $router;
         $this->regions = array();
-        $this->breadcrumbs = null;
+        $this->nodeBreadcrumbs = $breadcrumbs;
+        $this->widgetBreadcrumbs = array();
     }
 
     /**
@@ -212,6 +221,10 @@ class NodeDispatcher {
 	                        $widgetMatchedRouteArguments = true;
 	                    }
 
+	                    if ($cacheView->getBreadcrumbs()) {
+	                        $this->widgetBreadcrumbs = $cacheView->getBreadcrumbs();
+	                    }
+
 	                    if ($cacheView->isContent()) {
 	                        $result = $cacheView->getView();
 
@@ -247,6 +260,11 @@ class NodeDispatcher {
                 $isRegion = $widget->isRegion();
                 if ($isCacheable && !$containsUserContent && $widget->containsUserContent()) {
                     $containsUserContent = true;
+                }
+
+                $breadcrumbs = $widget->getBreadcrumbs();
+                if ($breadcrumbs) {
+                    $this->widgetBreadcrumbs = $breadcrumbs;
                 }
 
                 if ($isCacheable && !$widgetProperties->isCacheDisabled()) {
@@ -306,6 +324,9 @@ class NodeDispatcher {
         }
 
         if (is_array($result)) {
+            $breadcrumbs = $this->nodeBreadcrumbs + $this->widgetBreadcrumbs;
+
+            $this->view->setBreadcrumbs($breadcrumbs);
             $this->view->setDispatchedViews($result);
 
             $response->setView($this->view);

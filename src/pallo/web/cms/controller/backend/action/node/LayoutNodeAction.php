@@ -10,11 +10,10 @@ use pallo\library\cms\theme\Theme;
 use pallo\library\cms\theme\ThemeModel;
 use pallo\library\cms\widget\WidgetModel;
 use pallo\library\i18n\I18n;
-use pallo\library\reflection\Invoker;
 use pallo\library\validation\exception\ValidationException;
 
+use pallo\web\cms\controller\backend\action\widget\WidgetActionManager;
 use pallo\web\mvc\controller\AbstractController;
-use pallo\web\mvc\view\TemplateView;
 
 /**
  * Controller of the layout node action
@@ -88,7 +87,7 @@ class LayoutNodeAction extends AbstractNodeAction {
      * Action to show the region editor
      * @return null
      */
-    public function regionAction(I18n $i18n, $locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, NodeModel $nodeModel, $site, $node, $region) {
+    public function regionAction(I18n $i18n, $locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, WidgetActionManager $widgetActionManager, NodeModel $nodeModel, $site, $node, $region) {
         if (!$this->resolveNode($nodeModel, $site, $node)) {
             return;
         }
@@ -151,6 +150,7 @@ class LayoutNodeAction extends AbstractNodeAction {
             'availableWidgets' => $availableWidgets,
             'regionWidgets' => $regionWidgets,
             'inheritedWidgets' => $inheritedWidgets,
+            'actions' => $widgetActionManager->getWidgetActions(),
             'baseAction' => $baseAction,
         ));
     }
@@ -158,7 +158,7 @@ class LayoutNodeAction extends AbstractNodeAction {
     /**
      * Action to add a widget to the provided region
      */
-    public function widgetAddAction($locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, NodeModel $nodeModel, $site, $node, $region, $widget) {
+    public function widgetAddAction($locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, WidgetActionManager $widgetActionManager, NodeModel $nodeModel, $site, $node, $region, $widget) {
         if (!$this->resolveNode($nodeModel, $site, $node)) {
             return;
         }
@@ -197,104 +197,15 @@ class LayoutNodeAction extends AbstractNodeAction {
             $widget->setDependencyInjector($this->dependencyInjector);
         }
 
-        $baseAction = $this->getUrl('cms.node.layout.region', array(
-            'locale' => $locale,
-            'site' => $site->getId(),
-            'node' => $node->getId(),
-            'region' => $region,
-        ));
-
         $this->setTemplateView('cms/backend/widget.content', array(
-        	'widget' => $widget,
-            'widgetId' => $widgetId,
-            'baseAction' => $baseAction,
-        ));
-    }
-
-    /**
-     * Action to dispatch to the properties of a widget
-     */
-    public function widgetPropertiesAction(I18n $i18n, $locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, NodeModel $nodeModel, $site, $node, $region, $widget, Invoker $invoker) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
-            return;
-        }
-
-        $layout = null;
-        if (method_exists($node, 'getLayout') && $layout = $node->getLayout($locale)) {
-            $layout = $layoutModel->getLayout($layout);
-        }
-
-        $theme = $node->getTheme();
-        if ($theme) {
-            $theme = $themeModel->getTheme($theme);
-        }
-
-        $isThemeRegion = $theme->hasRegion($region);
-        $isLayoutRegion = $layout && $layout->hasRegion($region);
-        if (!$isThemeRegion && !$isLayoutRegion) {
-            $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
-
-            return;
-        }
-
-        $widgetId = $widget;
-
-        $widget = $site->getWidget($widgetId);
-        $widget = clone $widgetModel->getWidget($widget);
-        $widget->setRequest($this->request);
-        $widget->setResponse($this->response);
-        $widget->setProperties($node->getWidgetProperties($widgetId));
-        $widget->setLocale($locale);
-        $widget->setRegion($region);
-
-        if ($widget instanceof AbstractController) {
-            $widget->setConfig($this->config);
-            $widget->setDependencyInjector($this->dependencyInjector);
-        }
-
-        $propertiesCallback = $widget->getPropertiesCallback();
-        if (!$propertiesCallback) {
-            $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
-
-            return;
-        }
-
-        if ($invoker->invoke($propertiesCallback)) {
-            $nodeModel->setNode($node);
-
-            $this->response->setRedirect($this->getUrl('cms.node.layout.region', array(
-                'locale' => $locale,
-            	'site' => $site->getId(),
-            	'node' => $node->getId(),
-            	'region' => $region,
-            )));
-
-            return;
-        }
-
-        $view = $this->response->getView();
-        if (!$view instanceof TemplateView) {
-            return;
-        }
-
-        $inheritedWidgets = $node->getInheritedWidgets($region);
-        if (isset($inheritedWidgets[$widgetId])) {
-            $this->addWarning('warning.widget.properties.inherited');
-        }
-
-        $template = $view->getTemplate();
-        $variables = array(
+            'locale' => $locale,
             'site' => $site,
             'node' => $node,
-            'locale' => $locale,
-            'locales' => $i18n->getLocaleCodeList(),
             'region' => $region,
-            'widget' => $widget,
+        	'widget' => $widget,
             'widgetId' => $widgetId,
-            'propertiesTemplate' => $template->getResource(),
-        ) + $template->getVariables();
-
-        $this->setTemplateView('cms/backend/widget.properties', $variables);
+            'actions' => $widgetActionManager->getWidgetActions(),
+        ));
     }
 
     /**
@@ -327,7 +238,6 @@ class LayoutNodeAction extends AbstractNodeAction {
 
         $nodeModel->setNode($node);
     }
-
 
     /**
      * Action to reorder the widgets of the provided region

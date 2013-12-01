@@ -1,15 +1,16 @@
 <?php
 
-namespace pallo\web\cms\controller\backend\action\node;
+namespace pallo\web\cms\controller\backend\action\widget;
 
 use pallo\library\cms\node\Node;
+use pallo\library\cms\widget\Widget;
 
 use pallo\web\cms\controller\backend\AbstractBackendController;
 
 /**
- * Abstract controller of a node action
+ * Abstract controller of a widget action
  */
-abstract class AbstractNodeAction extends AbstractBackendController implements NodeAction {
+abstract class AbstractWidgetAction extends AbstractBackendController implements WidgetAction {
 
     /**
      * Get the machine name of this action
@@ -28,11 +29,12 @@ abstract class AbstractNodeAction extends AbstractBackendController implements N
     }
 
     /**
-     * Checks if this action is available for the node
+     * Checks if this action is available for the widget
      * @param pallo\library\cms\node\Node $node
+     * @param pallo\library\cms\widget\Widget $widget
      * @return boolean true if available
      */
-    public function isAvailableForNode(Node $node) {
+    public function isAvailableForWidget(Node $node, Widget $widget) {
         return true;
     }
 

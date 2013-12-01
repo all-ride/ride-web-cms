@@ -94,8 +94,9 @@ class NodeController extends AbstractController {
 
         $nodeView = new NodeTemplateView($node, $layout, $theme, $locale);
         $router = new GenericRouter(new RouteContainer());
+        $breadcrumbs = $nodeModel->getBreadcrumbsForNode($node, $this->request->getBaseScript(), $locale);
 
-        $nodeDispatcher = new NodeDispatcher($node, $nodeView, $router);
+        $nodeDispatcher = new NodeDispatcher($node, $nodeView, $router, $breadcrumbs);
         $nodeDispatcher->loadWidgets($widgetModel, $layout->getRegions() + $theme->getRegions());
 
         if ($cache) {
@@ -105,32 +106,6 @@ class NodeController extends AbstractController {
         }
 
         return $nodeDispatcher;
-	}
-
-	/**
-	 * Action to redirect to the current route of the provided node
-	 * @param string $id Id of the node to redirect to
-	 * @return null
-	 */
-	public function expiredAction($id) {
-        $node = $this->models[NodeModel::NAME]->getNode($id, 0);
-        if (!$node) {
-            $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
-
-            return;
-        }
-
-        $baseUrl = $this->request->getBaseUrl();
-        $redirectUrl = $baseUrl . Request::QUERY_SEPARATOR . $node->getRoute();
-
-        $parameters = func_get_args();
-        array_shift($parameters);
-
-        if ($parameters) {
-        	$redirectUrl .= Request::QUERY_SEPARATOR . implode(Request::QUERY_SEPARATOR, $parameters);
-        }
-
-        $this->response->setRedirect($redirectUrl, Response::STATUS_CODE_MOVED_PERMANENTLY);
 	}
 
 }

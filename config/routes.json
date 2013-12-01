@@ -149,9 +149,9 @@
         },        
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/layout/%region%/widget/%widget%/properties",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction", 
-            "action": "widgetPropertiesAction",
-            "id": "cms.node.layout.widget.properties"
+            "controller": "pallo\\web\\cms\\controller\\backend\\action\\widget\\PropertiesWidgetAction", 
+            "action": "indexAction",
+            "id": "cms.widget.properties"
         },        
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/layout/%region%/widget/%widget%/templates",

@@ -11,7 +11,7 @@
                             "name": "path",
                             "type": "parameter",
                             "properties": {
-                                "key": "system.directory.cms"
+                                "key": "cms.directory.node"
                             }
                         }
                     ]
@@ -38,6 +38,44 @@
                 }
             ]
         },
+        {
+            "class": "pallo\\library\\system\\file\\File",
+            "id": "cms.expired",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "cms.file.expired"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\expired\\io\\ExpiredRouteIO",
+            "class": "pallo\\library\\cms\\expired\\io\\XmlExpiredRouteIO", 
+            "id": "xml",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "file",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\library\\system\\file\\File",
+                                "id": "cms.expired"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }, 
         {
             "class": "pallo\\library\\cms\\node\\type\\NodeTypeManager",
             "id": "generic",
@@ -224,9 +262,32 @@
             "id": "template"
         },
         {
+            "class": "pallo\\web\\cms\\controller\\backend\\action\\widget\\WidgetActionManager",
+            "id": "generic",
+            "calls": [
+                {
+                    "method": "addWidgetAction",
+                    "arguments": [
+                        {
+                            "name": "widgetAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\widget\\PropertiesWidgetAction"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "interfaces": "pallo\\library\\cms\\widget\\WidgetModel",
             "class": "pallo\\web\\cms\\widget\\DependencyWidgetModel",
             "id": "dependency"
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\widget\\Widget",
+            "class": "pallo\\web\\cms\\controller\\widget\\BreadcrumbsWidget",
+            "id": "breadcrumbs"
         },
         {
             "interfaces": "pallo\\library\\cms\\widget\\Widget",
