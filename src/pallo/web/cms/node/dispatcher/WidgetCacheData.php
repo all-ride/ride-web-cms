@@ -16,6 +16,12 @@ class WidgetCacheData {
     private $view;
 
     /**
+     * Widget breadcrumbs
+     * @var array
+     */
+    private $breadcrumbs;
+
+    /**
      * Flag to see if the view is the content
      * @var boolean
      */
@@ -42,8 +48,9 @@ class WidgetCacheData {
      * route arguments
      * @return null
      */
-    public function __construct(View $view = null, $isContent = false, $isRegion = false, $routesMatched = false) {
+    public function __construct(View $view = null, array $breadcrumbs = array(), $isContent = false, $isRegion = false, $routesMatched = false) {
         $this->view = $view;
+        $this->breadcrumbs = $breadcrumbs;
         $this->isContent = $isContent;
         $this->isRegion = $isRegion;
         $this->routesMatched = $routesMatched;
@@ -55,6 +62,14 @@ class WidgetCacheData {
      */
     public function getView() {
         return $this->view;
+    }
+
+    /**
+     * Gets the breadcrumbs of this widget
+     * @return array
+     */
+    public function getBreadcrumbs() {
+        return $this->breadcrumbs;
     }
 
     /**

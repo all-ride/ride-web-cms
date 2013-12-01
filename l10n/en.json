@@ -8,6 +8,10 @@
     "button.properties.hide": "Hide full configuration",
     "button.site.add": "Create Site",
     "button.templates": "Templates",
+    "label.breadcrumbs.label": "Label",
+    "label.breadcrumbs.label.description": "Label before the breadcrumbs",
+    "label.breadcrumbs.filter": "Filter",
+    "label.breadcrumbs.filter.description": "Select the nodes you don't want to include in the breadcrumbs",
     "label.confirm.node.clone": "Are you sure you want to clone %node%?",
     "label.confirm.node.delete": "Are you sure you want to delete %node%?",
     "label.confirm.widget.delete": "Are you sure you want to delete this widget?",
@@ -93,6 +97,7 @@
     "title.widgets.available": "Available Widgets",
     "title.widgets.content": "Content Area",
     "warning.widget.properties.inherited": "You're about to change the properties of an inherited widget.",
+    "widget.breadcrumbs": "Breadcrumbs",
     "widget.language.select": "Language Select",
     "widget.menu": "Menu",
     "widget.title": "Page Tite"

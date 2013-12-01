@@ -286,6 +286,11 @@
         },
         {
             "interfaces": "pallo\\library\\cms\\widget\\Widget",
+            "class": "pallo\\web\\cms\\controller\\widget\\BreadcrumbsWidget",
+            "id": "breadcrumbs"
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\widget\\Widget",
             "class": "pallo\\web\\cms\\controller\\widget\\LanguageSelectWidget",
             "id": "language.select"
         },

@@ -59,6 +59,10 @@ class NodeTemplateView extends TemplateView {
         $this->template->set('regions', $regions);
     }
 
+    public function setBreadcrumbs(array $breadcrumbs) {
+        $this->template->set('breadcrumbs', $breadcrumbs);
+    }
+
     /**
      * Process a widget view to add helpers
      * @param pallo\library\mvc\view\View $widgetView view of the widget
@@ -80,6 +84,7 @@ class NodeTemplateView extends TemplateView {
             'widget' => $widgetId,
             'region' => $regionName,
             'node' => $this->template->get('node'),
+            'breadcrumbs' => $this->template->get('breadcrumbs'),
         );
 
         $template->set('app', $app);

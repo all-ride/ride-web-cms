@@ -94,8 +94,9 @@ class NodeController extends AbstractController {
 
         $nodeView = new NodeTemplateView($node, $layout, $theme, $locale);
         $router = new GenericRouter(new RouteContainer());
+        $breadcrumbs = $nodeModel->getBreadcrumbsForNode($node, $this->request->getBaseScript(), $locale);
 
-        $nodeDispatcher = new NodeDispatcher($node, $nodeView, $router);
+        $nodeDispatcher = new NodeDispatcher($node, $nodeView, $router, $breadcrumbs);
         $nodeDispatcher->loadWidgets($widgetModel, $layout->getRegions() + $theme->getRegions());
 
         if ($cache) {
