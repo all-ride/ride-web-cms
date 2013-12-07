@@ -33,6 +33,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
             return;
         }
 
+
         $this->setLastAction(self::NAME);
 
         $data = array(
@@ -40,6 +41,19 @@ class VisibilityNodeAction extends AbstractNodeAction {
         	'publishStart' => $node->get(Node::PROPERTY_PUBLISH_START, null, false),
         	'publishStop' => $node->get(Node::PROPERTY_PUBLISH_STOP, null, false),
         );
+
+        $nodeTypeManager = $nodeModel->getNodeTypeManager();
+        $nodeType = $nodeTypeManager->getNodeType($node->getType());
+        $isFrontendNode = $nodeType->getFrontendCallback() ? true : false;
+        if ($isFrontendNode) {
+            $data['hide'] = array();
+            if ($node->hideInMenu()) {
+                $data['hide']['menu'] = 'menu';
+            }
+            if ($node->hideInBreadcrumbs()) {
+                $data['hide']['breadcrumbs'] = 'breadcrumbs';
+            }
+        }
 
         $translator = $this->getTranslator();
 
@@ -61,6 +75,17 @@ class VisibilityNodeAction extends AbstractNodeAction {
                 'trim' => array(),
             ),
         ));
+
+        if ($isFrontendNode) {
+            $form->addRow('hide', 'option', array(
+                'label' => $translator->translate('label.hide'),
+                'options' => array(
+            	    'menu' => $translator->translate('label.hide.menu'),
+            	    'breadcrumbs' => $translator->translate('label.hide.breadcrumbs'),
+                ),
+                'multiselect' => true,
+            ));
+        }
         $form->setRequest($this->request);
 
         $form = $form->build();
@@ -73,6 +98,11 @@ class VisibilityNodeAction extends AbstractNodeAction {
                 $node->set(Node::PROPERTY_PUBLISH, $this->getPublishedValue($data['published']));
                 $node->set(Node::PROPERTY_PUBLISH_START, $data['publishStart']);
                 $node->set(Node::PROPERTY_PUBLISH_STOP, $data['publishStop']);
+
+                if ($isFrontendNode) {
+                    $node->setHideInMenu(isset($data['hide']['menu']));
+                    $node->setHideInBreadcrumbs(isset($data['hide']['breadcrumbs']));
+                }
 
                 $nodeModel->setNode($node);
 
