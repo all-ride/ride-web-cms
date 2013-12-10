@@ -69,10 +69,12 @@ class LayoutNodeAction extends AbstractNodeAction {
 
         if (!$region || ($region && (($layout && !$layout->hasRegion($region)) && !$theme->hasRegion($region)))) {
             if ($layout) {
-                $region = array_shift($layout->getRegions());
+                $regions = $layout->getRegions();
             } else {
-                $region = array_shift($theme->getRegions());
+                $regions = $theme->getRegions();
             }
+
+            $region = array_shift($regions);
         }
 
         $this->response->setRedirect($this->getUrl('cms.node.layout.region', array(
