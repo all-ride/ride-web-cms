@@ -155,10 +155,16 @@
         },        
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/layout/%region%/widget/%widget%/templates",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction", 
-            "action": "widgetTemplatesAction",
-            "id": "cms.node.layout.widget.templates"
+            "controller": "pallo\\web\\cms\\controller\\backend\\action\\widget\\TemplateWidgetAction", 
+            "action": "indexAction",
+            "id": "cms.widget.templates"
         },        
+        {
+            "path": "/sites/%site%/%locale%/nodes/%node%/templates",
+            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\TemplateNodeAction",
+            "action": "indexAction",
+            "id": "cms.node.templates"
+        },
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/visibility",
             "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\VisibilityNodeAction",

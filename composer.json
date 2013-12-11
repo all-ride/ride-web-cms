@@ -2,7 +2,7 @@
     "name": "pallo/web-cms",
     "description": "CMS application of the Pallo framework",
     "license": "MIT",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "authors": [
         {
             "name": "Joris Vandeweerd",
@@ -21,7 +21,7 @@
         "pallo/lib-reflection": ">=0.4.0",
         "pallo/lib-router": ">=0.1.3",
         "pallo/lib-security": ">=0.1.2",
-        "pallo/lib-template": ">=0.2.0",
+        "pallo/lib-template": ">=0.3.0",
         "pallo/lib-validation": ">=0.1.0",
         "pallo/lib-widget": ">=0.1.1",
         "pallo/web": ">=0.2.4",

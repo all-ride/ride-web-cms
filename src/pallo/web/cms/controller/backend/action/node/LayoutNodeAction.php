@@ -69,10 +69,12 @@ class LayoutNodeAction extends AbstractNodeAction {
 
         if (!$region || ($region && (($layout && !$layout->hasRegion($region)) && !$theme->hasRegion($region)))) {
             if ($layout) {
-                $region = array_shift($layout->getRegions());
+                $regions = $layout->getRegions();
             } else {
-                $region = array_shift($theme->getRegions());
+                $regions = $theme->getRegions();
             }
+
+            $region = array_shift($regions);
         }
 
         $this->response->setRedirect($this->getUrl('cms.node.layout.region', array(
@@ -88,30 +90,16 @@ class LayoutNodeAction extends AbstractNodeAction {
      * @return null
      */
     public function regionAction(I18n $i18n, $locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, WidgetActionManager $widgetActionManager, NodeModel $nodeModel, $site, $node, $region) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
-            return;
-        }
-
+        $theme = null;
         $layout = null;
-        if (method_exists($node, 'getLayout') && $layout = $node->getLayout($locale)) {
-            $layout = $layoutModel->getLayout($layout);
-        }
-
-        $theme = $node->getTheme();
-        if ($theme) {
-            $theme = $themeModel->getTheme($theme);
-        }
-
-        $isThemeRegion = $theme->hasRegion($region);
-        $isLayoutRegion = $layout && $layout->hasRegion($region);
-        if (!$isThemeRegion && !$isLayoutRegion) {
-            $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
-
+        if (!$this->resolveNode($nodeModel, $site, $node) || !$this->resolveRegion($themeModel, $layoutModel, $node, $locale, $region, $theme, $layout)) {
             return;
         }
+
+        $regions = $theme->getRegions();
 
         $this->setLastAction(self::NAME);
-        $this->setLastRegion($region, $isThemeRegion ? 'theme' : 'layout');
+        $this->setLastRegion($region, isset($regions[$region]) ? 'theme' : 'layout');
 
         $form = $this->createRegionForm($node, $layout, $theme, $region);
 
@@ -159,25 +147,7 @@ class LayoutNodeAction extends AbstractNodeAction {
      * Action to add a widget to the provided region
      */
     public function widgetAddAction($locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, WidgetActionManager $widgetActionManager, NodeModel $nodeModel, $site, $node, $region, $widget) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
-            return;
-        }
-
-        $layout = null;
-        if (method_exists($node, 'getLayout') && $layout = $node->getLayout($locale)) {
-            $layout = $layoutModel->getLayout($layout);
-        }
-
-        $theme = $node->getTheme();
-        if ($theme) {
-            $theme = $themeModel->getTheme($theme);
-        }
-
-        $isThemeRegion = $theme->hasRegion($region);
-        $isLayoutRegion = $layout && $layout->hasRegion($region);
-        if (!$isThemeRegion && !$isLayoutRegion) {
-            $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
-
+        if (!$this->resolveNode($nodeModel, $site, $node) || !$this->resolveRegion($themeModel, $layoutModel, $node, $locale, $region)) {
             return;
         }
 
@@ -212,25 +182,7 @@ class LayoutNodeAction extends AbstractNodeAction {
      * Action to delete a widget from the provided region
      */
     public function widgetDeleteAction($locale, ThemeModel $themeModel, LayoutModel $layoutModel, NodeModel $nodeModel, $site, $node, $region, $widget) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
-            return;
-        }
-
-        $layout = null;
-        if (method_exists($node, 'getLayout') && $layout = $node->getLayout($locale)) {
-            $layout = $layoutModel->getLayout($layout);
-        }
-
-        $theme = $node->getTheme();
-        if ($theme) {
-            $theme = $themeModel->getTheme($theme);
-        }
-
-        $isThemeRegion = $theme->hasRegion($region);
-        $isLayoutRegion = $layout && $layout->hasRegion($region);
-        if (!$isThemeRegion && !$isLayoutRegion) {
-            $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
-
+        if (!$this->resolveNode($nodeModel, $site, $node) || !$this->resolveRegion($themeModel, $layoutModel, $node, $locale, $region)) {
             return;
         }
 
@@ -243,25 +195,7 @@ class LayoutNodeAction extends AbstractNodeAction {
      * Action to reorder the widgets of the provided region
      */
     public function orderAction($locale, ThemeModel $themeModel, LayoutModel $layoutModel, NodeModel $nodeModel, $site, $node, $region) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
-            return;
-        }
-
-        $layout = null;
-        if (method_exists($node, 'getLayout') && $layout = $node->getLayout($locale)) {
-            $layout = $layoutModel->getLayout($layout);
-        }
-
-        $theme = $node->getTheme();
-        if ($theme) {
-            $theme = $themeModel->getTheme($theme);
-        }
-
-        $isThemeRegion = $theme->hasRegion($region);
-        $isLayoutRegion = $layout && $layout->hasRegion($region);
-        if (!$isThemeRegion && !$isLayoutRegion) {
-            $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
-
+        if (!$this->resolveNode($nodeModel, $site, $node) || !$this->resolveRegion($themeModel, $layoutModel, $node, $locale, $region)) {
             return;
         }
 

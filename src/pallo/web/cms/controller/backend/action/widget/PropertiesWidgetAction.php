@@ -15,12 +15,12 @@ use pallo\web\mvc\controller\AbstractController;
 use pallo\web\mvc\view\TemplateView;
 
 /**
- * Controller of the layout node action
+ * Controller of the properties widget action
  */
 class PropertiesWidgetAction extends AbstractWidgetAction {
 
     /**
-     * The name of this action
+     * Name of this action
      * @var string
      */
     const NAME = 'properties';
@@ -45,25 +45,7 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
      * Action to dispatch to the properties of a widget
      */
     public function indexAction(I18n $i18n, $locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, NodeModel $nodeModel, $site, $node, $region, $widget, Invoker $invoker) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
-            return;
-        }
-
-        $layout = null;
-        if (method_exists($node, 'getLayout') && $layout = $node->getLayout($locale)) {
-            $layout = $layoutModel->getLayout($layout);
-        }
-
-        $theme = $node->getTheme();
-        if ($theme) {
-            $theme = $themeModel->getTheme($theme);
-        }
-
-        $isThemeRegion = $theme->hasRegion($region);
-        $isLayoutRegion = $layout && $layout->hasRegion($region);
-        if (!$isThemeRegion && !$isLayoutRegion) {
-            $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
-
+        if (!$this->resolveNode($nodeModel, $site, $node) || !$this->resolveRegion($themeModel, $layoutModel, $node, $locale, $region)) {
             return;
         }
 
@@ -91,6 +73,10 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
 
         if ($invoker->invoke($propertiesCallback)) {
             $nodeModel->setNode($node);
+
+            $this->addSuccess('success.widget.saved', array(
+            	'widget' => $this->getTranslator()->translate('widget.' . $widget->getName()),
+            ));
 
             $this->response->setRedirect($this->getUrl('cms.node.layout.region', array(
                 'locale' => $locale,
@@ -121,6 +107,7 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
             'region' => $region,
             'widget' => $widget,
             'widgetId' => $widgetId,
+            'widgetName' => $this->getTranslator()->translate('widget.' . $widget->getName()),
             'propertiesTemplate' => $template->getResource(),
         ) + $template->getVariables();
 

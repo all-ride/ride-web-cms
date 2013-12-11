@@ -9,6 +9,7 @@ use pallo\library\cms\theme\ThemeModel;
 use pallo\library\cms\widget\WidgetModel;
 use pallo\library\event\EventManager;
 use pallo\library\http\Response;
+use pallo\library\log\Log;
 use pallo\library\mvc\view\View;
 use pallo\library\router\GenericRouter;
 use pallo\library\router\RouteContainer;
@@ -27,7 +28,7 @@ class NodeController extends AbstractController {
      * Dispatches the frontend of a node
      * @return null
 	 */
-	public function indexAction(WebApplication $web, EventManager $eventManager, LayoutModel $layoutModel, ThemeModel $themeModel, WidgetModel $widgetModel, NodeModel $nodeModel, $node, $locale = null) {
+	public function indexAction(WebApplication $web, EventManager $eventManager, Log $log, LayoutModel $layoutModel, ThemeModel $themeModel, WidgetModel $widgetModel, NodeModel $nodeModel, $node, $locale = null) {
         $cache = null;
 
         $i18n = $this->getI18n();
@@ -53,6 +54,7 @@ class NodeController extends AbstractController {
 
 		$nodeDispatcher->setDispatcher($web->getDispatcher());
 		$nodeDispatcher->setEventManager($eventManager);
+		$nodeDispatcher->setLog($log);
 		$nodeDispatcher->dispatch($this->request, $this->response, $this->getUser(), $cache);
 	}
 

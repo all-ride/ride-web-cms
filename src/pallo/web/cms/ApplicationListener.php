@@ -14,6 +14,8 @@ use pallo\web\mvc\view\TemplateView;
 
 class ApplicationListener {
 
+    const LOG_SOURCE = 'cms';
+
     public function prepareTemplateView(Event $event, I18n $i18n, NodeModel $nodeModel, NodeTreeGenerator $nodeTreeGenerator) {
         $web = $event->getArgument('web');
         $response = $web->getResponse();

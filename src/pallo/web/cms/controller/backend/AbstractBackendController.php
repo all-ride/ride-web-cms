@@ -2,8 +2,11 @@
 
 namespace pallo\web\cms\controller\backend;
 
-use pallo\library\cms\node\exception\NodeNotFoundException;
+use pallo\library\cms\exception\CmsException;
+use pallo\library\cms\layout\LayoutModel;
 use pallo\library\cms\node\NodeModel;
+use pallo\library\cms\node\Node;
+use pallo\library\cms\theme\ThemeModel;
 use pallo\library\http\Response;
 
 use pallo\web\base\controller\AbstractController;
@@ -42,7 +45,45 @@ abstract class AbstractBackendController extends AbstractController {
                     throw new NodeNotFoundException($node->getId());
                 }
             }
-        } catch (NodeNotFoundException $exception) {
+        } catch (CmsException $exception) {
+            $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Resolves the provided region
+     * @param pallo\library\cms\theme\ThemeModel $themeModel
+     * @param pallo\library\cms\layout\LayoutModel $layoutModel
+     * @param pallo\library\cms\node\Node $node
+     * @param string $locale
+     * @param string $region
+     * @param string $theme
+     * @param string $layout
+     * @return boolean True when the region is available in the provided node,
+     * false if the region is not available, the response code will be set to
+     * 404
+     */
+    protected function resolveRegion(ThemeModel $themeModel, LayoutModel $layoutModel, Node $node, $locale, $region, &$theme = null, &$layout = null) {
+        try {
+            if (method_exists($node, 'getLayout') && $layout = $node->getLayout($locale)) {
+                $layout = $layoutModel->getLayout($layout);
+            }
+
+            $theme = $node->getTheme();
+            if ($theme) {
+                $theme = $themeModel->getTheme($theme);
+            }
+
+            $isThemeRegion = $theme->hasRegion($region);
+            $isLayoutRegion = $layout && $layout->hasRegion($region);
+            if (!$isThemeRegion && !$isLayoutRegion) {
+                throw new CmsException();
+            }
+        } catch (CmsException $exception) {
             $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
 
             return false;
