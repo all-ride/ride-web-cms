@@ -45,6 +45,12 @@ class AbstractWidget extends AbstractController implements Widget {
     protected $region;
 
     /**
+     * Context of the node
+     * @var array
+     */
+    protected $context;
+
+    /**
      * Breadcrumbs of the page holding this widget
      * @var array
      */
@@ -235,6 +241,23 @@ class AbstractWidget extends AbstractController implements Widget {
      */
     public function containsUserContent() {
         return $this->containsUserContent;
+    }
+
+    /**
+     * Sets the context of the node
+     * @param array $context
+     * @return null
+     */
+    public function setContext(array $context) {
+        $this->context = $context;
+    }
+
+    /**
+     * Gets the context of the node
+     * @return array
+    */
+    public function getContext() {
+        return $this->context;
     }
 
     /**

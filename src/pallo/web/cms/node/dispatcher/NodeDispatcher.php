@@ -7,6 +7,7 @@ use pallo\library\cms\node\Node;
 use pallo\library\cms\widget\Widget;
 use pallo\library\cms\widget\WidgetModel;
 use pallo\library\event\EventManager;
+use pallo\library\log\Log;
 use pallo\library\mvc\dispatcher\Dispatcher;
 use pallo\library\mvc\Request;
 use pallo\library\mvc\Response;
@@ -16,6 +17,7 @@ use pallo\library\security\model\User;
 use pallo\library\String;
 
 use pallo\web\cms\view\NodeTemplateView;
+use pallo\web\cms\ApplicationListener;
 
 /**
  * Dispatcher for the frontend of a node
@@ -163,6 +165,7 @@ class NodeDispatcher {
      */
     public function dispatch(Request $request, Response $response, User $user = null, CachePool $cache = null) {
         $route = $request->getRoute();
+        $context = array();
 
         $this->locale = $this->view->getTemplate()->get('locale');
         $this->routeArguments = $route->getArguments();
@@ -200,7 +203,7 @@ class NodeDispatcher {
 
             foreach ($widgets as $widgetId => $widget) {
                 if ($this->log) {
-                    $log->logDebug('Rendering widget ' . $widgetId . ' for region ' . $regionName, null, Module::LOG_SOURCE);
+                    $this->log->logDebug('Rendering widget ' . $widget->getName() . '#' . $widgetId . ' for region ' . $regionName, null, ApplicationListener::LOG_SOURCE);
                 }
 
                 if ($isCacheable) {
@@ -242,6 +245,7 @@ class NodeDispatcher {
             	}
 
                 $widget->setProperties($widgetProperties);
+                $widget->setContext($context);
 
                 $widgetMatchedRouteArguments = $this->dispatchWidget($request, $response, $widgetId, $widget);
                 if ($widgetMatchedRouteArguments) {
@@ -266,6 +270,8 @@ class NodeDispatcher {
                 if ($breadcrumbs) {
                     $this->widgetBreadcrumbs = $breadcrumbs;
                 }
+
+                $context = $widget->getContext();
 
                 if ($isCacheable && !$widgetProperties->isCacheDisabled()) {
                     $cacheTtl = $widgetProperties->getCacheTtl();
@@ -355,9 +361,8 @@ class NodeDispatcher {
         $url = new String($request->getUrl());
         $cacheKey = 'node.response.' . $url->safeString();
 
-        $log = $web->getLog();
         if ($this->log) {
-            $log->logDebug('Caching the request', 'Ttl: ' . $this->cacheTtl . ' - ' . $cacheKey, 'cms');
+            $this->log->logDebug('Caching the request', 'Ttl: ' . $this->cacheTtl . ' - ' . $cacheKey, ApplicationListener::LOG_SOURCE);
         }
 
         $cachedResponse = $this->cache->create($cacheKey);
