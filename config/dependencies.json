@@ -189,6 +189,18 @@
                             "name": "nodeAction",
                             "type": "dependency",
                             "properties": {
+                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\TemplateNodeAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeAction",
+                    "arguments": [
+                        {
+                            "name": "nodeAction",
+                            "type": "dependency",
+                            "properties": {
                                 "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\AdvancedNodeAction"
                             }
                         }
@@ -273,6 +285,18 @@
                             "type": "dependency",
                             "properties": {
                                 "interface": "pallo\\web\\cms\\controller\\backend\\action\\widget\\PropertiesWidgetAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addWidgetAction",
+                    "arguments": [
+                        {
+                            "name": "widgetAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\widget\\TemplateWidgetAction"
                             }
                         }
                     ]
