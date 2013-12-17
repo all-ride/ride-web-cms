@@ -33,7 +33,6 @@ class VisibilityNodeAction extends AbstractNodeAction {
             return;
         }
 
-
         $this->setLastAction(self::NAME);
 
         $data = array(
@@ -133,10 +132,13 @@ class VisibilityNodeAction extends AbstractNodeAction {
             }
         }
 
+        $referer = $this->request->getQueryParameter('referer');
+
         $this->setTemplateView('cms/backend/node.visibility', array(
             'site' => $site,
             'node' => $node,
             'form' => $form->getView(),
+            'referer' => $referer,
             'locale' => $locale,
             'locales' => $i18n->getLocaleCodeList(),
         ));

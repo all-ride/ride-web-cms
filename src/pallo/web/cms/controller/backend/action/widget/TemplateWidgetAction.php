@@ -113,9 +113,12 @@ class TemplateWidgetAction extends AbstractWidgetAction {
             }
         }
 
+        $referer = $this->request->getQueryParameter('referer');
+
         $this->setTemplateView('cms/backend/widget.templates', array(
             'site' => $site,
             'node' => $node,
+            'referer' => $referer,
             'locale' => $locale,
             'locales' => $i18n->getLocaleCodeList(),
             'region' => $region,

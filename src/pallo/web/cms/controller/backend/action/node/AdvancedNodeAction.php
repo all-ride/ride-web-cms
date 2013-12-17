@@ -77,11 +77,14 @@ class AdvancedNodeAction extends AbstractNodeAction {
             }
         }
 
+        $referer = $this->request->getQueryParameter('referer');
+
         $this->setTemplateView('cms/backend/node.advanced', array(
             'site' => $site,
             'node' => $node,
             'nodeProperties' => $this->getHtmlFromNode($node),
             'form' => $form->getView(),
+            'referer' => $referer,
             'locale' => $locale,
             'locales' => $i18n->getLocaleCodeList(),
         ));

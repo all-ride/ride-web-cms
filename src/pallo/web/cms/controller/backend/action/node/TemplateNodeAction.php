@@ -113,11 +113,14 @@ class TemplateNodeAction extends AbstractNodeAction {
             }
         }
 
+        $referer = $this->request->getQueryParameter('referer');
+
         $this->setTemplateView('cms/backend/node.templates', array(
             'site' => $site,
             'node' => $node,
             'templates' => $templates,
             'form' => $form->getView(),
+            'referer' => $referer,
             'locale' => $locale,
             'locales' => $i18n->getLocaleCodeList(),
         ));

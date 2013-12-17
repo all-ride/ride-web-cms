@@ -12,6 +12,7 @@ use pallo\web\base\view\MenuItem;
 use pallo\web\base\view\Menu;
 use pallo\web\cms\node\NodeTreeGenerator;
 use pallo\web\mvc\view\TemplateView;
+use pallo\web\WebApplication;
 
 class ApplicationListener {
 
@@ -56,7 +57,7 @@ class ApplicationListener {
         $template->set('nodeTypes', $nodeModel->getNodeTypeManager()->getNodeTypes());
     }
 
-    public function prepareTaskbar(Event $event, Request $request, I18n $i18n, NodeModel $nodeModel, ThemeModel $themeModel) {
+    public function prepareTaskbar(Event $event, Request $request, I18n $i18n, NodeModel $nodeModel, ThemeModel $themeModel, WebApplication $web) {
         $locale = $request->getRoute()->getArgument('locale');
         if (!$locale) {
             $locale = $i18n->getLocale()->getCode();
@@ -64,6 +65,7 @@ class ApplicationListener {
 
         $taskbar = $event->getArgument('taskbar');
         $applicationMenu = $taskbar->getApplicationsMenu();
+        $referer = '?referer=' . urlencode($request->getUrl());
 
         // site menu
         $menu = new Menu();
@@ -87,9 +89,9 @@ class ApplicationListener {
 
         $menuItem = new MenuItem();
         $menuItem->setTranslation('button.site.add');
-        $menuItem->setRoute('cms.site.add', array(
+        $menuItem->setUrl($web->getUrl('cms.site.add', array(
             'locale' => $locale,
-        ));
+        )) . $referer);
 
         $menu->addMenuItem($menuItem);
 
@@ -104,9 +106,9 @@ class ApplicationListener {
             foreach ($themes as $theme) {
                 $menuItem = new MenuItem();
                 $menuItem->setLabel($theme->getDisplayName());
-                $menuItem->setRoute('cms.theme.edit', array(
+                $menuItem->setUrl($web->getUrl('cms.theme.edit', array(
                     'theme' => $theme->getName(),
-                ));
+                )) . $referer);
 
                 $menu->addMenuItem($menuItem);
             }
@@ -116,7 +118,7 @@ class ApplicationListener {
 
         $menuItem = new MenuItem();
         $menuItem->setTranslation('button.theme.add');
-        $menuItem->setRoute('cms.theme.add');
+        $menuItem->setUrl($web->getUrl('cms.theme.add') . $referer);
 
         $menu->addMenuItem($menuItem);
 

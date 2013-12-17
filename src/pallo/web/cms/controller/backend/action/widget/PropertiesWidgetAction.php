@@ -8,6 +8,7 @@ use pallo\library\cms\node\NodeModel;
 use pallo\library\cms\theme\ThemeModel;
 use pallo\library\cms\widget\Widget;
 use pallo\library\cms\widget\WidgetModel;
+use pallo\library\http\Response;
 use pallo\library\i18n\I18n;
 use pallo\library\reflection\Invoker;
 
@@ -77,19 +78,10 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
             $this->addSuccess('success.widget.saved', array(
             	'widget' => $this->getTranslator()->translate('widget.' . $widget->getName()),
             ));
-
-            $this->response->setRedirect($this->getUrl('cms.node.layout.region', array(
-                'locale' => $locale,
-            	'site' => $site->getId(),
-            	'node' => $node->getId(),
-            	'region' => $region,
-            )));
-
-            return;
         }
 
         $view = $this->response->getView();
-        if (!$view && !$this->response->getBody()) {
+        if (!$view && !$this->response->getBody() && $this->response->getStatusCode() == Response::STATUS_CODE_OK) {
             $this->response->setRedirect($this->getUrl('cms.node.layout.region', array(
                 'locale' => $locale,
             	'site' => $site->getId(),
@@ -109,10 +101,13 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
             $this->addWarning('warning.widget.properties.inherited');
         }
 
+        $referer = $this->request->getQueryParameter('referer');
+
         $template = $view->getTemplate();
         $variables = array(
             'site' => $site,
             'node' => $node,
+            'referer' => $referer,
             'locale' => $locale,
             'locales' => $i18n->getLocaleCodeList(),
             'region' => $region,

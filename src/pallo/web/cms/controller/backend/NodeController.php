@@ -50,7 +50,12 @@ class NodeController extends AbstractBackendController {
             }
         }
 
-        $this->response->setRedirect($redirectUrl);
+        $referer = $this->request->getQueryParameter('referer');
+        if ($referer) {
+            $referer = '?referer=' . urlencode($referer);
+        }
+
+        $this->response->setRedirect($redirectUrl . $referer);
     }
 
     /**

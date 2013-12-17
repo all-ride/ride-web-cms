@@ -85,9 +85,12 @@ class StructureNodeAction extends AbstractNodeAction {
             }
         }
 
+        $referer = $this->request->getQueryParameter('referer');
+
         $this->setTemplateView('cms/backend/site.structure', array(
             'site' => $site,
             'form' => $form->getView(),
+            'referer' => $referer,
             'locale' => $locale,
             'locales' => $i18n->getLocaleCodeList(),
         ));
