@@ -43,7 +43,7 @@ class TemplatesComponent extends AbstractComponent {
             $fileExtension = array_pop($fileTokens);
             $fileId = array_pop($fileTokens);
 
-            if ($fileId != $id) {
+            if ($id && $fileId != $id) {
                 $fileId .= '.' . $id;
             }
 

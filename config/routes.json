@@ -1,6 +1,12 @@
 {
     "routes": [
         {
+            "path": "/sites",
+            "controller": "pallo\\web\\cms\\controller\\backend\\SiteController",
+            "action": "indexAction",
+            "id": "cms.site"
+        },
+        {
             "path": "/sites/add/%locale%",
             "controller": "pallo\\web\\cms\\controller\\backend\\SiteController",
             "action": "formAction",
@@ -170,6 +176,30 @@
             "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\VisibilityNodeAction",
             "action": "indexAction",
             "id": "cms.node.visibility"
+        },
+        {
+            "path": "/themes",
+            "controller": "pallo\\web\\cms\\controller\\backend\\ThemeController",
+            "action": "indexAction",
+            "id": "cms.theme"
+        },
+        {
+            "path": "/themes/add",
+            "controller": "pallo\\web\\cms\\controller\\backend\\ThemeController",
+            "action": "formAction",
+            "id": "cms.theme.add"
+        },
+        {
+            "path": "/themes/%theme%",
+            "controller": "pallo\\web\\cms\\controller\\backend\\ThemeController",
+            "action": "formAction",
+            "id": "cms.theme.edit"
+        },
+        {
+            "path": "/themes/%theme%/delete",
+            "controller": "pallo\\web\\cms\\controller\\backend\\ThemeController",
+            "action": "deleteAction",
+            "id": "cms.theme.delete"
         },
         {
             "path": "/nodes/%node%",

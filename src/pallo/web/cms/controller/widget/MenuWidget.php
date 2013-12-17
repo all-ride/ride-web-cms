@@ -208,14 +208,7 @@ class MenuWidget extends AbstractWidget {
         $form = $form->build();
         if ($form->isSubmitted()) {
             if ($this->request->getBodyParameter('cancel')) {
-                $this->response->setRedirect($this->getUrl('cms.node.layout.region', array(
-                    'locale' => $this->locale,
-                    'site' => $rootNodeId,
-                    'node' => $node->getId(),
-                    'region' => $this->region,
-                )));
-
-                return;
+                return false;
             }
 
             try {

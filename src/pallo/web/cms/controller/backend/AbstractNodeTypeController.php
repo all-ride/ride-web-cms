@@ -59,11 +59,15 @@ abstract class AbstractNodeTypeController extends AbstractBackendController {
         if ($parentNode) {
             $inheritedValue = $parentNode->get(Node::PROPERTY_THEME, null, true, true);
 
+            if (isset($themes[$inheritedValue])) {
+                $inheritedValue = $themes[$inheritedValue]->getDisplayName();
+            }
+
             $options[self::OPTION_INHERITED] = $translator->translate('label.inherited') . ' (' . $inheritedValue . ')';
         }
 
-        foreach ($themes as $theme => $null) {
-            $options[$theme] = $translator->translate('theme.' . $theme);
+        foreach ($themes as $id => $theme) {
+            $options[$id] = $theme->getDisplayName();
         }
 
         return $options;
