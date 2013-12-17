@@ -3,6 +3,7 @@
 namespace pallo\web\cms;
 
 use pallo\library\cms\node\NodeModel;
+use pallo\library\cms\theme\ThemeModel;
 use pallo\library\event\Event;
 use pallo\library\i18n\I18n;
 use pallo\library\mvc\Request;
@@ -55,14 +56,16 @@ class ApplicationListener {
         $template->set('nodeTypes', $nodeModel->getNodeTypeManager()->getNodeTypes());
     }
 
-    public function prepareTaskbar(Event $event, Request $request, I18n $i18n, NodeModel $nodeModel) {
+    public function prepareTaskbar(Event $event, Request $request, I18n $i18n, NodeModel $nodeModel, ThemeModel $themeModel) {
         $locale = $request->getRoute()->getArgument('locale');
         if (!$locale) {
             $locale = $i18n->getLocale()->getCode();
         }
 
         $taskbar = $event->getArgument('taskbar');
+        $applicationMenu = $taskbar->getApplicationsMenu();
 
+        // site menu
         $menu = new Menu();
         $menu->setTranslation('label.sites');
 
@@ -90,7 +93,34 @@ class ApplicationListener {
 
         $menu->addMenuItem($menuItem);
 
-        $taskbar->getApplicationsMenu()->addMenu($menu);
+        $applicationMenu->addMenu($menu);
+
+        // theme menu
+        $menu = new Menu();
+        $menu->setTranslation('label.themes');
+
+        $themes = $themeModel->getThemes();
+        if ($themes) {
+            foreach ($themes as $theme) {
+                $menuItem = new MenuItem();
+                $menuItem->setLabel($theme->getDisplayName());
+                $menuItem->setRoute('cms.theme.edit', array(
+                    'theme' => $theme->getName(),
+                ));
+
+                $menu->addMenuItem($menuItem);
+            }
+
+            $menu->addSeparator();
+        }
+
+        $menuItem = new MenuItem();
+        $menuItem->setTranslation('button.theme.add');
+        $menuItem->setRoute('cms.theme.add');
+
+        $menu->addMenuItem($menuItem);
+
+        $applicationMenu->addMenu($menu);
     }
 
 }

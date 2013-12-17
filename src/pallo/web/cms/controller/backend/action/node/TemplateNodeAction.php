@@ -78,8 +78,14 @@ class TemplateNodeAction extends AbstractNodeAction {
             $templates[$layout] = 'cms/frontend/layout.' . $layout;
         }
 
+        if ($node->getId() == $site->getId()) {
+            $id = null;
+        } else {
+            $id = $node->getId();
+        }
+
         $component = new TemplatesComponent();
-        $data = $component->createData($templateFacade, $templates, $node->getTheme(), $node->getId());
+        $data = $component->createData($templateFacade, $templates, $node->getTheme(), $id);
 
         $form = $this->buildForm($component, $data);
         if ($form->isSubmitted()) {

@@ -89,6 +89,17 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
         }
 
         $view = $this->response->getView();
+        if (!$view && !$this->response->getBody()) {
+            $this->response->setRedirect($this->getUrl('cms.node.layout.region', array(
+                'locale' => $locale,
+            	'site' => $site->getId(),
+            	'node' => $node->getId(),
+            	'region' => $region,
+            )));
+
+            return;
+        }
+
         if (!$view instanceof TemplateView) {
             return;
         }

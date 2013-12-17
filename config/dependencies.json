@@ -246,22 +246,22 @@
         {
             "interfaces": "pallo\\library\\cms\\layout\\Layout",
             "class": "pallo\\library\\cms\\layout\\DoubleColumnHorizontal5050Layout",
-            "id": "double-h5050"
+            "id": "double.h5050"
         },
         {
             "interfaces": "pallo\\library\\cms\\layout\\Layout",
             "class": "pallo\\library\\cms\\layout\\DoubleColumnHorizontal2575Layout",
-            "id": "double-h2575"
+            "id": "double.h2575"
         },
         {
             "interfaces": "pallo\\library\\cms\\layout\\Layout",
             "class": "pallo\\library\\cms\\layout\\DoubleColumnHorizontal7525Layout",
-            "id": "double-h7525"
+            "id": "double.h7525"
         },
         {
             "interfaces": "pallo\\library\\cms\\layout\\Layout",
             "class": "pallo\\library\\cms\\layout\\DoubleColumnVerticalLayout",
-            "id": "double-v"
+            "id": "double.v"
         },
         {
             "interfaces": "pallo\\library\\cms\\layout\\LayoutModel",
@@ -269,9 +269,25 @@
             "id": "dependency"
         },
         {
-            "interfaces": "pallo\\library\\cms\\theme\\ThemeModel",
-            "class": "pallo\\library\\cms\\theme\\TemplateThemeModel",
-            "id": "template"
+            "interfaces": ["pallo\\library\\cms\\theme\\ThemeModel", "pallo\\web\\cms\\theme\\ThemeModel", "pallo\\library\\template\\theme\\ThemeModel"],
+            "class": "pallo\\web\\cms\\theme\\ThemeModel",
+            "id": "cms",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "directory",
+                            "type": "call",
+                            "properties": {
+                                "interface": "pallo\\library\\system\\file\\browser\\FileBrowser",
+                                "method": "getApplicationDirectory"
+                            }
+                        }
+                    ]
+                },
+                "setTemplateFacade"
+            ]
         },
         {
             "class": "pallo\\web\\cms\\controller\\backend\\action\\widget\\WidgetActionManager",
@@ -304,6 +320,16 @@
             ]
         },
         {
+            "interfaces": "pallo\\web\\cms\\text\\format\\TextFormat",
+            "class": "pallo\\web\\cms\\text\\format\\HtmlTextFormat",
+            "id": "html"
+        },
+        {
+            "interfaces": "pallo\\web\\cms\\text\\io\\TextIO",
+            "class": "pallo\\web\\cms\\text\\io\\PropertiesTextIO",
+            "id": "properties"
+        },        
+        {
             "interfaces": "pallo\\library\\cms\\widget\\WidgetModel",
             "class": "pallo\\web\\cms\\widget\\DependencyWidgetModel",
             "id": "dependency"
@@ -323,6 +349,11 @@
             "class": "pallo\\web\\cms\\controller\\widget\\MenuWidget",
             "id": "menu"
         },
+        {
+            "interfaces": "pallo\\library\\cms\\widget\\Widget",
+            "class": "pallo\\web\\cms\\controller\\widget\\TextWidget",
+            "id": "text"
+        },        
         {
             "interfaces": "pallo\\library\\cms\\widget\\Widget",
             "class": "pallo\\web\\cms\\controller\\widget\\TitleWidget",

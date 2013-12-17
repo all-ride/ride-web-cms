@@ -14,6 +14,18 @@ use pallo\library\validation\exception\ValidationException;
 class SiteController extends AbstractNodeTypeController {
 
     /**
+     * Action to show an overview of the sites
+     * @param pallo\library\cms\node\NodeModel $nodeModel
+     * @return null
+     */
+    public function indexAction(NodeModel $nodeModel) {
+        $this->setTemplateView('cms/backend/site', array(
+            'sites' => $nodeModel->getNodesByType('site'),
+            'locale' => $this->getLocale(),
+        ));
+    }
+
+    /**
      * Action to show the detail of a site
      * @param pallo\library\cms\node\NodeModel $nodeModel
      * @param string $site
@@ -151,11 +163,57 @@ class SiteController extends AbstractNodeTypeController {
             }
         }
 
+        $referer = $this->request->getQueryParameter('referer');
+        if (!$referer) {
+            $referer = $this->getUrl('cms.site');
+        }
+
         $this->setTemplateView('cms/backend/site.form', array(
             'node' => $site,
+            'referer' => $referer,
             'form' => $form->getView(),
             'locale' => $locale,
             'locales' => $locales,
+        ));
+    }
+
+    /**
+     * Action to delete a site
+     * @param pallo\library\i18n\I18n $i18n
+     * @param string $locale
+     * @param pallo\library\cms\node\NodeModel $nodeModel
+     * @param string $site
+     * @return null
+     */
+    public function deleteAction(I18n $i18n, $locale, NodeModel $nodeModel, $site) {
+        if (!$this->resolveNode($nodeModel, $site)) {
+            return;
+        }
+
+        $referer = $this->request->getQueryParameter('referer');
+        if (!$referer) {
+            $referer = $this->getUrl('cms.site');
+        }
+
+        if ($this->request->isPost() || $this->request->isDelete()) {
+            $nodeModel->removeNode($site);
+
+            $this->addSuccess('success.node.deleted', array(
+                'node' => $site->getName($locale),
+            ));
+
+            $this->response->setRedirect($this->getUrl('cms.site', array('locale' => $locale)));
+
+            return;
+        }
+
+        $this->setTemplateView('cms/backend/confirm.form', array(
+            'type' => 'delete',
+            'referer' => $referer,
+            'site' => $site,
+            'node' => $site,
+            'locale' => $locale,
+            'locales' => $i18n->getLocaleCodeList(),
         ));
     }
 

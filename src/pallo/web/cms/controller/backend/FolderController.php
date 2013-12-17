@@ -101,9 +101,18 @@ class FolderController extends AbstractNodeTypeController {
             }
         }
 
+        $referer = $this->request->getQueryParameter('referer');
+        if (!$referer) {
+            $referer = $this->getUrl('cms.site.detail.locale', array(
+            	'site' => $site->getId(),
+                'locale' => $locale,
+            ));
+        }
+
         $this->setTemplateView('cms/backend/folder.form', array(
             'site' => $site,
             'node' => $node,
+            'referer' => $referer,
             'form' => $form->getView(),
             'locale' => $locale,
             'locales' => $locales,
