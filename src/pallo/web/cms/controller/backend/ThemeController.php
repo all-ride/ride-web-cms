@@ -61,7 +61,7 @@ class ThemeController extends AbstractController {
         $form = $this->createFormBuilder($data);
         $form->addRow('id', 'hidden');
         $form->addRow('name', 'string', array(
-            'label' => $translator->translate('label.name'),
+            'label' => $translator->translate('label.theme'),
             'description' => $translator->translate('label.theme.name.description'),
             'filters' => array(
                 'trim' => array(),
