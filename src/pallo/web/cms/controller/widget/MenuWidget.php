@@ -32,7 +32,7 @@ class MenuWidget extends AbstractWidget {
      * Default depth value of a menu widget
      * @var int
      */
-    const DEFAULT_DEPTH = 3;
+    const DEFAULT_DEPTH = 1;
 
     /**
      * Default parent value of a menu widget

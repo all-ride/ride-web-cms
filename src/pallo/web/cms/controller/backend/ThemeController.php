@@ -81,6 +81,9 @@ class ThemeController extends AbstractController {
             'description' => $translator->translate('label.theme.engines.description'),
             'multiselect' => true,
             'options' => $engines,
+            'validators' => array(
+                'required' => array(),
+            ),
         ));
         $form->addRow('regions', 'collection', array(
             'type' => 'string',
@@ -94,6 +97,11 @@ class ThemeController extends AbstractController {
             ),
         ));
         $form->setRequest($this->request);
+
+        $referer = $this->request->getQueryParameter('referer');
+        if (!$referer) {
+            $referer = $this->getUrl('cms.theme');
+        }
 
         $form = $form->build();
         if ($form->isSubmitted()) {
@@ -123,7 +131,7 @@ class ThemeController extends AbstractController {
                 	'theme' => $data['name'],
                 ));
 
-                $this->response->setRedirect($this->getUrl('cms.theme'));
+                $this->response->setRedirect($referer);
 
                 return;
             } catch (ValidationException $exception) {
@@ -133,11 +141,6 @@ class ThemeController extends AbstractController {
 
                 $this->response->setStatusCode(Response::STATUS_CODE_UNPROCESSABLE_ENTITY);
             }
-        }
-
-        $referer = $this->request->getQueryParameter('referer');
-        if (!$referer) {
-            $referer = $this->getUrl('cms.theme');
         }
 
         if ($theme instanceof GenericTheme) {
