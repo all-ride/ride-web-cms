@@ -81,6 +81,9 @@ class ThemeController extends AbstractController {
             'description' => $translator->translate('label.theme.engines.description'),
             'multiselect' => true,
             'options' => $engines,
+            'validators' => array(
+                'required' => array(),
+            ),
         ));
         $form->addRow('regions', 'collection', array(
             'type' => 'string',
