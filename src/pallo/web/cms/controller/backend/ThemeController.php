@@ -79,7 +79,7 @@ class ThemeController extends AbstractController {
             'type' => 'string',
             'label' => $translator->translate('label.engines'),
             'description' => $translator->translate('label.theme.engines.description'),
-            'multiselect' => true,
+            'multiple' => true,
             'options' => $engines,
             'validators' => array(
                 'required' => array(),
