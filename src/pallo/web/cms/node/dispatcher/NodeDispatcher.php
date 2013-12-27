@@ -253,7 +253,7 @@ class NodeDispatcher {
                 }
 
                 $statusCode = $response->getStatusCode();
-                if ($statusCode != Response::STATUS_CODE_OK && $statusCode != Response::STATUS_CODE_BAD_REQUEST) {
+                if ($statusCode != Response::STATUS_CODE_OK && $statusCode != Response::STATUS_CODE_BAD_REQUEST && $statusCode != Response::STATUS_CODE_UNPROCESSABLE_ENTITY) {
                     return;
                 }
 

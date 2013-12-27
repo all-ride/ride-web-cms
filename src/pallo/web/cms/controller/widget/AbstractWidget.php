@@ -294,4 +294,28 @@ class AbstractWidget extends AbstractController implements Widget {
         $this->setIsContent(true);
     }
 
+    /**
+     * Gets the URL of the provided route
+     * @param string $routeId Id of the route
+     * @param array $arguments Path arguments for the route
+     * @return string
+     * @throws pallo\library\router\exception\RouterException If the route is
+     * not found
+     */
+    protected function getUrl($id, array $variables = array()) {
+        $routes = $this->getRoutes();
+        foreach ($routes as $route) {
+            if ($route->getId() != $id) {
+                continue;
+            }
+
+            $node = $this->properties->getNode();
+            $url = rtrim($this->request->getBaseScript() . $node->getRoute($this->locale), '/');
+            $url = $route->getUrl($url, $variables);
+
+            return $url;
+        }
+
+        return parent::getUrl($id, $variables);
+    }
 }

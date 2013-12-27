@@ -82,7 +82,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
             	    'menu' => $translator->translate('label.hide.menu'),
             	    'breadcrumbs' => $translator->translate('label.hide.breadcrumbs'),
                 ),
-                'multiselect' => true,
+                'multiple' => true,
             ));
         }
         $form->setRequest($this->request);

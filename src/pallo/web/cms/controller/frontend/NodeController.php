@@ -13,6 +13,7 @@ use pallo\library\log\Log;
 use pallo\library\mvc\view\View;
 use pallo\library\router\GenericRouter;
 use pallo\library\router\RouteContainer;
+use pallo\library\router\Route;
 
 use pallo\web\base\controller\AbstractController;
 use pallo\web\cms\node\dispatcher\NodeDispatcher;
@@ -46,7 +47,7 @@ class NodeController extends AbstractController {
 	    }
 
 	    $node = $nodeDispatcher->getNode();
-	    if (!$node->isPublished()) {
+	    if (!$node->isPublished() || !$node->isAvailableInLocale($locale)) {
 	        $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
 
 	        return;
@@ -56,6 +57,28 @@ class NodeController extends AbstractController {
 		$nodeDispatcher->setEventManager($eventManager);
 		$nodeDispatcher->setLog($log);
 		$nodeDispatcher->dispatch($this->request, $this->response, $this->getUser(), $cache);
+
+		if ($this->response->getStatusCode() != Response::STATUS_CODE_NOT_FOUND) {
+		    return;
+		}
+
+		// not found, try the public controller
+		$arguments = ltrim($this->request->getBasePath(true), '/');
+		if (!$arguments) {
+		    return;
+		}
+
+		$controller = $this->dependencyInjector->get('pallo\\library\\mvc\\controller\\Controller', 'public');
+		$callback = array($controller, 'indexAction');
+
+		$route = new Route('/', $callback);
+		$route->setIsDynamic(true);
+		$route->setArguments(explode('/', $arguments));
+
+		$this->request->setRoute($route);
+		$this->response->setStatusCode(Response::STATUS_CODE_OK);
+
+		return $this->request;
 	}
 
 	/**

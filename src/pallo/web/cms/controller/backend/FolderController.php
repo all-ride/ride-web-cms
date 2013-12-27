@@ -59,7 +59,7 @@ class FolderController extends AbstractNodeTypeController {
             'label' => $translator->translate('label.locales'),
             'description' => $translator->translate('label.locales.available.description'),
             'options' => $this->getLocalesOptions($node, $translator, $locales),
-            'multiselect' => true,
+            'multiple' => true,
             'validators' => array(
                 'required' => array(),
             )
