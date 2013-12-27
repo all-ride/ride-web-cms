@@ -92,7 +92,7 @@ class CmsRouteContainerIO implements RouteContainerIO {
                 }
 
                 $route = new Route($path, $callback, 'cms.front.' . $node->getId() . '.' . $locale);
-                $route->setIsDynamic($path != '/');
+                $route->setIsDynamic(true);
                 $route->setPredefinedArguments(array('node' => $node->getId()));
                 $route->setLocale($locale);
 
@@ -111,11 +111,12 @@ class CmsRouteContainerIO implements RouteContainerIO {
 
         $expiredRoutes = $this->expiredRouteModel->getExpiredRoutes();
         foreach ($expiredRoutes as $expiredRoute) {
-            if (isset($registeredPaths[$expiredRoute->getPath()])) {
+            $path = $expiredRoute->getPath();
+            if (isset($registeredPaths[$path]) || $path == '/') {
                 continue;
             }
 
-            $route = new Route($expiredRoute->getPath(), $expiredCallback);
+            $route = new Route($path, $expiredCallback);
             $route->setIsDynamic(true);
             $route->setPredefinedArguments(array('node' => $expiredRoute->getNode()));
             $route->setLocale($expiredRoute->getLocale());
