@@ -77,6 +77,7 @@ class NodeTemplateView extends TemplateView {
 
         $template = $widgetView->getTemplate();
         $template->setResourceId($widgetId);
+        $template->setTheme($this->template->getTheme());
 
         $app = $template->get('app', array());
 
