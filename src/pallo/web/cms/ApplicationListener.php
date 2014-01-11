@@ -3,6 +3,7 @@
 namespace pallo\web\cms;
 
 use pallo\library\cms\node\NodeModel;
+use pallo\library\cms\node\Node;
 use pallo\library\cms\theme\ThemeModel;
 use pallo\library\event\Event;
 use pallo\library\i18n\I18n;
@@ -74,11 +75,19 @@ class ApplicationListener {
         $sites = $nodeModel->getNodesByType('site');
         if ($sites) {
             foreach ($sites as $nodeId => $node) {
+                $availableLocales = $node->getAvailableLocales();
+                if ($availableLocales == Node::LOCALES_ALL || isset($availableLocales[$locale])) {
+                    $siteLocale = $locale;
+                } else {
+                    $siteLocale = each($availableLocales);
+                    $siteLocale = $siteLocale['value'];
+                }
+
                 $menuItem = new MenuItem();
                 $menuItem->setLabel($node->getName($locale));
                 $menuItem->setRoute('cms.site.detail.locale', array(
                     'site' => $node->getId(),
-                    'locale' => $locale,
+                    'locale' => $siteLocale,
                 ));
 
                 $menu->addMenuItem($menuItem);
