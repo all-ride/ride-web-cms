@@ -71,6 +71,16 @@ abstract class AbstractBackendController extends AbstractController {
         try {
             if (method_exists($node, 'getLayout') && $layout = $node->getLayout($locale)) {
                 $layout = $layoutModel->getLayout($layout);
+                $isLayoutRegion = $layout->hasRegion($region);
+            } else {
+                $layouts = $layoutModel->getLayouts();
+                foreach ($layouts as $l) {
+                    if ($l->hasRegion($region)) {
+                        $isLayoutRegion = true;
+
+                        break;
+                    }
+                }
             }
 
             $theme = $node->getTheme();
@@ -79,7 +89,6 @@ abstract class AbstractBackendController extends AbstractController {
             }
 
             $isThemeRegion = $theme->hasRegion($region);
-            $isLayoutRegion = $layout && $layout->hasRegion($region);
             if (!$isThemeRegion && !$isLayoutRegion) {
                 throw new CmsException();
             }

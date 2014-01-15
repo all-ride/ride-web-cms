@@ -91,10 +91,7 @@ class ThemeController extends AbstractController {
             'description' => $translator->translate('label.theme.regions.description'),
             'filters' => array(
                 'trim' => array('trim.empty' => true),
-            ),
-            'validators' => array(
-                'required' => array(),
-            ),
+            )
         ));
         $form->setRequest($this->request);
 

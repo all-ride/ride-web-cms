@@ -77,6 +77,23 @@
             ]
         }, 
         {
+            "class": "pallo\\web\\cms\\node\\type\\SiteNodeType",
+            "calls": [
+                {
+                    "method": "setDefaultTheme",
+                    "arguments": [
+                        {
+                            "name": "defaultTheme",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "cms.default.theme"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "class": "pallo\\library\\cms\\node\\type\\NodeTypeManager",
             "id": "generic",
             "calls": [
@@ -154,6 +171,18 @@
                             "type": "dependency",
                             "properties": {
                                 "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeAction",
+                    "arguments": [
+                        {
+                            "name": "nodeAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\MetaNodeAction"
                             }
                         }
                     ]

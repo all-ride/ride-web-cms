@@ -59,7 +59,7 @@ class LayoutNodeAction extends AbstractNodeAction {
             $theme = $themeModel->getTheme($theme);
         }
 
-        $form = $this->createRegionForm($node, $layout, $theme, null);
+        $form = $this->createRegionForm($node, $layoutModel, $layout, $theme);
         if ($form->isSubmitted()) {
             $data = $form->getData();
             $region = $data['region'];
@@ -71,7 +71,14 @@ class LayoutNodeAction extends AbstractNodeAction {
             if ($layout) {
                 $regions = $layout->getRegions();
             } else {
-                $regions = $theme->getRegions();
+                $regions = array();
+
+                $layouts = $layoutModel->getLayouts();
+                foreach ($layouts as $layout) {
+                    $regions += $layout->getRegions();
+                }
+
+                $regions += $theme->getRegions();
             }
 
             $region = array_shift($regions);
@@ -101,7 +108,7 @@ class LayoutNodeAction extends AbstractNodeAction {
         $this->setLastAction(self::NAME);
         $this->setLastRegion($region, isset($regions[$region]) ? 'theme' : 'layout');
 
-        $form = $this->createRegionForm($node, $layout, $theme, $region);
+        $form = $this->createRegionForm($node, $layoutModel, $layout, $theme, $region);
 
         $availableWidgets = $widgetModel->getWidgets();
         $inheritedWidgets = $node->getInheritedWidgets($region);
@@ -215,15 +222,27 @@ class LayoutNodeAction extends AbstractNodeAction {
      * @param string $region
      * @return pallo\library\form\Form
      */
-    protected function createRegionForm(Node $node, Layout $layout = null, Theme $theme = null, $region = null) {
+    protected function createRegionForm(Node $node, LayoutModel $layoutModel, Layout $layout = null, Theme $theme = null, $region = null) {
         $regions = array();
 
         if ($layout) {
             $regions['Layout'] = $layout->getRegions();
+            if (!$regions['Layout']) {
+                unset($regions['Layout']);
+            }
+        } else {
+            $regions['Layout'] = array();
+            $layouts = $layoutModel->getLayouts();
+            foreach ($layouts as $layout) {
+                $regions['Layout'] += $layout->getRegions();
+            }
         }
 
         if ($theme) {
             $regions['Theme'] = $theme->getRegions();
+            if (!$regions['Theme']) {
+                unset($regions['Theme']);
+            }
         }
 
         $form = $this->createFormBuilder(array('region' => $region));

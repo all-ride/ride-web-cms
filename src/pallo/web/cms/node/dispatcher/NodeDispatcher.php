@@ -71,13 +71,7 @@ class NodeDispatcher {
      * Breadcrumbs set by the node
      * @var array
      */
-    private $nodeBreadcrumbs;
-
-    /**
-     * Breadcrumbs set by the widgets
-     * @var array
-     */
-    private $widgetBreadcrumbs;
+    private $breadcrumbs;
 
     /**
      * Construct the dispatcher
@@ -93,8 +87,7 @@ class NodeDispatcher {
         $this->view = $view;
         $this->router = $router;
         $this->regions = array();
-        $this->nodeBreadcrumbs = $breadcrumbs;
-        $this->widgetBreadcrumbs = array();
+        $this->breadcrumbs = $breadcrumbs;
     }
 
     /**
@@ -165,10 +158,19 @@ class NodeDispatcher {
      */
     public function dispatch(Request $request, Response $response, User $user = null, CachePool $cache = null) {
         $route = $request->getRoute();
-        $context = array();
 
-        $this->locale = $this->view->getTemplate()->get('locale');
+        $this->locale = $this->view->getLocale();
         $this->routeArguments = $route->getArguments();
+
+        $context = array(
+        	'title' => array(
+        	    'site' => $this->node->getRootNode()->getName($this->locale),
+        	    'node' => $this->node->getName($this->locale),
+            ),
+            'breadcrumbs' => $this->breadcrumbs,
+            'styles' => array(),
+            'scripts' => array(),
+        );
 
         unset($this->routeArguments['node']);
         unset($this->routeArguments['locale']);
@@ -224,8 +226,15 @@ class NodeDispatcher {
 	                        $widgetMatchedRouteArguments = true;
 	                    }
 
-	                    if ($cacheView->getBreadcrumbs()) {
-	                        $this->widgetBreadcrumbs = $cacheView->getBreadcrumbs();
+	                    $cacheContext = $cacheView->getContext();
+	                    if ($cacheContext) {
+	                        foreach ($cacheContext as $key => $value) {
+	                            if ($value !== null) {
+	                                $context[$key] = $value;
+	                            } elseif (isset($context[$key])) {
+	                                unset($context[$key]);
+	                            }
+	                        }
 	                    }
 
 	                    if ($cacheView->isContent()) {
@@ -266,18 +275,15 @@ class NodeDispatcher {
                     $containsUserContent = true;
                 }
 
-                $breadcrumbs = $widget->getBreadcrumbs();
-                if ($breadcrumbs) {
-                    $this->widgetBreadcrumbs = $breadcrumbs;
-                }
-
+                $oldContext = $context;
                 $context = $widget->getContext();
 
                 if ($isCacheable && !$widgetProperties->isCacheDisabled()) {
+                    $widgetContext = $this->getContextDifference($context, $oldContext);
                     $cacheTtl = $widgetProperties->getCacheTtl();
 
                     $cachedItem = $cache->create($cacheKey);
-                    $cachedItem->setValue(new WidgetCacheData($view, $isContent, $isRegion, $widgetMatchedRouteArguments));
+                    $cachedItem->setValue(new WidgetCacheData($view, $widgetContext, $isContent, $isRegion, $widgetMatchedRouteArguments));
                     $cachedItem->setTtl($cacheTtl);
 
                     if ($nodeCacheTtl !== false && $cacheTtl) {
@@ -330,9 +336,7 @@ class NodeDispatcher {
         }
 
         if (is_array($result)) {
-            $breadcrumbs = $this->nodeBreadcrumbs + $this->widgetBreadcrumbs;
-
-            $this->view->setBreadcrumbs($breadcrumbs);
+            $this->view->setContext($context);
             $this->view->setDispatchedViews($result);
 
             $response->setView($this->view);
@@ -422,6 +426,32 @@ class NodeDispatcher {
         $this->dispatcher->dispatch($request, $response);
 
         return $routeArgumentsMatched;
+    }
+
+    /**
+     * Gets the new or updated values of the context
+     * @param array $context Current context
+     * @param array $oldContext Previous context
+     * @return array
+     */
+    protected function getContextDifference(array $context, array $oldContext) {
+        $result = array();
+
+        foreach ($context as $key => $value) {
+            if (!isset($oldContext[$key])) {
+                $result[$key] = value;
+            } elseif ($oldContext[$key] !== $value) {
+                $result[$key] = value;
+            }
+        }
+
+        foreach ($oldContext as $key => $value) {
+            if (!isset($context[$key])) {
+                $result[$key] = null;
+            }
+        }
+
+        return $result;
     }
 
 }

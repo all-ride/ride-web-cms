@@ -16,10 +16,10 @@ class WidgetCacheData {
     private $view;
 
     /**
-     * Widget breadcrumbs
+     * Page context
      * @var array
      */
-    private $breadcrumbs;
+    private $context;
 
     /**
      * Flag to see if the view is the content
@@ -42,15 +42,16 @@ class WidgetCacheData {
     /**
      * Constructs a new data container
      * @param pallo\library\mvc\view\View $view View to cache
+     * @param array $context Context variables of the widget
      * @param boolean $isContent Flag to see if this view is the page
      * @param boolean $isRegion Flag to see if this view is the region
      * @param boolean $routesMatched Flag to see if this widget matched the
      * route arguments
      * @return null
      */
-    public function __construct(View $view = null, array $breadcrumbs = array(), $isContent = false, $isRegion = false, $routesMatched = false) {
+    public function __construct(View $view = null, array $context = array(), $isContent = false, $isRegion = false, $routesMatched = false) {
         $this->view = $view;
-        $this->breadcrumbs = $breadcrumbs;
+        $this->context = $context;
         $this->isContent = $isContent;
         $this->isRegion = $isRegion;
         $this->routesMatched = $routesMatched;
@@ -65,11 +66,11 @@ class WidgetCacheData {
     }
 
     /**
-     * Gets the breadcrumbs of this widget
+     * Gets the context variables of the widget
      * @return array
      */
-    public function getBreadcrumbs() {
-        return $this->breadcrumbs;
+    public function getContext() {
+        return $this->context;
     }
 
     /**
