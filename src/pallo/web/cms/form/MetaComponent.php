@@ -16,7 +16,6 @@ class MetaComponent extends AbstractComponent {
      * @return array $data
      */
     public function parseSetData($data) {
-var_export($data);
         if (strpos($data, ' ') !== false) {
             list($property, $content) = explode(' ', $data, 2);
 
@@ -27,7 +26,7 @@ var_export($data);
         } else {
             $data = null;
         }
-var_export($data);
+
         return $data;
     }
 
