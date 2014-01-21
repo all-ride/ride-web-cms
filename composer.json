@@ -2,7 +2,7 @@
     "name": "pallo/web-cms",
     "description": "CMS application of the Pallo framework",
     "license": "MIT",
-    "version": "0.5.4",
+    "version": "0.5.1",
     "authors": [
         {
             "name": "Joris Vandeweerd",
