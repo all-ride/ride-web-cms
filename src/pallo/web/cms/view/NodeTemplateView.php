@@ -27,10 +27,46 @@ class NodeTemplateView extends TemplateView {
         $template->setResource('cms/frontend/layout.' . $layout->getName());
         $template->setResourceId($node->getId());
         $template->setTheme($theme->getName());
-        $template->set('node', $node);
-        $template->set('locale', $locale);
+        $template->set('app', array(
+            'cms' => array(
+                'node' => $node,
+            ),
+            'locale' => $locale
+        ));
 
         parent::__construct($template);
+    }
+
+    /**
+     * Gets the node of this view
+     * @return pallo\library\cms\node\Node
+     */
+    public function getNode() {
+        $app = $this->template->get('app');
+
+        return $app['cms']['node'];
+    }
+
+    /**
+     * Gets the locale of this view
+     * @return string Code of the locale
+     */
+    public function getLocale() {
+        $app = $this->template->get('app');
+
+        return $app['locale'];
+    }
+
+    /**
+     * Sets the context to the view
+     * @param array $context
+     * @return null
+     */
+    public function setContext(array $context) {
+        $app = $this->template->get('app');
+        $app['cms']['context'] = $context;
+
+        $this->template->set('app', $app);
     }
 
     /**
@@ -59,10 +95,6 @@ class NodeTemplateView extends TemplateView {
         $this->template->set('regions', $regions);
     }
 
-    public function setBreadcrumbs(array $breadcrumbs) {
-        $this->template->set('breadcrumbs', $breadcrumbs);
-    }
-
     /**
      * Process a widget view to add helpers
      * @param pallo\library\mvc\view\View $widgetView view of the widget
@@ -79,14 +111,9 @@ class NodeTemplateView extends TemplateView {
         $template->setResourceId($widgetId);
         $template->setTheme($this->template->getTheme());
 
-        $app = $template->get('app', array());
-
-        $app['cms'] = array(
-            'widget' => $widgetId,
-            'region' => $regionName,
-            'node' => $this->template->get('node'),
-            'breadcrumbs' => $this->template->get('breadcrumbs'),
-        );
+        $app = $template->get('app');
+        $app['cms']['widget'] = $widgetId;
+        $app['cms']['region'] = $regionName;
 
         $template->set('app', $app);
     }
@@ -103,26 +130,34 @@ class NodeTemplateView extends TemplateView {
             throw new MvcException("Could not render template view: template facade not set, invoke setTemplateFacade() first");
         }
 
+        // render the widget templates in the regions
         $app = $this->template->get('app');
         $regions = $this->template->get('regions');
         foreach ($regions as $region => $widgets) {
             foreach ($widgets as $widgetId => $widgetView) {
                 if ($widgetView instanceof TemplateView) {
+                    // merge main app template variable
                     $template = $widgetView->getTemplate();
 
-                    $data = $template->get('app', array());
-                    $app['cms'] = $data['cms'];
+                    $widgetApp = $template->get('app');
+                    $widgetApp['cms']['node'] = $app['cms']['node'];
+                    $widgetApp['cms']['context'] = $app['cms']['context'];
+
+                    $app['cms'] = $widgetApp['cms'];
 
                     $template->set('app', $app);
                 }
 
+                // render widget
                 $regions[$region][$widgetId] = $widgetView->render(true);
             }
         }
         $this->template->set('regions', $regions);
 
+        // render main template
         $output = $this->templateFacade->render($this->template);
 
+        // return
         if ($willReturnValue) {
             return $output;
         }

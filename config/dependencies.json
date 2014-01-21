@@ -77,6 +77,23 @@
             ]
         }, 
         {
+            "class": "pallo\\web\\cms\\node\\type\\SiteNodeType",
+            "calls": [
+                {
+                    "method": "setDefaultTheme",
+                    "arguments": [
+                        {
+                            "name": "defaultTheme",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "cms.default.theme"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "class": "pallo\\library\\cms\\node\\type\\NodeTypeManager",
             "id": "generic",
             "calls": [
@@ -165,6 +182,18 @@
                             "name": "nodeAction",
                             "type": "dependency",
                             "properties": {
+                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\MetaNodeAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeAction",
+                    "arguments": [
+                        {
+                            "name": "nodeAction",
+                            "type": "dependency",
+                            "properties": {
                                 "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\VisibilityNodeAction"
                             }
                         }
@@ -238,31 +267,6 @@
                 }
             ]
         },        
-        {
-            "interfaces": "pallo\\library\\cms\\layout\\Layout",
-            "class": "pallo\\library\\cms\\layout\\SingleColumnLayout",
-            "id": "single"
-        },
-        {
-            "interfaces": "pallo\\library\\cms\\layout\\Layout",
-            "class": "pallo\\library\\cms\\layout\\DoubleColumnHorizontal5050Layout",
-            "id": "double.h5050"
-        },
-        {
-            "interfaces": "pallo\\library\\cms\\layout\\Layout",
-            "class": "pallo\\library\\cms\\layout\\DoubleColumnHorizontal2575Layout",
-            "id": "double.h2575"
-        },
-        {
-            "interfaces": "pallo\\library\\cms\\layout\\Layout",
-            "class": "pallo\\library\\cms\\layout\\DoubleColumnHorizontal7525Layout",
-            "id": "double.h7525"
-        },
-        {
-            "interfaces": "pallo\\library\\cms\\layout\\Layout",
-            "class": "pallo\\library\\cms\\layout\\DoubleColumnVerticalLayout",
-            "id": "double.v"
-        },
         {
             "interfaces": "pallo\\library\\cms\\layout\\LayoutModel",
             "class": "pallo\\web\\cms\\layout\\DependencyLayoutModel",

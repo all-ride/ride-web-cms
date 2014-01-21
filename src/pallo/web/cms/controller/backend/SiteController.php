@@ -80,6 +80,9 @@ class SiteController extends AbstractNodeTypeController {
         $form->addRow('name', 'string', array(
             'label' => $translator->translate('label.site'),
             'description' => $translator->translate('label.site.description'),
+            'attributes' => array(
+        	   'autofocus' => 'true',
+            ),
             'filters' => array(
                 'trim' => array(),
             ),

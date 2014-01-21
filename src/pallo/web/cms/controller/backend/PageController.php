@@ -135,6 +135,10 @@ class PageController extends AbstractNodeTypeController {
             ));
         }
 
+        if (!$layouts) {
+            $this->addWarning('warning.layouts.none');
+        }
+
         // show view
         $this->setTemplateView('cms/backend/page.form', array(
             'site' => $site,

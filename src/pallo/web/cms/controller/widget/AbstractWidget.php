@@ -245,19 +245,38 @@ class AbstractWidget extends AbstractController implements Widget {
 
     /**
      * Sets the context of the node
-     * @param array $context
+     * @param string|array $context Name of the context variable or an array
+     * of key-value pairs
+     * @param mixed $value Context value
      * @return null
      */
-    public function setContext(array $context) {
-        $this->context = $context;
+    public function setContext($context, $value = null) {
+        if (is_array($context)) {
+            foreach ($context as $key => $value) {
+                $this->setContext($key, $value);
+            }
+        } elseif ($value !== null) {
+            $this->context[$context] = $value;
+        } elseif (isset($this->context[$context])) {
+            unset($this->context[$context]);
+        }
     }
 
     /**
      * Gets the context of the node
-     * @return array
-    */
-    public function getContext() {
-        return $this->context;
+     * @param string $name Name of the context variable
+     * @param mixed $default Default value for when the variable is not set
+     * @return mixed Full context if no arguments provided, value of the
+     * variable if set in the context, provided default value otherwise
+     */
+    public function getContext($name = null, $default = null) {
+        if ($name === null) {
+            return $this->context;
+        } elseif (isset($this->context[$name])) {
+            return $this->context[$name];
+        } else {
+            return $default;
+        }
     }
 
     /**
