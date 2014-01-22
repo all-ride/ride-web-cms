@@ -8,6 +8,7 @@ use pallo\library\cms\theme\ThemeModel;
 use pallo\library\event\Event;
 use pallo\library\i18n\I18n;
 use pallo\library\mvc\Request;
+use pallo\library\security\SecurityManager;
 
 use pallo\web\base\view\MenuItem;
 use pallo\web\base\view\Menu;
@@ -19,7 +20,7 @@ class ApplicationListener {
 
     const LOG_SOURCE = 'cms';
 
-    public function prepareTemplateView(Event $event, I18n $i18n, NodeModel $nodeModel, NodeTreeGenerator $nodeTreeGenerator) {
+    public function prepareTemplateView(Event $event, I18n $i18n, NodeModel $nodeModel, NodeTreeGenerator $nodeTreeGenerator, SecurityManager $securityManager) {
         $web = $event->getArgument('web');
         $response = $web->getResponse();
         if (!$response) {
@@ -51,14 +52,28 @@ class ApplicationListener {
 
         $translator = $i18n->getTranslator();
 
+        $nodeTypes = $nodeModel->getNodeTypeManager()->getNodeTypes();
         $nodeTree = $nodeTreeGenerator->getTreeHtml($node, $locale);
+        $nodeCreateActions = array();
+
+        $parameters = array(
+            'locale' => $locale,
+            'site' => $site->getRootNodeId(),
+        );
+        foreach ($nodeTypes as $nodeTypeName => $null) {
+            $url = $web->getUrl('cms.' . $nodeTypeName . '.add', $parameters);
+            if ($securityManager->isUrlAllowed($url)) {
+                $nodeCreateActions[$nodeTypeName] = $url;
+            }
+        }
 
         $template->set('site', $site);
         $template->set('nodeTree', $nodeTree);
-        $template->set('nodeTypes', $nodeModel->getNodeTypeManager()->getNodeTypes());
+        $template->set('nodeTypes', $nodeTypes);
+        $template->set('nodeCreateActions', $nodeCreateActions);
     }
 
-    public function prepareTaskbar(Event $event, Request $request, I18n $i18n, NodeModel $nodeModel, ThemeModel $themeModel, WebApplication $web) {
+    public function prepareTaskbar(Event $event, Request $request, I18n $i18n, NodeModel $nodeModel, ThemeModel $themeModel, WebApplication $web, SecurityManager $securityManager) {
         $locale = $request->getRoute()->getArgument('locale');
         if (!$locale) {
             $locale = $i18n->getLocale()->getCode();
@@ -93,16 +108,23 @@ class ApplicationListener {
                 $menu->addMenuItem($menuItem);
             }
 
-            $menu->addSeparator();
         }
 
-        $menuItem = new MenuItem();
-        $menuItem->setTranslation('button.site.add');
-        $menuItem->setUrl($web->getUrl('cms.site.add', array(
+        $url = $web->getUrl('cms.site.add', array(
             'locale' => $locale,
-        )) . $referer);
+        )) . $referer;
 
-        $menu->addMenuItem($menuItem);
+        if ($securityManager->isUrlAllowed($url)) {
+            if ($menu->hasItems()) {
+                $menu->addSeparator();
+            }
+
+            $menuItem = new MenuItem();
+            $menuItem->setTranslation('button.site.add');
+            $menuItem->setUrl($url);
+
+            $menu->addMenuItem($menuItem);
+        }
 
         $applicationMenu->addMenu($menu);
 
