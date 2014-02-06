@@ -99,8 +99,8 @@ class VisibilityNodeAction extends AbstractNodeAction {
                 $node->set(Node::PROPERTY_PUBLISH_STOP, $data['publishStop']);
 
                 if ($isFrontendNode) {
-                    $node->setHideInMenu(isset($data['hide']['menu']));
-                    $node->setHideInBreadcrumbs(isset($data['hide']['breadcrumbs']));
+                    $node->setHideInMenu(in_array('menu', $data['hide']));
+                    $node->setHideInBreadcrumbs(in_array('breadcrumbs', $data['hide']));
                 }
 
                 $nodeModel->setNode($node);

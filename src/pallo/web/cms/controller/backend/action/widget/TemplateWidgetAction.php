@@ -14,6 +14,7 @@ use pallo\library\template\TemplateFacade;
 use pallo\library\validation\exception\ValidationException;
 
 use pallo\web\cms\form\TemplatesComponent;
+use pallo\web\mvc\controller\AbstractController;
 
 /**
  * Controller of the templates widget action
@@ -65,7 +66,16 @@ class TemplateWidgetAction extends AbstractWidgetAction {
 
         $widgetId = $widget;
         $widget = $site->getWidget($widgetId);
-        $widget = $widgetModel->getWidget($widget);
+        $widget = clone $widgetModel->getWidget($widget);
+        $widget->setRequest($this->request);
+        $widget->setResponse($this->response);
+        $widget->setProperties($node->getWidgetProperties($widgetId));
+        $widget->setLocale($locale);
+        $widget->setRegion($region);
+        if ($widget instanceof AbstractController) {
+            $widget->setConfig($this->config);
+            $widget->setDependencyInjector($this->dependencyInjector);
+        }
 
         $templates = $widget->getTemplates();
         foreach ($templates as $index => $template) {

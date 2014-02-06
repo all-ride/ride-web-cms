@@ -6,6 +6,7 @@ use pallo\library\cms\layout\Layout;
 use pallo\library\cms\node\Node;
 use pallo\library\cms\theme\Theme;
 use pallo\library\mvc\exception\MvcException;
+use pallo\library\mvc\view\HtmlView;
 use pallo\library\mvc\view\View;
 use pallo\library\template\GenericThemedTemplate;
 
@@ -96,13 +97,17 @@ class NodeTemplateView extends TemplateView {
     }
 
     /**
-     * Process a widget view to add helpers
+     * Process a widget view to add helpers and merge resources
      * @param pallo\library\mvc\view\View $widgetView view of the widget
      * @param int $widgetId id of the widget
      * @param string $regionName name of the region
      * @return null
      */
     protected function processTemplateView(View $widgetView, $widgetId, $regionName) {
+        if ($widgetView instanceof HtmlView) {
+            $this->mergeResources($widgetView);
+        }
+
         if (!$widgetView instanceof TemplateView) {
             return;
         }
@@ -138,6 +143,7 @@ class NodeTemplateView extends TemplateView {
                 if ($widgetView instanceof TemplateView) {
                     // merge main app template variable
                     $template = $widgetView->getTemplate();
+                    $template->setTheme($this->template->getTheme());
 
                     $widgetApp = $template->get('app');
                     $widgetApp['cms']['node'] = $app['cms']['node'];
@@ -146,6 +152,8 @@ class NodeTemplateView extends TemplateView {
                     $app['cms'] = $widgetApp['cms'];
 
                     $template->set('app', $app);
+
+                    $widgetView->setTemplateFacade($this->templateFacade);
                 }
 
                 // render widget

@@ -59,7 +59,6 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
         $widget->setProperties($node->getWidgetProperties($widgetId));
         $widget->setLocale($locale);
         $widget->setRegion($region);
-
         if ($widget instanceof AbstractController) {
             $widget->setConfig($this->config);
             $widget->setDependencyInjector($this->dependencyInjector);
@@ -80,8 +79,8 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
             ));
         }
 
-        $view = $this->response->getView();
-        if (!$view && !$this->response->getBody() && $this->response->getStatusCode() == Response::STATUS_CODE_OK) {
+        $widgetView = $this->response->getView();
+        if (!$widgetView && !$this->response->getBody() && $this->response->getStatusCode() == Response::STATUS_CODE_OK) {
             $this->response->setRedirect($this->getUrl('cms.node.layout.region', array(
                 'locale' => $locale,
             	'site' => $site->getId(),
@@ -92,7 +91,7 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
             return;
         }
 
-        if (!$view instanceof TemplateView) {
+        if (!$widgetView instanceof TemplateView) {
             return;
         }
 
@@ -103,7 +102,7 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
 
         $referer = $this->request->getQueryParameter('referer');
 
-        $template = $view->getTemplate();
+        $template = $widgetView->getTemplate();
         $variables = array(
             'site' => $site,
             'node' => $node,
@@ -117,7 +116,9 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
             'propertiesTemplate' => $template->getResource(),
         ) + $template->getVariables();
 
-        $this->setTemplateView('cms/backend/widget.properties', $variables);
+        $view = $this->setTemplateView('cms/backend/widget.properties', $variables);
+        $view->addJavascript('js/form.js');
+        $view->mergeResources($widgetView);
     }
 
 }
