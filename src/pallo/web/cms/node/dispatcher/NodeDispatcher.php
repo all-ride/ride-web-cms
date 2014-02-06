@@ -415,6 +415,9 @@ class NodeDispatcher {
 
                 $routeArgumentsMatched = true;
             }
+        } else {
+            $route->setArguments(array());
+            $route->setIsDynamic(false);
         }
 
         if (!$callback) {

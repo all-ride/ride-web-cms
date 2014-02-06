@@ -35,6 +35,18 @@
                             }
                         }
                     ]
+                },
+                {
+                    "method": "setWidgetIdOffset",
+                    "arguments": [
+                        {
+                            "name": "widgetIdOffset",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "cms.widget.offset"
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -327,6 +339,50 @@
             "interfaces": "pallo\\library\\cms\\widget\\WidgetModel",
             "class": "pallo\\web\\cms\\widget\\DependencyWidgetModel",
             "id": "dependency"
+        },
+        {
+            "interfaces": "pallo\\library\\cms\\content\\mapper\\ContentMapper",
+            "class": "pallo\\library\\cms\\content\\mapper\\NodeContentMapper",
+            "id": "node"
+        },
+        {
+            "class": "pallo\\library\\cms\\content\\ContentFacade",
+            "id": "cms",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "baseUrl",
+                            "type": "call",
+                            "properties": {
+                                "interface": "pallo\\library\\http\\Request",
+                                "method": "getBaseUrl"
+                            }
+                        },
+                        {
+                            "name": "baseScript",
+                            "type": "call",
+                            "properties": {
+                                "interface": "pallo\\library\\http\\Request",
+                                "method": "getBaseScript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addContentMapperIO",
+                    "arguments": [
+                        {
+                            "name": "io",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "pallo\\web\\cms\\content\\mapper\\io\\DependencyContentMapperIO"
+                            }
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

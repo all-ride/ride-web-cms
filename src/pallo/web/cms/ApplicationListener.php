@@ -5,6 +5,7 @@ namespace pallo\web\cms;
 use pallo\library\cms\node\NodeModel;
 use pallo\library\cms\node\Node;
 use pallo\library\cms\theme\ThemeModel;
+use pallo\library\event\EventManager;
 use pallo\library\event\Event;
 use pallo\library\i18n\I18n;
 use pallo\library\mvc\Request;
@@ -17,6 +18,12 @@ use pallo\web\mvc\view\TemplateView;
 use pallo\web\WebApplication;
 
 class ApplicationListener {
+
+    /**
+     * Name of the event to prepare the content menu
+     * @var string
+     */
+    const EVENT_MENU_CONTENT = 'cms.menu.content';
 
     const LOG_SOURCE = 'cms';
 
@@ -73,7 +80,7 @@ class ApplicationListener {
         $template->set('nodeCreateActions', $nodeCreateActions);
     }
 
-    public function prepareTaskbar(Event $event, Request $request, I18n $i18n, NodeModel $nodeModel, ThemeModel $themeModel, WebApplication $web, SecurityManager $securityManager) {
+    public function prepareTaskbar(Event $event, Request $request, I18n $i18n, NodeModel $nodeModel, ThemeModel $themeModel, WebApplication $web, SecurityManager $securityManager, EventManager $eventManager) {
         $locale = $request->getRoute()->getArgument('locale');
         if (!$locale) {
             $locale = $i18n->getLocale()->getCode();
@@ -82,6 +89,14 @@ class ApplicationListener {
         $taskbar = $event->getArgument('taskbar');
         $applicationMenu = $taskbar->getApplicationsMenu();
         $referer = '?referer=' . urlencode($request->getUrl());
+
+        // content menu
+        $contentMenu = new Menu();
+        $contentMenu->setTranslation('label.content');
+
+        $eventManager->triggerEvent(self::EVENT_MENU_CONTENT, array('menu' => $contentMenu, 'locale' => $locale));
+
+        $applicationMenu->addMenu($contentMenu);
 
         // site menu
         $menu = new Menu();

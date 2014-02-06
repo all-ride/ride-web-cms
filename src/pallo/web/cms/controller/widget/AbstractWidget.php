@@ -51,12 +51,6 @@ class AbstractWidget extends AbstractController implements Widget {
     protected $context;
 
     /**
-     * Breadcrumbs of the page holding this widget
-     * @var array
-     */
-    private $breadcrumbs = array();
-
-    /**
      * Flag to set whether to display this widget as page
      * @var boolean
      */
@@ -179,7 +173,7 @@ class AbstractWidget extends AbstractController implements Widget {
      * @return array Array with the URL as key and the label as value
      */
     public function getBreadcrumbs() {
-        return $this->breadcrumbs;
+        return $this->context['breadcrumbs'];
     }
 
     /**
@@ -189,7 +183,33 @@ class AbstractWidget extends AbstractController implements Widget {
      * @return null
      */
     protected function addBreadcrumb($url, $label) {
-        $this->breadcrumbs[$url] = $label;
+        $this->context['breadcrumbs'][$url] = $label;
+    }
+
+    /**
+     * Sets the title of the page
+     * @param string $title
+     * @return null
+     */
+    protected function setPageTitle($title) {
+        $this->context['title']['node'] = $title;
+    }
+
+    /**
+     * Gets the content facade
+     * @return pallo\library\cms\content\ContentFacade
+     */
+    public function getContentFacade() {
+        return $this->dependencyInjector->get('pallo\\library\\cms\\content\\ContentFacade');
+    }
+
+    /**
+     * Gets the content mapper for the provided content type
+     * @param string $type Name of the content type
+     * @return pallo\library\cms\content\mapper\ContentMapper
+     */
+    public function getContentMapper($type) {
+        return $this->getContentFacade()->getContentMapper($type);
     }
 
     /**
