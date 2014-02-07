@@ -117,6 +117,7 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
         ) + $template->getVariables();
 
         $view = $this->setTemplateView('cms/backend/widget.properties', $variables);
+        $view->getTemplate()->setResourceId(substr(md5($template->getResource()), 0, 7));
         $view->addJavascript('js/form.js');
         $view->mergeResources($widgetView);
     }
