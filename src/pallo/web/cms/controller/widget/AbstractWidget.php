@@ -343,16 +343,18 @@ class AbstractWidget extends AbstractController implements Widget {
      */
     protected function getUrl($id, array $variables = array()) {
         $routes = $this->getRoutes();
-        foreach ($routes as $route) {
-            if ($route->getId() != $id) {
-                continue;
+        if ($routes) {
+            foreach ($routes as $route) {
+                if ($route->getId() != $id) {
+                    continue;
+                }
+
+                $node = $this->properties->getNode();
+                $url = rtrim($this->request->getBaseScript() . $node->getRoute($this->locale), '/');
+                $url = $route->getUrl($url, $variables);
+
+                return $url;
             }
-
-            $node = $this->properties->getNode();
-            $url = rtrim($this->request->getBaseScript() . $node->getRoute($this->locale), '/');
-            $url = $route->getUrl($url, $variables);
-
-            return $url;
         }
 
         return parent::getUrl($id, $variables);

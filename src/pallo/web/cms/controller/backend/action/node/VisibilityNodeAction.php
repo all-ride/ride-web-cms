@@ -67,11 +67,25 @@ class VisibilityNodeAction extends AbstractNodeAction {
             'filters' => array(
                 'trim' => array(),
             ),
+            'validators' => array(
+            	'regex' => array(
+            	    'required' => false,
+                    'regex' => '/2([0-9]){3}-([0-9]){2}-([0-9]){2} ([0-9]){2}:([0-9]){2}:([0-9]){2}/',
+            	    'error.regex' => 'error.validation.date.cms',
+                ),
+            ),
         ));
         $form->addRow('publishStop', 'string', array(
             'label' => $translator->translate('label.publish.stop'),
             'filters' => array(
                 'trim' => array(),
+            ),
+            'validators' => array(
+            	'regex' => array(
+            	    'required' => false,
+            	    'regex' => '/2([0-9]){3}-([0-9]){2}-([0-9]){2} ([0-9]){2}:([0-9]){2}:([0-9]){2}/',
+            	    'error.regex' => 'error.validation.date.cms',
+                ),
             ),
         ));
 
@@ -99,8 +113,8 @@ class VisibilityNodeAction extends AbstractNodeAction {
                 $node->set(Node::PROPERTY_PUBLISH_STOP, $data['publishStop']);
 
                 if ($isFrontendNode) {
-                    $node->setHideInMenu(in_array('menu', $data['hide']));
-                    $node->setHideInBreadcrumbs(in_array('breadcrumbs', $data['hide']));
+                    $node->setHideInMenu(isset($data['hide']['menu']));
+                    $node->setHideInBreadcrumbs(isset($data['hide']['breadcrumbs']));
                 }
 
                 $nodeModel->setNode($node);
