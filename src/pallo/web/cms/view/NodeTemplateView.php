@@ -78,49 +78,7 @@ class NodeTemplateView extends TemplateView {
      * @return null
      */
     public function setDispatchedViews(array $dispatchedViews) {
-        $regions = array();
-        foreach ($dispatchedViews as $regionName => $widgetViews) {
-            $regions[$regionName] = array();
-
-            foreach ($widgetViews as $widgetId => $widgetView) {
-                if (!$widgetView) {
-                    continue;
-                }
-
-                $this->processTemplateView($widgetView, $widgetId, $regionName);
-
-                $regions[$regionName][$widgetId] = $widgetView;
-            }
-        }
-
-        $this->template->set('regions', $regions);
-    }
-
-    /**
-     * Process a widget view to add helpers and merge resources
-     * @param pallo\library\mvc\view\View $widgetView view of the widget
-     * @param int $widgetId id of the widget
-     * @param string $regionName name of the region
-     * @return null
-     */
-    protected function processTemplateView(View $widgetView, $widgetId, $regionName) {
-        if ($widgetView instanceof HtmlView) {
-            $this->mergeResources($widgetView);
-        }
-
-        if (!$widgetView instanceof TemplateView) {
-            return;
-        }
-
-        $template = $widgetView->getTemplate();
-        $template->setResourceId($widgetId);
-        $template->setTheme($this->template->getTheme());
-
-        $app = $template->get('app');
-        $app['cms']['widget'] = $widgetId;
-        $app['cms']['region'] = $regionName;
-
-        $template->set('app', $app);
+        $this->template->set('regions', $dispatchedViews);
     }
 
     /**
@@ -140,14 +98,25 @@ class NodeTemplateView extends TemplateView {
         $regions = $this->template->get('regions');
         foreach ($regions as $region => $widgets) {
             foreach ($widgets as $widgetId => $widgetView) {
+                if (!$widgetView) {
+                    continue;
+                }
+
+                if ($widgetView instanceof HtmlView) {
+                    $this->mergeResources($widgetView);
+                }
+
                 if ($widgetView instanceof TemplateView) {
                     // merge main app template variable
                     $template = $widgetView->getTemplate();
+                    $template->setResourceId($widgetId);
                     $template->setTheme($this->template->getTheme());
 
                     $widgetApp = $template->get('app');
                     $widgetApp['cms']['node'] = $app['cms']['node'];
                     $widgetApp['cms']['context'] = $app['cms']['context'];
+                    $widgetApp['cms']['region'] = $region;
+                    $widgetApp['cms']['widget'] = $widgetId;
 
                     $app['cms'] = $widgetApp['cms'];
 
