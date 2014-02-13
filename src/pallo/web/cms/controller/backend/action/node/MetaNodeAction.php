@@ -37,12 +37,17 @@ class MetaNodeAction extends AbstractNodeAction {
 
         $this->setLastAction(self::NAME);
 
-        $data = array(
-            'meta' => $node->getMeta($locale),
-        );
-
         $translator = $this->getTranslator();
         $metaComponent = new MetaComponent();
+
+        $data = array(
+            'meta' => array(),
+        );
+
+        $meta = $node->getMeta($locale);
+        foreach ($meta as $property => $content) {
+            $data['meta'][] = $property . '=' . $content;
+        }
 
         $form = $this->createFormBuilder($data);
         $form->addRow('meta', 'collection', array(
@@ -59,9 +64,16 @@ class MetaNodeAction extends AbstractNodeAction {
             try {
                 $form->validate();
 
-                $data = $form->getData();
+                $meta = array();
 
-                $node->setMeta($locale, array_values($data['meta']));
+                $data = $form->getData();
+                foreach ($data['meta'] as $property) {
+                    list($property, $content) = explode('=', $property, 2);
+
+                    $meta[$property] = $content;
+                }
+
+                $node->setMeta($locale, $meta);
 
                 $nodeModel->setNode($node);
 

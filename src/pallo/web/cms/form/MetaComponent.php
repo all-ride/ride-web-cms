@@ -16,8 +16,8 @@ class MetaComponent extends AbstractComponent {
      * @return array $data
      */
     public function parseSetData($data) {
-        if (strpos($data, ' ') !== false) {
-            list($property, $content) = explode(' ', $data, 2);
+        if (strpos($data, '=') !== false) {
+            list($property, $content) = explode('=', $data, 2);
 
             $data = array(
             	'property' => $property,
@@ -36,7 +36,7 @@ class MetaComponent extends AbstractComponent {
      * @return mixed $data
      */
     public function parseGetData(array $data) {
-        return $data['property'] . ' ' . $data['content'];
+        return $data['property'] . '=' . $data['content'];
     }
 
     /**
