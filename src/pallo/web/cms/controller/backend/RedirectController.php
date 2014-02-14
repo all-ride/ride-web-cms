@@ -9,21 +9,17 @@ use pallo\library\cms\node\NodeModel;
 use pallo\library\cms\node\SiteNode;
 use pallo\library\cms\theme\ThemeModel;
 use pallo\library\http\Response;
-use pallo\library\i18n\translator\Translator;
 use pallo\library\i18n\I18n;
-use pallo\library\image\ImageUrlGenerator;
 use pallo\library\validation\exception\ValidationException;
 
-class PageController extends AbstractNodeTypeController {
+class RedirectController extends AbstractNodeTypeController {
 
-    public function formAction(I18n $i18n, $locale, ImageUrlGenerator $imageUrlGenerator, LayoutModel $layoutModel, ThemeModel $themeModel, NodeModel $nodeModel, $site, $node = null) {
-        $themes = $themeModel->getThemes();
-        $layouts = $layoutModel->getLayouts();
+    public function formAction(I18n $i18n, $locale, NodeModel $nodeModel, $site, $node = null) {
         $locales = $i18n->getLocaleCodeList();
         $translator = $i18n->getTranslator();
 
         if ($node) {
-            if (!$this->resolveNode($nodeModel, $site, $node, 'page')) {
+            if (!$this->resolveNode($nodeModel, $site, $node, 'redirect')) {
                 return;
             }
 
@@ -33,30 +29,62 @@ class PageController extends AbstractNodeTypeController {
                 return;
             }
 
-            $node = $nodeModel->createNode('page');
+            $node = $nodeModel->createNode('redirect');
             $node->setParentNode($site);
         }
+
+        $rootNode = $nodeModel->getNode($node->getRootNodeId(), null, true);
+        $nodeList = $nodeModel->getListFromNodes(array($rootNode), $locale, false);
+        $nodeList = array($rootNode->getId() => '/' . $rootNode->getName($locale)) + $nodeList;
 
         // gather data
         $data = array(
             'name' => $node->getName($locale),
+            'redirect-node' => $node->getRedirectNode($locale),
+            'redirect-url' => $node->getRedirectUrl($locale),
             'route' => $node->getRoute($locale, false),
-            'layout' => $node->getLayout($locale),
-            'theme' => $this->getThemeValueFromNode($node),
             'availableLocales' => $this->getLocalesValueFromNode($node),
         );
+
+        if ($data['redirect-url']) {
+            $data['redirect-type'] = 'url';
+        } else {
+            $data['redirect-type'] = 'node';
+        }
 
         // build form
         $form = $this->createFormBuilder($data);
         $form->addRow('name', 'string', array(
-            'label' => $translator->translate('label.page'),
-            'description' => $translator->translate('label.page.description'),
+            'label' => $translator->translate('label.redirect'),
+            'description' => $translator->translate('label.redirect.name.description'),
             'filters' => array(
                 'trim' => array(),
             ),
             'validators' => array(
                 'required' => array(),
             )
+        ));
+        $form->addRow('redirect-type', 'option', array(
+            'label' => $translator->translate('label.redirect.to'),
+            'options' => array(
+                'node' => $translator->translate('label.node'),
+                'url' => $translator->translate('label.url'),
+            ),
+            'validators' => array(
+                'required' => array(),
+            ),
+        ));
+        $form->addRow('redirect-node', 'select', array(
+            'label' => $translator->translate('label.redirect.node'),
+            'description' => $translator->translate('label.redirect.node.description'),
+            'options' => $nodeList,
+        ));
+        $form->addRow('redirect-url', 'website', array(
+            'label' => $translator->translate('label.redirect.url'),
+            'description' => $translator->translate('label.redirect.url.description'),
+            'filters' => array(
+                'trim' => array(),
+            ),
         ));
         $form->addRow('route', 'string', array(
             'label' => $translator->translate('label.route'),
@@ -64,19 +92,6 @@ class PageController extends AbstractNodeTypeController {
             'filters' => array(
                 'trim' => array(),
             ),
-        ));
-        $form->addRow('theme', 'select', array(
-            'label' => $translator->translate('label.theme'),
-            'description' => $translator->translate('label.theme.description'),
-            'options' => $this->getThemeOptions($node, $translator, $themes),
-        ));
-        $form->addRow('layout', 'option', array(
-            'label' => $translator->translate('label.layout'),
-            'description' => $translator->translate('label.layout.description'),
-            'options' => $this->getLayoutOptions($imageUrlGenerator, $translator, $layouts),
-            'validators' => array(
-                'required' => array(),
-            )
         ));
         $form->addRow('availableLocales', 'select', array(
             'label' => $translator->translate('label.locales'),
@@ -99,18 +114,23 @@ class PageController extends AbstractNodeTypeController {
 
                 $node->setName($locale, $data['name']);
                 $node->setRoute($locale, $data['route']);
-                $node->setLayout($locale, $data['layout']);
-                $node->setTheme($this->getOptionValueFromForm($data['theme']));
                 $node->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
+                if ($data['redirect-type'] == 'node') {
+                    $node->setRedirectNode($locale, $data['redirect-node']);
+                    $node->setRedirectUrl($locale, null);
+                } else {
+                    $node->setRedirectNode($locale, null);
+                    $node->setRedirectUrl($locale, $data['redirect-url']);
+                }
 
                 $nodeModel->setNode($node);
 
                 $this->addSuccess('success.node.saved', array(
-                	'node' => $node->getName($locale),
+                    'node' => $node->getName($locale),
                 ));
 
                 $this->response->setRedirect($this->getUrl(
-                    'cms.page.edit', array(
+                    'cms.redirect.edit', array(
                         'locale' => $locale,
                         'site' => $site->getId(),
                         'node' => $node->getId(),
@@ -130,17 +150,13 @@ class PageController extends AbstractNodeTypeController {
         $referer = $this->request->getQueryParameter('referer');
         if (!$referer) {
             $referer = $this->getUrl('cms.site.detail.locale', array(
-            	'site' => $site->getId(),
+                'site' => $site->getId(),
                 'locale' => $locale,
             ));
         }
 
-        if (!$layouts) {
-            $this->addWarning('warning.layouts.none');
-        }
-
         // show view
-        $this->setTemplateView('cms/backend/page.form', array(
+        $this->setTemplateView('cms/backend/redirect.form', array(
             'site' => $site,
             'node' => $node,
             'referer' => $referer,
@@ -148,23 +164,6 @@ class PageController extends AbstractNodeTypeController {
             'locale' => $locale,
             'locales' => $locales,
         ));
-    }
-
-    /**
-     * Gets the available layout options
-     * @param pallo\library\i18n\translator\Translator $translator
-     * @param array $layouts
-     * @return array Array with the layout machine name as key and the
-     * translation as value
-     */
-    protected function getLayoutOptions(ImageUrlGenerator $imageUrlGenerator, Translator $translator, array $layouts) {
-        $options = array();
-
-        foreach ($layouts as $layout => $null) {
-            $options[$layout] = '<img src="' . $imageUrlGenerator->generateUrl('img/cms/layout/' . $layout . '.png') . '" alt="' . $layout . '" title="' . $translator->translate('layout.' . $layout) . '" />';
-        }
-
-        return $options;
     }
 
 }

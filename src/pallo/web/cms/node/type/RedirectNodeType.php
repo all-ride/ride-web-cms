@@ -10,6 +10,14 @@ use pallo\library\cms\node\type\RedirectNodeType as LibraryRedirectNodeType;
 class RedirectNodeType extends LibraryRedirectNodeType implements NodeType {
 
     /**
+     * Gets the callback for the frontend route
+     * @return string|array|zibo\library\Callback
+     */
+    public function getFrontendCallback() {
+        return array('pallo\\web\\cms\\controller\\frontend\\RedirectController', 'indexAction');
+    }
+
+    /**
      * Gets the id of the route to create a new node of this type
      * @return string Route id
      */
