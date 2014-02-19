@@ -9,6 +9,11 @@
         {
             "interface": "pallo\\web\\cms\\ApplicationListener",
             "method": "prepareTemplateView"
-        }    
+        },    
+        {
+            "interface": "pallo\\web\\cms\\ApplicationListener",
+            "method": "handleHttpError",
+            "weight": 25 
+        }
     ]
 }

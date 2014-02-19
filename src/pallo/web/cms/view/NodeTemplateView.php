@@ -95,6 +95,7 @@ class NodeTemplateView extends TemplateView {
 
         // render the widget templates in the regions
         $app = $this->template->get('app');
+
         $regions = $this->template->get('regions');
         foreach ($regions as $region => $widgets) {
             foreach ($widgets as $widgetId => $widgetView) {

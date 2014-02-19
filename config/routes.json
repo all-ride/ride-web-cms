@@ -49,6 +49,12 @@
             "id": "cms.site.structure"
         },
         {
+            "path": "/sites/%site%/%locale%/error",
+            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\ErrorNodeAction",
+            "action": "indexAction",
+            "id": "cms.site.error"
+        },
+        {
             "path": "/sites/%site%/%locale%/add/folder",
             "controller": "pallo\\web\\cms\\controller\\backend\\FolderController",
             "action": "formAction",

@@ -54,7 +54,9 @@ class MetaComponent extends AbstractComponent {
                 'trim' => array(),
             ),
             'validators' => array(
-                'required' => array(),
+                'regex' => array(
+                    'regex' => '/^([a-zA-Z0-9\-])*$/',
+                ),
             )
         ));
         $builder->addRow('content', 'text', array(
@@ -65,9 +67,6 @@ class MetaComponent extends AbstractComponent {
             'filters' => array(
                 'trim' => array(),
             ),
-            'validators' => array(
-                'required' => array(),
-            )
         ));
     }
 
