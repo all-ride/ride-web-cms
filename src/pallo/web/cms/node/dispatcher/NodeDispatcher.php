@@ -318,6 +318,7 @@ class NodeDispatcher {
         if ($this->routeArguments && !$routeArgumentsMatched) {
             // sub route provided but never matched
             $response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
+            $response->setView(null);
 
             $result = null;
         }

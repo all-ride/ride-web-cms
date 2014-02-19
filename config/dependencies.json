@@ -242,6 +242,18 @@
                             "name": "nodeAction",
                             "type": "dependency",
                             "properties": {
+                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\ErrorNodeAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeAction",
+                    "arguments": [
+                        {
+                            "name": "nodeAction",
+                            "type": "dependency",
+                            "properties": {
                                 "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\AdvancedNodeAction"
                             }
                         }

@@ -7,6 +7,7 @@ use pallo\library\cms\node\Node;
 use pallo\library\cms\theme\ThemeModel;
 use pallo\library\event\EventManager;
 use pallo\library\event\Event;
+use pallo\library\http\Response;
 use pallo\library\i18n\I18n;
 use pallo\library\mvc\Request;
 use pallo\library\security\SecurityManager;
@@ -16,6 +17,7 @@ use pallo\web\base\view\Menu;
 use pallo\web\cms\node\NodeTreeGenerator;
 use pallo\web\mvc\view\TemplateView;
 use pallo\web\WebApplication;
+use pallo\web\cms\node\type\SiteNodeType;
 
 class ApplicationListener {
 
@@ -169,6 +171,67 @@ class ApplicationListener {
         $menu->addMenuItem($menuItem);
 
         $applicationMenu->addMenu($menu);
+    }
+
+    /**
+     * Sets a error view to the response if a status code above 399 is set
+     * @return null
+     */
+    public function handleHttpError(Event $event, WebApplication $web, I18n $i18n, NodeModel $nodeModel) {
+        $response = $web->getResponse();
+
+        $statusCode = $response->getStatusCode();
+        if (($statusCode != 403 && $statusCode != 404) || $response->getView() || $response->getBody()) {
+            return;
+        }
+
+        $locale = $i18n->getLocale()->getCode();
+
+        // lookup site with the current base URL
+        $baseUrl = $web->getRequest()->getBaseUrl();
+        $site = null;
+        $defaultSite = null;
+
+        $sites = $nodeModel->getNodesByType(SiteNodeType::NAME);
+        foreach ($sites as $site) {
+            if ($site->getBaseUrl($locale) == $baseUrl) {
+                break;
+            }
+
+            $defaultSite = $site;
+            $site = null;
+        }
+
+        if (!$site) {
+            if (!$defaultSite) {
+                return;
+            }
+
+            $site = $defaultSite;
+        }
+
+        // get the error node
+        $node = $site->get('error.' . $statusCode);
+        if (!$node) {
+            return;
+        }
+
+        // dispatch the error page
+        $routeContainer = $web->getRouter()->getRouteContainer();
+        $route = $routeContainer->getRouteById('cms.front.' . $node . '.' . $locale);
+        $route->setArguments();
+
+        $request = $web->createRequest($route->getPath());
+        $request->setRoute($route);
+
+        $response->setView(null);
+        $response->setStatusCode(Response::STATUS_CODE_OK);
+        $response->clearRedirect();
+
+        $dispatcher = $web->getDispatcher();
+        $dispatcher->dispatch($request, $response);
+
+        $response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
     }
 
 }
