@@ -1,7 +1,7 @@
 {
     "dependencies": [
         {
-            "class": "pallo\\library\\system\\file\\File",
+            "class": "ride\\library\\system\\file\\File",
             "id": "cms.node",
             "calls": [
                 {
@@ -19,8 +19,8 @@
             ]
         },
         {
-            "interfaces": "pallo\\library\\cms\\node\\io\\NodeIO",
-            "class": "pallo\\library\\cms\\node\\io\\IniNodeIO",
+            "interfaces": "ride\\library\\cms\\node\\io\\NodeIO",
+            "class": "ride\\library\\cms\\node\\io\\IniNodeIO",
             "id": "ini",
             "calls": [
                 {
@@ -30,7 +30,7 @@
                             "name": "path",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\library\\system\\file\\File",
+                                "interface": "ride\\library\\system\\file\\File",
                                 "id": "cms.node"
                             }
                         }
@@ -51,7 +51,7 @@
             ]
         },
         {
-            "class": "pallo\\library\\system\\file\\File",
+            "class": "ride\\library\\system\\file\\File",
             "id": "cms.expired",
             "calls": [
                 {
@@ -69,8 +69,8 @@
             ]
         },
         {
-            "interfaces": "pallo\\library\\cms\\expired\\io\\ExpiredRouteIO",
-            "class": "pallo\\library\\cms\\expired\\io\\XmlExpiredRouteIO", 
+            "interfaces": "ride\\library\\cms\\expired\\io\\ExpiredRouteIO",
+            "class": "ride\\library\\cms\\expired\\io\\XmlExpiredRouteIO", 
             "id": "xml",
             "calls": [
                 {
@@ -80,7 +80,7 @@
                             "name": "file",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\library\\system\\file\\File",
+                                "interface": "ride\\library\\system\\file\\File",
                                 "id": "cms.expired"
                             }
                         }
@@ -89,7 +89,7 @@
             ]
         }, 
         {
-            "class": "pallo\\web\\cms\\node\\type\\SiteNodeType",
+            "class": "ride\\web\\cms\\node\\type\\SiteNodeType",
             "calls": [
                 {
                     "method": "setDefaultTheme",
@@ -106,7 +106,7 @@
             ]
         },
         {
-            "class": "pallo\\library\\cms\\node\\type\\NodeTypeManager",
+            "class": "ride\\library\\cms\\node\\type\\NodeTypeManager",
             "id": "generic",
             "calls": [
                 {
@@ -116,7 +116,7 @@
                             "name": "nodeType",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\node\\type\\SiteNodeType"
+                                "interface": "ride\\web\\cms\\node\\type\\SiteNodeType"
                             }
                         }
                     ]
@@ -128,7 +128,7 @@
                             "name": "nodeType",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\node\\type\\PageNodeType"
+                                "interface": "ride\\web\\cms\\node\\type\\PageNodeType"
                             }
                         }
                     ]
@@ -140,7 +140,7 @@
                             "name": "nodeType",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\node\\type\\FolderNodeType"
+                                "interface": "ride\\web\\cms\\node\\type\\FolderNodeType"
                             }
                         }
                     ]
@@ -152,7 +152,7 @@
                             "name": "nodeType",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\node\\type\\RedirectNodeType"
+                                "interface": "ride\\web\\cms\\node\\type\\RedirectNodeType"
                             }
                         }
                     ]
@@ -160,7 +160,7 @@
             ]
         },
         {
-            "class": "pallo\\web\\cms\\controller\\backend\\action\\node\\NodeActionManager",
+            "class": "ride\\web\\cms\\controller\\backend\\action\\node\\NodeActionManager",
             "id": "generic",
             "calls": [
                 {
@@ -170,7 +170,7 @@
                             "name": "nodeAction",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\GoNodeAction"
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\GoNodeAction"
                             }
                         }
                     ]
@@ -182,7 +182,7 @@
                             "name": "nodeAction",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction"
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction"
                             }
                         }
                     ]
@@ -194,7 +194,7 @@
                             "name": "nodeAction",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\MetaNodeAction"
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\MetaNodeAction"
                             }
                         }
                     ]
@@ -206,7 +206,7 @@
                             "name": "nodeAction",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\VisibilityNodeAction"
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\VisibilityNodeAction"
                             }
                         }
                     ]
@@ -218,7 +218,7 @@
                             "name": "nodeAction",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\StructureNodeAction"
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\StructureNodeAction"
                             }
                         }
                     ]
@@ -230,7 +230,7 @@
                             "name": "nodeAction",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\TemplateNodeAction"
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\TemplateNodeAction"
                             }
                         }
                     ]
@@ -242,7 +242,7 @@
                             "name": "nodeAction",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\ErrorNodeAction"
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\ErrorNodeAction"
                             }
                         }
                     ]
@@ -254,7 +254,7 @@
                             "name": "nodeAction",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\node\\AdvancedNodeAction"
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\AdvancedNodeAction"
                             }
                         }
                     ]
@@ -262,18 +262,18 @@
             ]
         },        
         {
-            "interfaces": "pallo\\library\\cms\\node\\structure\\NodeStructureParser",
-            "class": "pallo\\library\\cms\\node\\structure\\GenericNodeStructureParser",
+            "interfaces": "ride\\library\\cms\\node\\structure\\NodeStructureParser",
+            "class": "ride\\library\\cms\\node\\structure\\GenericNodeStructureParser",
             "id": "generic"
         },
         {
-            "interfaces": "pallo\\library\\cms\\node\\validator\\NodeValidator",
-            "class": "pallo\\library\\cms\\node\\validator\\GenericNodeValidator",
+            "interfaces": "ride\\library\\cms\\node\\validator\\NodeValidator",
+            "class": "ride\\library\\cms\\node\\validator\\GenericNodeValidator",
             "id": "generic"
         },
         {
-            "interfaces": "pallo\\web\\router\\io\\RouteContainerIO", 
-            "class": "pallo\\web\\cms\\router\\CmsRouteContainerIO",
+            "interfaces": "ride\\web\\router\\io\\RouteContainerIO", 
+            "class": "ride\\web\\cms\\router\\CmsRouteContainerIO",
             "id": "cms",
             "calls": [
                 {
@@ -283,7 +283,7 @@
                             "name": "locales",
                             "type": "call",
                             "properties": {
-                                "interface": "pallo\\library\\i18n\\I18n",
+                                "interface": "ride\\library\\i18n\\I18n",
                                 "method": "getLocaleCodeList"
                             }
                         }
@@ -292,13 +292,13 @@
             ]
         },        
         {
-            "interfaces": "pallo\\library\\cms\\layout\\LayoutModel",
-            "class": "pallo\\web\\cms\\layout\\DependencyLayoutModel",
+            "interfaces": "ride\\library\\cms\\layout\\LayoutModel",
+            "class": "ride\\web\\cms\\layout\\DependencyLayoutModel",
             "id": "dependency"
         },
         {
-            "interfaces": ["pallo\\library\\cms\\theme\\ThemeModel", "pallo\\web\\cms\\theme\\ThemeModel", "pallo\\library\\template\\theme\\ThemeModel"],
-            "class": "pallo\\web\\cms\\theme\\ThemeModel",
+            "interfaces": ["ride\\library\\cms\\theme\\ThemeModel", "ride\\web\\cms\\theme\\ThemeModel", "ride\\library\\template\\theme\\ThemeModel"],
+            "class": "ride\\web\\cms\\theme\\ThemeModel",
             "id": "cms",
             "calls": [
                 {
@@ -308,7 +308,7 @@
                             "name": "directory",
                             "type": "call",
                             "properties": {
-                                "interface": "pallo\\library\\system\\file\\browser\\FileBrowser",
+                                "interface": "ride\\library\\system\\file\\browser\\FileBrowser",
                                 "method": "getApplicationDirectory"
                             }
                         }
@@ -318,7 +318,7 @@
             ]
         },
         {
-            "class": "pallo\\web\\cms\\controller\\backend\\action\\widget\\WidgetActionManager",
+            "class": "ride\\web\\cms\\controller\\backend\\action\\widget\\WidgetActionManager",
             "id": "generic",
             "calls": [
                 {
@@ -328,7 +328,7 @@
                             "name": "widgetAction",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\widget\\PropertiesWidgetAction"
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\widget\\PropertiesWidgetAction"
                             }
                         }
                     ]
@@ -340,7 +340,7 @@
                             "name": "widgetAction",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\controller\\backend\\action\\widget\\TemplateWidgetAction"
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\widget\\TemplateWidgetAction"
                             }
                         }
                     ]
@@ -348,17 +348,17 @@
             ]
         },
         {
-            "interfaces": "pallo\\library\\cms\\widget\\WidgetModel",
-            "class": "pallo\\web\\cms\\widget\\DependencyWidgetModel",
+            "interfaces": "ride\\library\\cms\\widget\\WidgetModel",
+            "class": "ride\\web\\cms\\widget\\DependencyWidgetModel",
             "id": "dependency"
         },
         {
-            "interfaces": "pallo\\library\\cms\\content\\mapper\\ContentMapper",
-            "class": "pallo\\library\\cms\\content\\mapper\\NodeContentMapper",
+            "interfaces": "ride\\library\\cms\\content\\mapper\\ContentMapper",
+            "class": "ride\\library\\cms\\content\\mapper\\NodeContentMapper",
             "id": "node"
         },
         {
-            "class": "pallo\\library\\cms\\content\\ContentFacade",
+            "class": "ride\\library\\cms\\content\\ContentFacade",
             "id": "cms",
             "calls": [
                 {
@@ -368,7 +368,7 @@
                             "name": "baseUrl",
                             "type": "call",
                             "properties": {
-                                "interface": "pallo\\library\\http\\Request",
+                                "interface": "ride\\library\\http\\Request",
                                 "method": "getBaseUrl"
                             }
                         },
@@ -376,7 +376,7 @@
                             "name": "baseScript",
                             "type": "call",
                             "properties": {
-                                "interface": "pallo\\library\\http\\Request",
+                                "interface": "ride\\library\\http\\Request",
                                 "method": "getBaseScript"
                             }
                         }
@@ -389,7 +389,7 @@
                             "name": "io",
                             "type": "dependency",
                             "properties": {
-                                "interface": "pallo\\web\\cms\\content\\mapper\\io\\DependencyContentMapperIO"
+                                "interface": "ride\\web\\cms\\content\\mapper\\io\\DependencyContentMapperIO"
                             }
                         }
                     ]
