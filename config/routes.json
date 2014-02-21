@@ -2,227 +2,227 @@
     "routes": [
         {
             "path": "/sites",
-            "controller": "pallo\\web\\cms\\controller\\backend\\SiteController",
+            "controller": "ride\\web\\cms\\controller\\backend\\SiteController",
             "action": "indexAction",
             "id": "cms.site"
         },
         {
             "path": "/sites/add/%locale%",
-            "controller": "pallo\\web\\cms\\controller\\backend\\SiteController",
+            "controller": "ride\\web\\cms\\controller\\backend\\SiteController",
             "action": "formAction",
             "id": "cms.site.add"
         },
         {
             "path": "/sites/%site%",
-            "controller": "pallo\\web\\cms\\controller\\backend\\SiteController",
+            "controller": "ride\\web\\cms\\controller\\backend\\SiteController",
             "action": "detailAction",
             "id": "cms.site.detail"
         },
         {
             "path": "/sites/%site%/%locale%",
-            "controller": "pallo\\web\\cms\\controller\\backend\\SiteController",
+            "controller": "ride\\web\\cms\\controller\\backend\\SiteController",
             "action": "detailAction",
             "id": "cms.site.detail.locale"
         },
         {
             "path": "/sites/%site%/%locale%/edit",
-            "controller": "pallo\\web\\cms\\controller\\backend\\SiteController",
+            "controller": "ride\\web\\cms\\controller\\backend\\SiteController",
             "action": "formAction",
             "id": "cms.site.edit"
         },
         {
             "path": "/sites/%site%/%locale%/clone",
-            "controller": "pallo\\web\\cms\\controller\\backend\\SiteController",
+            "controller": "ride\\web\\cms\\controller\\backend\\SiteController",
             "action": "cloneAction",
             "id": "cms.site.clone"
         },
         {
             "path": "/sites/%site%/%locale%/delete",
-            "controller": "pallo\\web\\cms\\controller\\backend\\SiteController",
+            "controller": "ride\\web\\cms\\controller\\backend\\SiteController",
             "action": "deleteAction",
             "id": "cms.site.delete"
         },
         {
             "path": "/sites/%site%/%locale%/structure",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\StructureNodeAction",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\StructureNodeAction",
             "action": "indexAction",
             "id": "cms.site.structure"
         },
         {
             "path": "/sites/%site%/%locale%/error",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\ErrorNodeAction",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ErrorNodeAction",
             "action": "indexAction",
             "id": "cms.site.error"
         },
         {
             "path": "/sites/%site%/%locale%/add/folder",
-            "controller": "pallo\\web\\cms\\controller\\backend\\FolderController",
+            "controller": "ride\\web\\cms\\controller\\backend\\FolderController",
             "action": "formAction",
             "id": "cms.folder.add"
         },
         {
             "path": "/sites/%site%/%locale%/folders/%node%/edit",
-            "controller": "pallo\\web\\cms\\controller\\backend\\FolderController",
+            "controller": "ride\\web\\cms\\controller\\backend\\FolderController",
             "action": "formAction",
             "id": "cms.folder.edit"
         },
         {
             "path": "/sites/%site%/%locale%/add/page",
-            "controller": "pallo\\web\\cms\\controller\\backend\\PageController",
+            "controller": "ride\\web\\cms\\controller\\backend\\PageController",
             "action": "formAction",
             "id": "cms.page.add"
         },
         {
             "path": "/sites/%site%/%locale%/pages/%node%/edit",
-            "controller": "pallo\\web\\cms\\controller\\backend\\PageController",
+            "controller": "ride\\web\\cms\\controller\\backend\\PageController",
             "action": "formAction",
             "id": "cms.page.edit"
         },
         {
             "path": "/sites/%site%/%locale%/add/redirect",
-            "controller": "pallo\\web\\cms\\controller\\backend\\RedirectController",
+            "controller": "ride\\web\\cms\\controller\\backend\\RedirectController",
             "action": "formAction",
             "id": "cms.redirect.add"
         },
         {
             "path": "/sites/%site%/%locale%/redirects/%node%/edit",
-            "controller": "pallo\\web\\cms\\controller\\backend\\RedirectController",
+            "controller": "ride\\web\\cms\\controller\\backend\\RedirectController",
             "action": "formAction",
             "id": "cms.redirect.edit"
         },
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/advanced",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\AdvancedNodeAction",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\AdvancedNodeAction",
             "action": "indexAction",
             "id": "cms.node.advanced"
         },
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/clone",
-            "controller": "pallo\\web\\cms\\controller\\backend\\NodeController",
+            "controller": "ride\\web\\cms\\controller\\backend\\NodeController",
             "action": "cloneAction",
             "id": "cms.node.clone"
         },
         {
             "path": "/sites/%site%/%locale%/nodes/%node%",
-            "controller": "pallo\\web\\cms\\controller\\backend\\NodeController",
+            "controller": "ride\\web\\cms\\controller\\backend\\NodeController",
             "action": "defaultAction",
             "id": "cms.node.default"
         },
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/delete",
-            "controller": "pallo\\web\\cms\\controller\\backend\\NodeController",
+            "controller": "ride\\web\\cms\\controller\\backend\\NodeController",
             "action": "deleteAction",
             "id": "cms.node.delete"
         },
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/go",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\GoNodeAction",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\GoNodeAction",
             "action": "indexAction",
             "id": "cms.node.go"
         },
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/layout",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
             "action": "indexAction",
             "id": "cms.node.layout"
         },
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/layout/%region%",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
             "action": "regionAction",
             "id": "cms.node.layout.region"
         },
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/layout/%region%/order",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
             "action": "orderAction",
             "id": "cms.node.layout.order",
             "methods": "POST"
         },
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/layout/%region%/widget/%widget%",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction", 
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction", 
             "action": "widgetAddAction",
             "id": "cms.node.layout.widget.add",
             "methods": "post"
         },        
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/layout/%region%/widget/%widget%/cache",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction", 
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction", 
             "action": "widgetCacheAction",
             "id": "cms.node.layout.widget.cache"
         },        
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/layout/%region%/widget/%widget%/delete",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction", 
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction", 
             "action": "widgetDeleteAction",
             "id": "cms.node.layout.widget.delete",
             "methods": "POST"
         },      
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/meta",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\MetaNodeAction",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\MetaNodeAction",
             "action": "indexAction",
             "id": "cms.node.meta"
         },
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/layout/%region%/widget/%widget%/properties",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\widget\\PropertiesWidgetAction", 
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\widget\\PropertiesWidgetAction", 
             "action": "indexAction",
             "id": "cms.widget.properties"
         },        
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/layout/%region%/widget/%widget%/templates",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\widget\\TemplateWidgetAction", 
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\widget\\TemplateWidgetAction", 
             "action": "indexAction",
             "id": "cms.widget.templates"
         },        
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/templates",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\TemplateNodeAction",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\TemplateNodeAction",
             "action": "indexAction",
             "id": "cms.node.templates"
         },
         {
             "path": "/sites/%site%/%locale%/nodes/%node%/visibility",
-            "controller": "pallo\\web\\cms\\controller\\backend\\action\\node\\VisibilityNodeAction",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\VisibilityNodeAction",
             "action": "indexAction",
             "id": "cms.node.visibility"
         },
         {
             "path": "/themes",
-            "controller": "pallo\\web\\cms\\controller\\backend\\ThemeController",
+            "controller": "ride\\web\\cms\\controller\\backend\\ThemeController",
             "action": "indexAction",
             "id": "cms.theme"
         },
         {
             "path": "/themes/add",
-            "controller": "pallo\\web\\cms\\controller\\backend\\ThemeController",
+            "controller": "ride\\web\\cms\\controller\\backend\\ThemeController",
             "action": "formAction",
             "id": "cms.theme.add"
         },
         {
             "path": "/themes/%theme%",
-            "controller": "pallo\\web\\cms\\controller\\backend\\ThemeController",
+            "controller": "ride\\web\\cms\\controller\\backend\\ThemeController",
             "action": "formAction",
             "id": "cms.theme.edit"
         },
         {
             "path": "/themes/%theme%/delete",
-            "controller": "pallo\\web\\cms\\controller\\backend\\ThemeController",
+            "controller": "ride\\web\\cms\\controller\\backend\\ThemeController",
             "action": "deleteAction",
             "id": "cms.theme.delete"
         },
         {
             "path": "/nodes/%node%",
-            "controller": "pallo\\web\\cms\\controller\\frontend\\NodeController",
+            "controller": "ride\\web\\cms\\controller\\frontend\\NodeController",
             "action": "indexAction",
             "id": "cms.node.frontend",
             "dynamic": true
         },
         {
             "path": "/nodes/%node%/%locale%",
-            "controller": "pallo\\web\\cms\\controller\\frontend\\NodeController",
+            "controller": "ride\\web\\cms\\controller\\frontend\\NodeController",
             "action": "indexAction",
             "id": "cms.node.frontend.locale",
             "dynamic": true
