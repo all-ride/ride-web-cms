@@ -90,7 +90,7 @@ class ThemeController extends AbstractController {
             'label' => $translator->translate('label.regions'),
             'description' => $translator->translate('label.theme.regions.description'),
             'filters' => array(
-                'trim' => array('trim.empty' => true),
+                'trim' => array('empty' => true),
             )
         ));
         $form->setRequest($this->request);
@@ -125,7 +125,7 @@ class ThemeController extends AbstractController {
                 $themeModel->setTheme($theme);
 
                 $this->addSuccess('success.theme.saved', array(
-                	'theme' => $data['name'],
+                    'theme' => $data['name'],
                 ));
 
                 $this->response->setRedirect($referer);

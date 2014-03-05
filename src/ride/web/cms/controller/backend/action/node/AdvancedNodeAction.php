@@ -44,7 +44,7 @@ class AdvancedNodeAction extends AbstractNodeAction {
             'label' => $translator->translate('label.node.properties'),
             'description' => $translator->translate('label.node.properties.description'),
             'attributes' => array(
-        	   'rows' => 10,
+                'rows' => 10,
             ),
             'filters' => array(
                 'trim' => array(),
@@ -72,7 +72,7 @@ class AdvancedNodeAction extends AbstractNodeAction {
                 $this->response->setRedirect($this->request->getUrl());
 
                 return;
-            } catch (ValidationException $saveException) {
+            } catch (ValidationException $validationException) {
             	$form->setValidationException($validationException);
             }
         }

@@ -95,7 +95,7 @@ class NodeController extends AbstractBackendController {
                     'site' => $site->getId(),
             	    'node' => $clone->getId(),
                 )
-        	));
+            ));
 
             return;
         }
@@ -144,7 +144,7 @@ class NodeController extends AbstractBackendController {
                     'locale' => $locale,
                     'site' => $site->getId(),
                 )
-        	));
+            ));
 
             return;
         }

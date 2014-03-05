@@ -106,7 +106,7 @@ class PageController extends AbstractNodeTypeController {
                 $nodeModel->setNode($node);
 
                 $this->addSuccess('success.node.saved', array(
-                	'node' => $node->getName($locale),
+                    'node' => $node->getName($locale),
                 ));
 
                 $this->response->setRedirect($this->getUrl(
