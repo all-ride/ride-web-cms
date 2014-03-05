@@ -81,7 +81,7 @@ class SiteController extends AbstractNodeTypeController {
             'label' => $translator->translate('label.site'),
             'description' => $translator->translate('label.site.description'),
             'attributes' => array(
-        	   'autofocus' => 'true',
+                'autofocus' => 'true',
             ),
             'filters' => array(
                 'trim' => array(),
@@ -146,7 +146,7 @@ class SiteController extends AbstractNodeTypeController {
                 $nodeModel->setNode($site);
 
                 $this->addSuccess('success.node.saved', array(
-                	'node' => $site->getName($locale),
+                    'node' => $site->getName($locale),
                 ));
 
                 $this->response->setRedirect($this->getUrl(

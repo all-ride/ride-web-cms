@@ -10,7 +10,6 @@ use ride\library\cms\theme\Theme;
 use ride\library\cms\theme\ThemeModel;
 use ride\library\cms\widget\WidgetModel;
 use ride\library\i18n\I18n;
-use ride\library\validation\exception\ValidationException;
 
 use ride\web\cms\controller\backend\action\widget\WidgetActionManager;
 use ride\web\mvc\controller\AbstractController;
@@ -85,7 +84,7 @@ class LayoutNodeAction extends AbstractNodeAction {
         }
 
         $this->response->setRedirect($this->getUrl('cms.node.layout.region', array(
-        	'locale' => $locale,
+            'locale' => $locale,
             'site' => $site->getId(),
             'node' => $node->getId(),
             'region' => $region,
@@ -179,7 +178,7 @@ class LayoutNodeAction extends AbstractNodeAction {
             'site' => $site,
             'node' => $node,
             'region' => $region,
-        	'widget' => $widget,
+            'widget' => $widget,
             'widgetId' => $widgetId,
             'actions' => $widgetActionManager->getWidgetActions(),
         ));
