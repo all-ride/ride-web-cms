@@ -51,6 +51,11 @@
             ]
         },
         {
+            "class": "ride\\library\\cms\\node\\NodeModel",
+            "id": "cms",
+            "calls": ["setEventManager"]
+        },
+        {
             "class": "ride\\library\\system\\file\\File",
             "id": "cms.expired",
             "calls": [
