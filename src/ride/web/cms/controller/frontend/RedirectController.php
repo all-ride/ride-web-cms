@@ -7,7 +7,6 @@ use ride\library\cms\node\exception\NodeNotFoundException;
 use ride\library\cms\node\NodeModel;
 use ride\library\i18n\I18n;
 
-use ride\web\base\controller\AbstractController;
 use ride\web\cms\node\type\RedirectNodeType;
 
 /**
@@ -33,6 +32,11 @@ class RedirectController extends AbstractController {
 	        $locale = $i18n->getLocale()->getCode();
 	    } else {
 	        $i18n->setCurrentLocale($locale);
+	    }
+
+	    $arguments = ltrim($this->request->getBasePath(true), '/');
+	    if ($arguments) {
+	    	return $this->chainWebRequest();
 	    }
 
 	    $url = $node->getRedirectUrl($locale);

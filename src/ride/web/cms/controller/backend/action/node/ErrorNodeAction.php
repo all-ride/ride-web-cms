@@ -77,7 +77,7 @@ class ErrorNodeAction extends AbstractNodeAction {
                     $site->set('error.' . $statusCode, $node);
                 }
 
-                $nodeModel->setNode($site);
+                $nodeModel->setNode($site, "Set error pages for " . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $site->getName($locale)

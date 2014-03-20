@@ -6,8 +6,6 @@ use ride\library\cms\node\exception\NodeNotFoundException;
 use ride\library\cms\node\NodeModel;
 use ride\library\http\Response;
 
-use ride\web\base\controller\AbstractController;
-
 /**
  * Controller for the frontend of the expired routes
  */

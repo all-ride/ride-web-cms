@@ -15,7 +15,6 @@ use ride\library\router\GenericRouter;
 use ride\library\router\RouteContainer;
 use ride\library\router\Route;
 
-use ride\web\base\controller\AbstractController;
 use ride\web\cms\node\dispatcher\NodeDispatcher;
 use ride\web\cms\view\NodeTemplateView;
 use ride\web\WebApplication;
@@ -39,49 +38,26 @@ class NodeController extends AbstractController {
             $i18n->setCurrentLocale($locale);
         }
 
-	    $nodeDispatcher = $this->getNodeDispatcher($layoutModel, $themeModel, $widgetModel, $nodeModel, $node, $locale, $cache);
-	    if (!$nodeDispatcher) {
-	        $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
+        $nodeDispatcher = $this->getNodeDispatcher($layoutModel, $themeModel, $widgetModel, $nodeModel, $node, $locale, $cache);
+        if ($nodeDispatcher) {
+            $node = $nodeDispatcher->getNode();
+            if ($node->isPublished() && !$node->isAvailableInLocale($locale)) {
+                $nodeDispatcher->setDispatcher($web->getDispatcher());
+                $nodeDispatcher->setEventManager($eventManager);
+                $nodeDispatcher->setLog($log);
+                $nodeDispatcher->dispatch($this->request, $this->response, $this->getUser(), $cache);
 
-	        return;
-	    }
+                if ($this->response->getStatusCode() != Response::STATUS_CODE_NOT_FOUND) {
+                    return;
+                }
+            }
+        }
 
-	    $node = $nodeDispatcher->getNode();
-	    if (!$node->isPublished() || !$node->isAvailableInLocale($locale)) {
-	        $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
+        // not found, try the public web controller
+        return $this->chainWebRequest();
+    }
 
-	        return;
-	    }
-
-		$nodeDispatcher->setDispatcher($web->getDispatcher());
-		$nodeDispatcher->setEventManager($eventManager);
-		$nodeDispatcher->setLog($log);
-		$nodeDispatcher->dispatch($this->request, $this->response, $this->getUser(), $cache);
-
-		if ($this->response->getStatusCode() != Response::STATUS_CODE_NOT_FOUND) {
-		    return;
-		}
-
-		// not found, try the public controller
-		$arguments = ltrim($this->request->getBasePath(true), '/');
-		if (!$arguments) {
-		    return;
-		}
-
-		$controller = $this->dependencyInjector->get('ride\\library\\mvc\\controller\\Controller', 'public');
-		$callback = array($controller, 'indexAction');
-
-		$route = new Route('/', $callback);
-		$route->setIsDynamic(true);
-		$route->setArguments(explode('/', $arguments));
-
-		$this->request->setRoute($route);
-		$this->response->setStatusCode(Response::STATUS_CODE_OK);
-
-		return $this->request;
-	}
-
-	/**
+    /**
      * Gets the dispatcher of a node
      * @param ride\library\cms\layout\LayoutModel $layoutModel Instance of the
      * layout model
@@ -97,8 +73,8 @@ class NodeController extends AbstractController {
      * dispatcher
      * @return ride\web\cms\node\dispatcher\NodeDispatcher|null A node
      * dispatcher or null when no node could be found
-	 */
-	private function getNodeDispatcher(LayoutModel $layoutModel, ThemeModel $themeModel, WidgetModel $widgetModel, NodeModel $nodeModel, $node, $locale, CachePool $cache = null) {
+     */
+    private function getNodeDispatcher(LayoutModel $layoutModel, ThemeModel $themeModel, WidgetModel $widgetModel, NodeModel $nodeModel, $node, $locale, CachePool $cache = null) {
         if ($cache) {
             $cacheKey = 'node.dispatcher.' . $node . '.' . $locale;
 
@@ -108,11 +84,11 @@ class NodeController extends AbstractController {
             }
         }
 
-	    try {
-	        $node = $nodeModel->getNode($node);
-	    } catch (NodeNotFoundException $e) {
-	        return null;
-	    }
+        try {
+            $node = $nodeModel->getNode($node);
+        } catch (NodeNotFoundException $e) {
+            return null;
+        }
 
         $layout = $layoutModel->getLayout($node->getLayout($locale));
         $theme = $themeModel->getTheme($node->getTheme());
@@ -131,6 +107,6 @@ class NodeController extends AbstractController {
         }
 
         return $nodeDispatcher;
-	}
+    }
 
 }
