@@ -123,7 +123,7 @@ class RedirectController extends AbstractNodeTypeController {
                     $node->setRedirectUrl($locale, $data['redirect-url']);
                 }
 
-                $nodeModel->setNode($node);
+                $nodeModel->setNode($node, (!$node->getId() ? 'Created new redirect ' : 'Updated redirect ') . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $node->getName($locale),

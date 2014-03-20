@@ -63,7 +63,7 @@ class AdvancedNodeAction extends AbstractNodeAction {
 
                 $node->setProperties($nodeProperties);
 
-                $nodeModel->setNode($node);
+                $nodeModel->setNode($node, 'Edited advanced properties of node ' . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $node->getName($locale)
@@ -73,7 +73,7 @@ class AdvancedNodeAction extends AbstractNodeAction {
 
                 return;
             } catch (ValidationException $validationException) {
-            	$form->setValidationException($validationException);
+                $this->setValidationException($validationException, $form);
             }
         }
 

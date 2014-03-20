@@ -143,7 +143,7 @@ class SiteController extends AbstractNodeTypeController {
                 $site->setTheme($data['theme']);
                 $site->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
 
-                $nodeModel->setNode($site);
+                $nodeModel->setNode($site, (!$site->getId() ? 'Created new site ' : 'Updated site ') . $site->getName());
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $site->getName($locale),

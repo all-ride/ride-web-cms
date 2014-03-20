@@ -117,7 +117,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
                     $node->setHideInBreadcrumbs(isset($data['hide']['breadcrumbs']));
                 }
 
-                $nodeModel->setNode($node);
+                $nodeModel->setNode($node, 'Set visibility of ' . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $node->getName($locale)

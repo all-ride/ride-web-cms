@@ -103,7 +103,7 @@ class PageController extends AbstractNodeTypeController {
                 $node->setTheme($this->getOptionValueFromForm($data['theme']));
                 $node->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
 
-                $nodeModel->setNode($node);
+                $nodeModel->setNode($node, (!$node->getId() ? 'Created new page ' : 'Updated page ') . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $node->getName($locale),

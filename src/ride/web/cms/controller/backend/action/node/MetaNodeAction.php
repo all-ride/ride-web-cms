@@ -164,7 +164,7 @@ class MetaNodeAction extends AbstractNodeAction {
 
                 $node->setMeta($locale, $meta);
 
-                $nodeModel->setNode($node);
+                $nodeModel->setNode($node, 'Set meta tags to ' . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $node->getName($locale)

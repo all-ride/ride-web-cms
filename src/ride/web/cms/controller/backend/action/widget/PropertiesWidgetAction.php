@@ -72,7 +72,7 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
         }
 
         if ($invoker->invoke($propertiesCallback)) {
-            $nodeModel->setNode($node);
+            $nodeModel->setNode($node, 'Updated properties for widget ' . $widgetId . ' in ' . $node->getName());
 
             $this->addSuccess('success.widget.saved', array(
             	'widget' => $this->getTranslator()->translate('widget.' . $widget->getName()),

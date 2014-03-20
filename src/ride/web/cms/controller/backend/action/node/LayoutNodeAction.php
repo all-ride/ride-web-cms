@@ -160,8 +160,8 @@ class LayoutNodeAction extends AbstractNodeAction {
         $widgetId = $site->createWidget($widget);
         $node->addWidget($region, $widgetId);
 
-        $nodeModel->setNode($site);
-        $nodeModel->setNode($node);
+        $nodeModel->setNode($site, 'Created new widget in ' . $site->getName());
+        $nodeModel->setNode($node, 'Added widget to ' . $node->getName());
 
         $widget = clone $widgetModel->getWidget($widget);
         $widget->setProperties($node->getWidgetProperties($widgetId));
@@ -194,7 +194,7 @@ class LayoutNodeAction extends AbstractNodeAction {
 
         $node->deleteWidget($region, $widget);
 
-        $nodeModel->setNode($node);
+        $nodeModel->setNode($node, 'Deleted widget from ' . $node->getName());
     }
 
     /**
@@ -210,7 +210,7 @@ class LayoutNodeAction extends AbstractNodeAction {
 
         $node->orderWidgets($region, $widgetsValue);
 
-        $nodeModel->setNode($node);
+        $nodeModel->setNode($node, 'Reordered widgets on ' . $node->getName());
     }
 
     /**
