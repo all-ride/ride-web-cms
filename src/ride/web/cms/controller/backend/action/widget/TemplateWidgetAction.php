@@ -118,8 +118,8 @@ class TemplateWidgetAction extends AbstractWidgetAction {
                 ));
 
                 return;
-            } catch (ValidationException $saveException) {
-                $form->setValidationException($validationException);
+            } catch (ValidationException $validationException) {
+                $this->setValidationException($validationException, $form);
             }
         }
 

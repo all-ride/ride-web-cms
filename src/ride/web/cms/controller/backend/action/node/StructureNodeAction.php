@@ -81,7 +81,7 @@ class StructureNodeAction extends AbstractNodeAction {
 
                 return;
             } catch (ValidationException $validationException) {
-            	$form->setValidationException($validationException);
+                $this->setValidationException($validationException, $form);
             }
         }
 

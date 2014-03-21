@@ -86,8 +86,8 @@ class ErrorNodeAction extends AbstractNodeAction {
                 $this->response->setRedirect($this->request->getUrl());
 
                 return;
-            } catch (ValidationException $exception) {
-
+            } catch (ValidationException $validationException) {
+                $this->setValidationException($validationException, $form);
             }
         }
 

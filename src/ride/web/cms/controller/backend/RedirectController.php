@@ -138,12 +138,8 @@ class RedirectController extends AbstractNodeTypeController {
                 ));
 
                 return;
-            } catch (ValidationException $exception) {
-                $form->setValidationException($exception);
-
-                $this->addError('error.validation');
-
-                $this->response->setStatusCode(Response::STATUS_CODE_UNPROCESSABLE_ENTITY);
+            } catch (ValidationException $validationException) {
+                $this->setValidationException($validationException, $form);
             }
         }
 
