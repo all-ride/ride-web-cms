@@ -41,7 +41,7 @@ class NodeController extends AbstractController {
         $nodeDispatcher = $this->getNodeDispatcher($layoutModel, $themeModel, $widgetModel, $nodeModel, $node, $locale, $cache);
         if ($nodeDispatcher) {
             $node = $nodeDispatcher->getNode();
-            if ($node->isPublished() && !$node->isAvailableInLocale($locale)) {
+            if ($node->isPublished() && $node->isAvailableInLocale($locale)) {
                 $nodeDispatcher->setDispatcher($web->getDispatcher());
                 $nodeDispatcher->setEventManager($eventManager);
                 $nodeDispatcher->setLog($log);
