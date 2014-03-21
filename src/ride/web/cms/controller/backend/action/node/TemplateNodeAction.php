@@ -108,8 +108,8 @@ class TemplateNodeAction extends AbstractNodeAction {
                 $this->response->setRedirect($this->request->getUrl());
 
                 return;
-            } catch (ValidationException $saveException) {
-            	$form->setValidationException($validationException);
+            } catch (ValidationException $validationException) {
+                $this->setValidationException($validationException, $form);
             }
         }
 

@@ -142,7 +142,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
                     }
                 }
 
-                $form->setValidationException($validationException);
+                $this->setValidationException($validationException, $form);
             }
         }
 
