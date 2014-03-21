@@ -28,6 +28,7 @@ class AbstractController extends BaseAbstractController {
         $controller = $this->dependencyInjector->get('ride\\library\\mvc\\controller\\Controller', 'public');
         $callback = array($controller, 'indexAction');
 
+        $route = new Route('/', $callback);
         $route->setIsDynamic(true);
         $route->setArguments(explode('/', $arguments));
 
