@@ -34,8 +34,8 @@ class RedirectController extends AbstractController {
 	        $i18n->setCurrentLocale($locale);
 	    }
 
-	    $arguments = ltrim($this->request->getBasePath(true), '/');
-	    if ($arguments) {
+	    $path = $this->request->getBasePath(true);
+	    if (!$path || $path !== $node->getRoute($locale)) {
 	    	return $this->chainWebRequest();
 	    }
 
