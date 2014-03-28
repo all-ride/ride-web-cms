@@ -83,7 +83,13 @@ class ApplicationListener {
     }
 
     public function prepareTaskbar(Event $event, Request $request, I18n $i18n, NodeModel $nodeModel, ThemeModel $themeModel, WebApplication $web, SecurityManager $securityManager, EventManager $eventManager) {
-        $locale = $request->getRoute()->getArgument('locale');
+        $locale = null;
+        $route = $request->getRoute();
+
+        if ($route) {
+            $locale = $route->getArgument('locale');
+        }
+
         if (!$locale) {
             $locale = $i18n->getLocale()->getCode();
         }
