@@ -26,37 +26,37 @@ class NodeDispatcher {
 
     /**
      * Node which is to be dispatched
-     * @var ride\library\cms\node\Node
+     * @var \ride\library\cms\node\Node
      */
     private $node;
 
     /**
      * View of the node
-     * @var ride\web\cms\view\NodeTemplateView
+     * @var \ride\web\cms\view\NodeTemplateView
      */
     private $view;
 
     /**
      * Router for the widget routes
-     * @var ride\library\router\Router
+     * @var \ride\library\router\Router
      */
     private $router;
 
     /**
      * Dispatcher for the widgets
-     * @var ride\library\mvc\dispatcher\Dispatcher
+     * @var \ride\library\mvc\dispatcher\Dispatcher
      */
     private $dispatcher;
 
     /**
      * Instance of the event manager
-     * @var ride\library\event\EventManager
+     * @var \ride\library\event\EventManager
      */
     private $eventManager;
 
     /**
      * Instance of the log
-     * @var ride\library\log\Log
+     * @var \ride\library\log\Log
      */
     private $log;
 
@@ -75,9 +75,9 @@ class NodeDispatcher {
 
     /**
      * Construct the dispatcher
-     * @param ride\library\cms\node\Node $node
-     * @param ride\web\cms\view\NodeTemplateView $view View for the node
-     * @param ride\library\router\Router $router
+     * @param \ride\library\cms\node\Node $node
+     * @param \ride\web\cms\view\NodeTemplateView $view View for the node
+     * @param \ride\library\router\Router $router
      * @param array $breadcrumbs Array with the URL as key and the name as
      * value
      * @return null
@@ -92,7 +92,7 @@ class NodeDispatcher {
 
     /**
      * Get the node which is to be dispatched
-     * @return ride\library\cms\node\Node
+     * @return \ride\library\cms\node\Node
      */
     public function getNode() {
         return $this->node;
@@ -100,7 +100,7 @@ class NodeDispatcher {
 
     /**
      * Sets the event manager
-     * @param ride\library\event\EventManager $eventManager
+     * @param \ride\library\event\EventManager $eventManager
      * @return null
      */
     public function setEventManager(EventManager $eventManager) {
@@ -109,7 +109,7 @@ class NodeDispatcher {
 
     /**
      * Sets the MVC dispatcher
-     * @param ride\library\mvc\dispatcher\Dispatcher $dispatcher
+     * @param \ride\library\mvc\dispatcher\Dispatcher $dispatcher
      * @return null
      */
     public function setDispatcher(Dispatcher $dispatcher) {
@@ -118,7 +118,7 @@ class NodeDispatcher {
 
     /**
      * Sets the log
-     * @param ride\library\log\Log $log
+     * @param \ride\library\log\Log $log
      * @return null
      */
     public function setLog(Log $log) {
@@ -148,10 +148,10 @@ class NodeDispatcher {
 
     /**
      * Dispatches the node
-     * @param ride\library\mvc\Request $request
-     * @param ride\library\mvc\Response $response
-     * @param ride\library\security\model\User $user
-     * @param zibo\library\cache\pool\CachePool $cache
+     * @param \ride\library\mvc\Request $request
+     * @param \ride\library\mvc\Response $response
+     * @param \ride\library\security\model\User $user
+     * @param \ride\library\cache\pool\CachePool $cache
      * @return array Array with the region name as key and a view array as
      * value. The view array has the widget id as key and the dispatched
      * widget view as value
@@ -348,7 +348,7 @@ class NodeDispatcher {
 
     /**
      * Caches the response
-     * @param ride\web\WebApplication $web
+     * @param \ride\web\WebApplication $web
      * @return null
      */
     public function cacheResponse(WebApplication $web) {
@@ -379,10 +379,10 @@ class NodeDispatcher {
 
     /**
      * Dispatches a widget
-     * @param ride\library\mvc\Request $request
-     * @param ride\library\mvc\Response $response
+     * @param \ride\library\mvc\Request $request
+     * @param \ride\library\mvc\Response $response
      * @param integer $widgetId Id of the widget instance
-     * @param ride\library\cms\widget\Widget $widget Instance of the widget
+     * @param \ride\library\cms\widget\Widget $widget Instance of the widget
      * @return null
      */
     protected function dispatchWidget(Request $request, Response $response, $widgetId, Widget $widget) {

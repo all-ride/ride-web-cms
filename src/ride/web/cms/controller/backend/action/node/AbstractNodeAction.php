@@ -29,7 +29,7 @@ abstract class AbstractNodeAction extends AbstractBackendController implements N
 
     /**
      * Checks if this action is available for the node
-     * @param ride\library\cms\node\Node $node
+     * @param \ride\library\cms\node\Node $node
      * @return boolean true if available
      */
     public function isAvailableForNode(Node $node) {

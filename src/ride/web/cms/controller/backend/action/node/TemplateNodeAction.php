@@ -31,13 +31,13 @@ class TemplateNodeAction extends AbstractNodeAction {
 
     /**
      * Instance of the node type manager
-     * @var ride\library\cms\node\type\NodeTypeManager
+     * @var \ride\library\cms\node\type\NodeTypeManager
      */
     protected $nodeTypeManager;
 
     /**
      * Constructs a new go action
-     * @param ride\library\cms\node\type\NodeTypeManager $nodeTypeManager
+     * @param \ride\library\cms\node\type\NodeTypeManager $nodeTypeManager
      */
     public function __construct(NodeTypeManager $nodeTypeManager) {
         $this->nodeTypeManager = $nodeTypeManager;
@@ -45,7 +45,7 @@ class TemplateNodeAction extends AbstractNodeAction {
 
     /**
      * Checks if this action is available for the node
-     * @param ride\library\cms\node\Node $node
+     * @param \ride\library\cms\node\Node $node
      * @return boolean True if available
      */
     public function isAvailableForNode(Node $node) {

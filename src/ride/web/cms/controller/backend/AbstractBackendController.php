@@ -24,7 +24,7 @@ abstract class AbstractBackendController extends AbstractController {
 
     /**
      * Resolves the provided site and node
-     * @param ride\library\cms\node\NodeModel $nodeModel Instance of the node
+     * @param \ride\library\cms\node\NodeModel $nodeModel Instance of the node
      * model
      * @param string $site Id of the site, will become the site Node instance
      * @param string $node Id of the node, if set will become the Node instance
@@ -56,9 +56,9 @@ abstract class AbstractBackendController extends AbstractController {
 
     /**
      * Resolves the provided region
-     * @param ride\library\cms\theme\ThemeModel $themeModel
-     * @param ride\library\cms\layout\LayoutModel $layoutModel
-     * @param ride\library\cms\node\Node $node
+     * @param \ride\library\cms\theme\ThemeModel $themeModel
+     * @param \ride\library\cms\layout\LayoutModel $layoutModel
+     * @param \ride\library\cms\node\Node $node
      * @param string $locale
      * @param string $region
      * @param string $theme

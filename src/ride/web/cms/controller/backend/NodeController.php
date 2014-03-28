@@ -3,7 +3,6 @@
 namespace ride\web\cms\controller\backend;
 
 use ride\library\cms\node\NodeModel;
-use ride\library\http\Response;
 use ride\library\i18n\I18n;
 
 use ride\web\cms\controller\backend\action\node\LayoutNodeAction;
@@ -16,9 +15,9 @@ class NodeController extends AbstractBackendController {
 
     /**
      * Action to go to the previous type of action for the provided node
-     * @param ride\web\cms\node\action\NodeActionManager $nodeActionManager
+     * @param \ride\web\cms\controller\backend\action\node\NodeActionManager $nodeActionManager
      * @param string $locale
-     * @param ride\library\cms\node\NodeModel $nodeModel
+     * @param \ride\library\cms\node\NodeModel $nodeModel
      * @param string $site
      * @param string $node
      * @return null
@@ -60,9 +59,9 @@ class NodeController extends AbstractBackendController {
 
     /**
      * Action to clone a node
-     * @param ride\library\i18n\I18n $i18n
+     * @param \ride\library\i18n\I18n $i18n
      * @param string $locale
-     * @param ride\library\cms\node\NodeModel $nodeModel
+     * @param \ride\library\cms\node\NodeModel $nodeModel
      * @param string $site
      * @param string $node
      * @return null
@@ -112,9 +111,9 @@ class NodeController extends AbstractBackendController {
 
     /**
      * Action to delete a node
-     * @param ride\library\i18n\I18n $i18n
+     * @param \ride\library\i18n\I18n $i18n
      * @param string $locale
-     * @param ride\library\cms\node\NodeModel $nodeModel
+     * @param \ride\library\cms\node\NodeModel $nodeModel
      * @param string $site
      * @param string $node
      * @return null

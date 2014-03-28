@@ -215,11 +215,11 @@ class LayoutNodeAction extends AbstractNodeAction {
 
     /**
      * Creates a form to select the region
-     * @param ride\library\cms\node\Node $node
-     * @param ride\library\cms\layout\Layout $layout
-     * @param ride\library\cms\theme\Theme $theme
+     * @param \ride\library\cms\node\Node $node
+     * @param \ride\library\cms\layout\Layout $layout
+     * @param \ride\library\cms\theme\Theme $theme
      * @param string $region
-     * @return ride\library\form\Form
+     * @return \ride\library\form\Form
      */
     protected function createRegionForm(Node $node, LayoutModel $layoutModel, Layout $layout = null, Theme $theme = null, $region = null) {
         $regions = array();
