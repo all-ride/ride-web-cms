@@ -43,7 +43,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
 
         $nodeTypeManager = $nodeModel->getNodeTypeManager();
         $nodeType = $nodeTypeManager->getNodeType($node->getType());
-        $isFrontendNode = $nodeType->getFrontendCallback() ? true : false;
+        $isFrontendNode = $nodeType->getFrontendCallback() || $node->getLevel() === 0 ? true : false;
         if ($isFrontendNode) {
             $data['hide'] = array();
             if ($node->hideInMenu()) {
@@ -113,8 +113,14 @@ class VisibilityNodeAction extends AbstractNodeAction {
                 $node->set(Node::PROPERTY_PUBLISH_STOP, $data['publishStop']);
 
                 if ($isFrontendNode) {
-                    $node->setHideInMenu(isset($data['hide']['menu']));
-                    $node->setHideInBreadcrumbs(isset($data['hide']['breadcrumbs']));
+                    if ($node->getLevel() === 0) {
+                        $inherit = false;
+                    } else {
+                        $inherit = null;
+                    }
+
+                    $node->setHideInMenu(isset($data['hide']['menu']), $inherit);
+                    $node->setHideInBreadcrumbs(isset($data['hide']['breadcrumbs']), $inherit);
                 }
 
                 $nodeModel->setNode($node, 'Set visibility of ' . $node->getName());
