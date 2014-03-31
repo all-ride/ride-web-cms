@@ -11,7 +11,7 @@ class WidgetCacheData {
 
     /**
      * View to cache
-     * @var ride\library\mvc\view\View
+     * @var \ride\library\mvc\view\View
      */
     private $view;
 
@@ -41,7 +41,7 @@ class WidgetCacheData {
 
     /**
      * Constructs a new data container
-     * @param ride\library\mvc\view\View $view View to cache
+     * @param \ride\library\mvc\view\View $view View to cache
      * @param array $context Context variables of the widget
      * @param boolean $isContent Flag to see if this view is the page
      * @param boolean $isRegion Flag to see if this view is the region
@@ -59,7 +59,7 @@ class WidgetCacheData {
 
     /**
      * Gets the view of this widget
-     * @return ride\library\mvc\view\View
+     * @return \ride\library\mvc\view\View
      */
     public function getView() {
         return $this->view;

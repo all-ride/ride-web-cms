@@ -3,7 +3,6 @@
 namespace ride\web\cms\controller\backend;
 
 use ride\library\http\Response;
-use ride\library\i18n\I18n;
 use ride\library\template\exception\ThemeNotFoundException;
 use ride\library\template\engine\EngineModel;
 use ride\library\validation\exception\ValidationException;
@@ -154,7 +153,7 @@ class ThemeController extends AbstractController {
 
     /**
      * Action to delete a theme
-     * @param ride\web\cms\theme\ThemeModel $themeModel
+     * @param \ride\web\cms\theme\ThemeModel $themeModel
      * @param string $theme
      * @return null
      */

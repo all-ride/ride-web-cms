@@ -12,13 +12,13 @@ class DependencyLayoutModel implements LayoutModel {
 
     /**
      * Instance of the dependency injector
-     * @var ride\library\dependency\DependencyInjector
+     * @var \ride\library\dependency\DependencyInjector
      */
     protected $dependencyInjector;
 
     /**
      * Constructs a new layout model
-     * @param ride\library\dependency\DependencyInjector $dependencyInjector
+     * @param \ride\library\dependency\DependencyInjector $dependencyInjector
      * @return null
      */
     public function __construct(DependencyInjector $dependencyInjector) {

@@ -181,7 +181,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
 
     /**
      * Gets the publish options
-     * @param ride\library\i18n\translator\Translator $translator
+     * @param \ride\library\i18n\translator\Translator $translator
      * @return array Array with the publish code as key and the translation as
      * value
      */
@@ -201,8 +201,8 @@ class VisibilityNodeAction extends AbstractNodeAction {
 
     /**
      * Get a suffix for the publish inherit label based on the inherited settings
-     * @param joppa\model\NodeSettings $nodeSettings
-     * @param zibo\library\i18n\translation\Translator $translator
+     * @param ride\library\cms\\
+     * @param \ride\library\i18n\translator\Translator $translator
      * @return string if a publish setting is found the suffix will be " (Yes)" or " (No)"
      */
     protected function getPublishedInheritSuffix(Node $node, Translator $translator) {

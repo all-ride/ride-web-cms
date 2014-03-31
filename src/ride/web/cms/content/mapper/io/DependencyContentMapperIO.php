@@ -14,7 +14,7 @@ class DependencyContentMapperIO implements ContentMapperIO {
 
     /**
      * Constructs a new dependency content mapper io
-     * @param ride\library\dependency\DependencyInjector $dependencyInjector
+     * @param \ride\library\dependency\DependencyInjector $dependencyInjector
      * @return null
      */
     public function __construct(DependencyInjector $dependencyInjector) {
@@ -23,7 +23,7 @@ class DependencyContentMapperIO implements ContentMapperIO {
 
     /**
      * Gets a content mapper
-     * @return ride\library\cms\content\mapper\ContentMapper|null
+     * @return \ride\library\cms\content\mapper\ContentMapper|null
      */
     public function getContentMapper($type) {
         try {

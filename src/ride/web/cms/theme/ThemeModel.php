@@ -18,25 +18,25 @@ class ThemeModel extends TemplateThemeModel {
 
     /**
      * Instance of the configuration
-     * @var ride\library\config\Config;
+     * @var \ride\library\config\Config;
      */
     protected $config;
 
     /**
      * Instance of the layout model
-     * @var ride\library\cms\layout\LayoutModel;
+     * @var \ride\library\cms\layout\LayoutModel;
      */
     protected $layoutModel;
 
     /**
      * Instance of the template facade
-     * @var ride\library\template\TemplateFacade;
+     * @var \ride\library\template\TemplateFacade;
      */
     protected $templateFacade;
 
     /**
      * Directory to write dummy templates
-     * @var ride\library\system\file\File
+     * @var \ride\library\system\file\File
      */
     protected $directory;
 
@@ -48,12 +48,12 @@ class ThemeModel extends TemplateThemeModel {
 
     /**
      * Constructs a new theme model
-     * @param ride\library\config\Config $config Instance of the configuration
-     * @param ride\library\template\theme\ThemeModel $model Instance of the
+     * @param \ride\library\config\Config $config Instance of the configuration
+     * @param \ride\library\template\theme\ThemeModel $model Instance of the
      * template theme model
-     * @param ride\library\cms\layout\LayoutModel $layoutModel Instance
+     * @param \ride\library\cms\layout\LayoutModel $layoutModel Instance
      * of the layout model
-     * @param ride\library\system\file\File $directory Directory to write
+     * @param \ride\library\system\file\File $directory Directory to write
      * dummy templates
      * @return null
      */
@@ -70,7 +70,7 @@ class ThemeModel extends TemplateThemeModel {
     /**
      * Sets the instance of the template facade to generate templates if
      * necessairy
-     * @param ride\library\template\TemplateFacade $templateFacade Instance of
+     * @param \ride\library\template\TemplateFacade $templateFacade Instance of
      * the template facade
      * @return null
      */
@@ -82,7 +82,7 @@ class ThemeModel extends TemplateThemeModel {
      * Gets a theme
      * @param string $name Machine name of the theme
      * @return Theme
-     * @throws ride\library\template\exception\ThemeNotFoundException
+     * @throws \ride\library\template\exception\ThemeNotFoundException
      */
     public function getTheme($name) {
         $themes = $this->getThemes();

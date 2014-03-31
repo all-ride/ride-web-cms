@@ -11,7 +11,7 @@ class PageNodeType extends LibraryPageNodeType implements NodeType {
 
     /**
      * Gets the callback for the frontend route
-     * @return string|array|zibo\library\Callback
+     * @return string|array|\ride\web\cms\controller\frontend\NodeController
      */
     public function getFrontendCallback() {
         return array('ride\\web\\cms\\controller\\frontend\\NodeController', 'indexAction');

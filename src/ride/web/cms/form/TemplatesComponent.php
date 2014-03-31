@@ -13,7 +13,7 @@ class TemplatesComponent extends AbstractComponent {
 
     /**
      * Creates the data for this component
-     * @param ride\library\template\TemplateFacade $templateFacade
+     * @param \ride\library\template\TemplateFacade $templateFacade
      * @param array $templates
      * @param string $theme
      * @param string $id
@@ -55,7 +55,7 @@ class TemplatesComponent extends AbstractComponent {
 
     /**
      * Prepares the form by adding row definitions
-     * @param ride\library\form\FormBuilder $builder
+     * @param \ride\library\form\FormBuilder $builder
      * @param array $options
      * @return null
      */

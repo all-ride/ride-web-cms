@@ -26,7 +26,7 @@ class ErrorNodeAction extends AbstractNodeAction {
 
     /**
      * Checks if this action is available for the node
-     * @param ride\library\cms\node\Node $node
+     * @param \ride\library\cms\node\Node $node
      * @return boolean True if available
      */
     public function isAvailableForNode(Node $node) {

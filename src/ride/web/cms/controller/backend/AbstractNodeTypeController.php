@@ -32,7 +32,7 @@ abstract class AbstractNodeTypeController extends AbstractBackendController {
 
     /**
      * Gets the form value for the theme option
-     * @param ride\library\cms\node\Node $node
+     * @param \ride\library\cms\node\Node $node
      * @return string
      */
     protected function getThemeValueFromNode(Node $node) {
@@ -46,8 +46,8 @@ abstract class AbstractNodeTypeController extends AbstractBackendController {
 
     /**
      * Gets the available locales options
-     * @param ride\library\cms\node\Node $node
-     * @param ride\library\i18n\translator\Translator $translator
+     * @param \ride\library\cms\node\Node $node
+     * @param \ride\library\i18n\translator\Translator $translator
      * @param array $locales
      * @return array Array with the publish code as key and the translation as
      * value
@@ -75,7 +75,7 @@ abstract class AbstractNodeTypeController extends AbstractBackendController {
 
     /**
      * Gets the form value for the available locales options
-     * @param ride\library\cms\node\Node $node
+     * @param \ride\library\cms\node\Node $node
      * @return array
      */
     protected function getLocalesValueFromNode(Node $node) {
@@ -102,8 +102,8 @@ abstract class AbstractNodeTypeController extends AbstractBackendController {
 
     /**
      * Gets the available locales options
-     * @param ride\library\cms\node\Node $node
-     * @param ride\library\i18n\translator\Translator $translator
+     * @param \ride\library\cms\node\Node $node
+     * @param \ride\library\i18n\translator\Translator $translator
      * @param array $locales
      * @return array Array with the publish code as key and the translation as
      * value

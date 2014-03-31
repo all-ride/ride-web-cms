@@ -110,7 +110,7 @@ class AdvancedNodeAction extends AbstractNodeAction {
      * Parses the provided INI in an array of NodeProperty instances
      * @param string $ini
      * @return array
-     * @throws ride\library\validation\exception\ValidationException when the
+     * @throws \ride\library\validation\exception\ValidationException when the
      * ini is not valid
      */
     protected function getNodePropertiesFromIni($ini) {
@@ -145,7 +145,7 @@ class AdvancedNodeAction extends AbstractNodeAction {
 
     /**
      * Get a HTML representation of a Node instance
-     * @param ride\library\cms\node\Node $node
+     * @param \ride\library\cms\node\Node $node
      * @return string HTML representation of the Node
      */
     protected function getHtmlFromNode(Node $node) {
