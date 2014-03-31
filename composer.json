@@ -11,7 +11,7 @@
     ],
     "require": {
         "ride/lib-cache": ">=0.1.1",
-        "ride/lib-cms": ">=0.8.0",
+        "ride/lib-cms": ">=0.9.0",
         "ride/lib-dependency": ">=0.5.3",
         "ride/lib-event": ">=0.3.2",
         "ride/lib-form": ">=0.5.4",
@@ -27,7 +27,7 @@
         "ride/lib-widget": ">=0.1.1",
         "ride/web": ">=0.2.4",
         "ride/web-base": ">=0.1.0"
-    }, 
+    },
     "autoload": {
         "psr-0": {
             "ride\\web\\cms\\": ["src/"]

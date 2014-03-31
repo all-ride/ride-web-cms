@@ -117,6 +117,7 @@ class NodeTemplateView extends TemplateView {
                     $widgetApp['cms']['node'] = $app['cms']['node'];
                     $widgetApp['cms']['context'] = $app['cms']['context'];
                     $widgetApp['cms']['region'] = $region;
+                    $widgetApp['cms']['properties'] = $app['cms']['node']->getWidgetProperties($widgetId);
                     $widgetApp['cms']['widget'] = $widgetId;
 
                     $app['cms'] = $widgetApp['cms'];
