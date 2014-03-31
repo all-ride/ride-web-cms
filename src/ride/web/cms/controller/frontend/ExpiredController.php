@@ -13,7 +13,7 @@ class ExpiredController extends AbstractController {
 
 	/**
      * Dispatches the frontend of a expired route
-     * @param ride\library\cms\node\NodeModel $nodeModel Instance of the node
+     * @param \ride\library\cms\node\NodeModel $nodeModel Instance of the node
      * model
      * @param string $node Id of the node
      * @param mixed $path Argument to see if additional arguments are provided

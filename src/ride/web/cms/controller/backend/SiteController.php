@@ -2,12 +2,9 @@
 
 namespace ride\web\cms\controller\backend;
 
-use ride\library\cms\node\exception\NodeNotFoundException;
-use ride\library\cms\node\Node;
 use ride\library\cms\node\NodeModel;
 use ride\library\cms\node\SiteNode;
 use ride\library\cms\theme\ThemeModel;
-use ride\library\http\Response;
 use ride\library\i18n\I18n;
 use ride\library\validation\exception\ValidationException;
 
@@ -15,7 +12,7 @@ class SiteController extends AbstractNodeTypeController {
 
     /**
      * Action to show an overview of the sites
-     * @param ride\library\cms\node\NodeModel $nodeModel
+     * @param \ride\library\cms\node\NodeModel $nodeModel
      * @return null
      */
     public function indexAction(NodeModel $nodeModel) {
@@ -27,7 +24,7 @@ class SiteController extends AbstractNodeTypeController {
 
     /**
      * Action to show the detail of a site
-     * @param ride\library\cms\node\NodeModel $nodeModel
+     * @param \ride\library\cms\node\NodeModel $nodeModel
      * @param string $site
      * @param string $locale
      * @return null
@@ -178,9 +175,9 @@ class SiteController extends AbstractNodeTypeController {
 
     /**
      * Action to delete a site
-     * @param ride\library\i18n\I18n $i18n
+     * @param \ride\library\i18n\I18n $i18n
      * @param string $locale
-     * @param ride\library\cms\node\NodeModel $nodeModel
+     * @param \ride\library\cms\node\NodeModel $nodeModel
      * @param string $site
      * @return null
      */

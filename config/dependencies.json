@@ -75,7 +75,7 @@
         },
         {
             "interfaces": "ride\\library\\cms\\expired\\io\\ExpiredRouteIO",
-            "class": "ride\\library\\cms\\expired\\io\\XmlExpiredRouteIO", 
+            "class": "ride\\library\\cms\\expired\\io\\XmlExpiredRouteIO",
             "id": "xml",
             "calls": [
                 {
@@ -92,7 +92,7 @@
                     ]
                 }
             ]
-        }, 
+        },
         {
             "class": "ride\\web\\cms\\node\\type\\SiteNodeType",
             "calls": [
@@ -265,7 +265,7 @@
                     ]
                 }
             ]
-        },        
+        },
         {
             "interfaces": "ride\\library\\cms\\node\\structure\\NodeStructureParser",
             "class": "ride\\library\\cms\\node\\structure\\GenericNodeStructureParser",
@@ -277,7 +277,7 @@
             "id": "generic"
         },
         {
-            "interfaces": "ride\\web\\router\\io\\RouteContainerIO", 
+            "interfaces": "ride\\web\\router\\io\\RouteContainerIO",
             "class": "ride\\web\\cms\\router\\CmsRouteContainerIO",
             "id": "cms",
             "calls": [
@@ -295,7 +295,7 @@
                     ]
                 }
             ]
-        },        
+        },
         {
             "interfaces": "ride\\library\\cms\\layout\\LayoutModel",
             "class": "ride\\web\\cms\\layout\\DependencyLayoutModel",
@@ -334,6 +334,18 @@
                             "type": "dependency",
                             "properties": {
                                 "interface": "ride\\web\\cms\\controller\\backend\\action\\widget\\PropertiesWidgetAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addWidgetAction",
+                    "arguments": [
+                        {
+                            "name": "widgetAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\widget\\StyleWidgetAction"
                             }
                         }
                     ]

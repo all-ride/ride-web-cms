@@ -28,7 +28,7 @@ class AbstractWidget extends AbstractController implements Widget {
 
     /**
      * Properties of this widget
-     * @var ride\library\cms\widget\WidgetProperties
+     * @var \ride\library\cms\widget\WidgetProperties
      */
     protected $properties;
 
@@ -143,7 +143,7 @@ class AbstractWidget extends AbstractController implements Widget {
 
     /**
      * Sets the properties of the widget instance
-     * @param ride\library\widget\WidgetProperties $properties Properties for
+     * @param \ride\library\widget\WidgetProperties $properties Properties for
      * the widget instance
      * @return null
      */
@@ -197,7 +197,7 @@ class AbstractWidget extends AbstractController implements Widget {
 
     /**
      * Gets the content facade
-     * @return ride\library\cms\content\ContentFacade
+     * @return \ride\library\cms\content\ContentFacade
      */
     public function getContentFacade() {
         return $this->dependencyInjector->get('ride\\library\\cms\\content\\ContentFacade');
@@ -206,7 +206,7 @@ class AbstractWidget extends AbstractController implements Widget {
     /**
      * Gets the content mapper for the provided content type
      * @param string $type Name of the content type
-     * @return ride\library\cms\content\mapper\ContentMapper
+     * @return \ride\library\cms\content\mapper\ContentMapper
      */
     public function getContentMapper($type) {
         return $this->getContentFacade()->getContentMapper($type);
@@ -303,7 +303,7 @@ class AbstractWidget extends AbstractController implements Widget {
      * Sets a template view to the response
      * @param string $resource Resource to the template
      * @param array $variables Variables for the template
-     * @return ride\web\base\view\BaseTemplateView
+     * @return \ride\web\base\view\BaseTemplateView
      */
     protected function setTemplateView($resource, array $variables = null) {
         $templateFacade = $this->dependencyInjector->get('ride\\library\\template\\TemplateFacade');
@@ -320,7 +320,7 @@ class AbstractWidget extends AbstractController implements Widget {
 
     /**
      * Sets a download view for the provided file to the response
-     * @param ride\library\system\file\File $file File which needs to be
+     * @param \ride\library\system\file\File $file File which needs to be
      * offered for download
      * @param string $name Name for the download
      * @param boolean $cleanUp Set to true to register an event to clean up the
@@ -338,7 +338,7 @@ class AbstractWidget extends AbstractController implements Widget {
      * @param string $routeId Id of the route
      * @param array $arguments Path arguments for the route
      * @return string
-     * @throws ride\library\router\exception\RouterException If the route is
+     * @throws \ride\library\router\exception\RouterException If the route is
      * not found
      */
     protected function getUrl($id, array $variables = array()) {

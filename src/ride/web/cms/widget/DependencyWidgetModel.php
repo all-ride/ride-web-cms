@@ -12,13 +12,13 @@ class DependencyWidgetModel implements WidgetModel {
 
     /**
      * Instance of the dependency injector
-     * @var ride\library\dependency\DependencyInjector
+     * @var \ride\library\dependency\DependencyInjector
      */
     protected $dependencyInjector;
 
     /**
      * Constructs a new widget model
-     * @param ride\library\dependency\DependencyInjector $dependencyInjector
+     * @param \ride\library\dependency\DependencyInjector $dependencyInjector
      * @return null
      */
     public function __construct(DependencyInjector $dependencyInjector) {
@@ -28,7 +28,7 @@ class DependencyWidgetModel implements WidgetModel {
     /**
      * Gets the instance of a widget
      * @param string $widget Machine name of the widget
-     * @return ride\library\cms\widget\Widget
+     * @return \ride\library\cms\widget\Widget
      */
     public function getWidget($widget) {
         return $this->dependencyInjector->get('ride\\library\\cms\\widget\\Widget', $widget);

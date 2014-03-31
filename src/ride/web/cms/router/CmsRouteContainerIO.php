@@ -16,19 +16,19 @@ class CmsRouteContainerIO implements RouteContainerIO {
 
     /**
      * Parent implementation
-     * @var ride\web\router\io\RouteContainerIO
+     * @var \ride\web\router\io\RouteContainerIO
      */
     private $io;
 
     /**
      * Instance of the node model
-     * @var ride\library\cms\node\NodeModel
+     * @var \ride\library\cms\node\NodeModel
      */
     private $nodeModel;
 
     /**
      * Instance of the expired route model
-     * @var ride\library\cms\expired\ExpiredRouteModel
+     * @var \ride\library\cms\expired\ExpiredRouteModel
      */
     private $expiredRouteModel;
 
@@ -40,10 +40,10 @@ class CmsRouteContainerIO implements RouteContainerIO {
 
     /**
      * Constructs a new Joppa route container I/O
-     * @param ride\web\router\io\RouteContainerIO $io Parent route container
+     * @param \ride\web\router\io\RouteContainerIO $io Parent route container
      * I/O implementation
-     * @param ride\library\cms\node\NodeModel $nodeModel
-     * @param ride\library\cms\expired\ExpiredRouteModel $expiredRouteModel
+     * @param \ride\library\cms\node\NodeModel $nodeModel
+     * @param \ride\library\cms\expired\ExpiredRouteModel $expiredRouteModel
      * @param array $locales Array with the locale codes
      * @return null
      */
@@ -56,7 +56,7 @@ class CmsRouteContainerIO implements RouteContainerIO {
 
     /**
      * Gets the route container from a data source
-     * @return ride\library\router\RouteContainer
+     * @return \ride\library\router\RouteContainer
      */
     public function getRouteContainer() {
         $container = $this->io->getRouteContainer();

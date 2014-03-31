@@ -30,8 +30,8 @@ abstract class AbstractWidgetAction extends AbstractBackendController implements
 
     /**
      * Checks if this action is available for the widget
-     * @param ride\library\cms\node\Node $node
-     * @param ride\library\cms\widget\Widget $widget
+     * @param \ride\library\cms\node\Node $node
+     * @param \ride\library\cms\widget\Widget $widget
      * @return boolean true if available
      */
     public function isAvailableForWidget(Node $node, Widget $widget) {

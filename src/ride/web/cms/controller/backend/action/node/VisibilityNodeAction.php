@@ -43,7 +43,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
 
         $nodeTypeManager = $nodeModel->getNodeTypeManager();
         $nodeType = $nodeTypeManager->getNodeType($node->getType());
-        $isFrontendNode = $nodeType->getFrontendCallback() ? true : false;
+        $isFrontendNode = $nodeType->getFrontendCallback() || $node->getLevel() === 0 ? true : false;
         if ($isFrontendNode) {
             $data['hide'] = array();
             if ($node->hideInMenu()) {
@@ -113,8 +113,14 @@ class VisibilityNodeAction extends AbstractNodeAction {
                 $node->set(Node::PROPERTY_PUBLISH_STOP, $data['publishStop']);
 
                 if ($isFrontendNode) {
-                    $node->setHideInMenu(isset($data['hide']['menu']));
-                    $node->setHideInBreadcrumbs(isset($data['hide']['breadcrumbs']));
+                    if ($node->getLevel() === 0) {
+                        $inherit = false;
+                    } else {
+                        $inherit = null;
+                    }
+
+                    $node->setHideInMenu(isset($data['hide']['menu']), $inherit);
+                    $node->setHideInBreadcrumbs(isset($data['hide']['breadcrumbs']), $inherit);
                 }
 
                 $nodeModel->setNode($node, 'Set visibility of ' . $node->getName());
@@ -175,7 +181,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
 
     /**
      * Gets the publish options
-     * @param ride\library\i18n\translator\Translator $translator
+     * @param \ride\library\i18n\translator\Translator $translator
      * @return array Array with the publish code as key and the translation as
      * value
      */
@@ -195,8 +201,8 @@ class VisibilityNodeAction extends AbstractNodeAction {
 
     /**
      * Get a suffix for the publish inherit label based on the inherited settings
-     * @param joppa\model\NodeSettings $nodeSettings
-     * @param zibo\library\i18n\translation\Translator $translator
+     * @param ride\library\cms\\
+     * @param \ride\library\i18n\translator\Translator $translator
      * @return string if a publish setting is found the suffix will be " (Yes)" or " (No)"
      */
     protected function getPublishedInheritSuffix(Node $node, Translator $translator) {

@@ -11,7 +11,7 @@ class RedirectNodeType extends LibraryRedirectNodeType implements NodeType {
 
     /**
      * Gets the callback for the frontend route
-     * @return string|array|zibo\library\Callback
+     * @return string|array| \ride\web\cms\controller\frontend\RedirectController
      */
     public function getFrontendCallback() {
         return array('ride\\web\\cms\\controller\\frontend\\RedirectController', 'indexAction');

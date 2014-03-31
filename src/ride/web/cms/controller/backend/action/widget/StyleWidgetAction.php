@@ -13,34 +13,33 @@ use ride\library\system\file\browser\FileBrowser;
 use ride\library\template\TemplateFacade;
 use ride\library\validation\exception\ValidationException;
 
-use ride\web\cms\form\TemplatesComponent;
-use ride\web\mvc\controller\AbstractController;
+use ride\web\cms\controller\widget\StyleWidget;
 
 /**
- * Controller of the templates widget action
+ * Controller of the style widget action
  */
-class TemplateWidgetAction extends AbstractWidgetAction {
+class StyleWidgetAction extends AbstractWidgetAction {
 
     /**
      * Name of this action
      * @var string
      */
-    const NAME = 'templates';
+    const NAME = 'style';
 
     /**
      * Route of this action
      * @var string
      */
-    const ROUTE = 'cms.widget.templates';
+    const ROUTE = 'cms.widget.style';
 
     /**
      * Checks if this action is available for the widget
-     * @param \ride\library\cms\node\Node $node
-     * @param \ride\library\cms\widget\Widget $widget
+     * @param ride\library\cms\node\Node $node
+     * @param ride\library\cms\widget\Widget $widget
      * @return boolean true if available
      */
     public function isAvailableForWidget(Node $node, Widget $widget) {
-        return $widget->getTemplates() ? true : false;
+        return $widget instanceof StyleWidget && $widget->getWidgetStyleOptions() ? true : false;
     }
 
     /**
@@ -59,17 +58,19 @@ class TemplateWidgetAction extends AbstractWidgetAction {
      * @param TemplateFacade $templateFacade
      * @return null
      */
-    public function indexAction(I18n $i18n, $locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, NodeModel $nodeModel, $site, $node, $region, $widget, FileBrowser $fileBrowser, TemplateFacade $templateFacade) {
+    public function indexAction(I18n $i18n, $locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, NodeModel $nodeModel, $site, $node, $region, $widget) {
         if (!$this->resolveNode($nodeModel, $site, $node) || !$this->resolveRegion($themeModel, $layoutModel, $node, $locale, $region)) {
             return;
         }
 
         $widgetId = $widget;
+        $widgetProperties = $node->getWidgetProperties($widgetId);
+
         $widget = $site->getWidget($widgetId);
         $widget = clone $widgetModel->getWidget($widget);
         $widget->setRequest($this->request);
         $widget->setResponse($this->response);
-        $widget->setProperties($node->getWidgetProperties($widgetId));
+        $widget->setProperties($widgetProperties);
         $widget->setLocale($locale);
         $widget->setRegion($region);
         if ($widget instanceof AbstractController) {
@@ -77,31 +78,35 @@ class TemplateWidgetAction extends AbstractWidgetAction {
             $widget->setDependencyInjector($this->dependencyInjector);
         }
 
-        $templates = $widget->getTemplates();
-        foreach ($templates as $index => $template) {
-            $tokens = explode('/', $template);
-            $name = array_pop($tokens);
+        $styleOptions = $widget->getWidgetStyleOptions();
 
-            unset($templates[$index]);
-            $templates[$name] = $template;
+        $data = array();
+        foreach ($styleOptions as $styleOption => $styleTranslationKey) {
+            $data[$styleOption] = $widgetProperties->getWidgetProperty('style.' . $styleOption);
         }
 
-        $component = new TemplatesComponent();
-        $data = $component->createData($templateFacade, $templates, $node->getTheme(), $widgetId);
+        $translator = $this->getTranslator();
 
-        $form = $this->buildForm($component, $data);
+        $form = $this->createFormBuilder($data);
+        foreach ($styleOptions as $styleOption => $styleTranslationKey) {
+            $form->addRow($styleOption, 'string', array(
+                'label' => $translator->translate($styleTranslationKey),
+            ));
+        }
+        $form->setRequest($this->request);
+
+        $form = $form->build();
         if ($form->isSubmitted()) {
             try {
                 $form->validate();
 
                 $data = $form->getData();
 
-                $applicationDirectory = $fileBrowser->getApplicationDirectory();
-                foreach ($templates as $name => $template) {
-                    $file = $applicationDirectory->getChild($data['path'][$name]);
-                    $file->getParent()->create();
-                    $file->write($data['content'][$name]);
+                foreach ($styleOptions as $styleOption => $styleTranslationKey) {
+                    $widgetProperties->setWidgetProperty('style.' . $styleOption, $data[$styleOption]);
                 }
+
+                $nodeModel->setNode($node, 'Updated style for widget ' . $widgetId . ' in ' . $node->getName());
 
                 $this->addSuccess('success.widget.saved', array(
                     'widget' => $this->getTranslator()->translate('widget.' . $widget->getName()),
@@ -110,7 +115,7 @@ class TemplateWidgetAction extends AbstractWidgetAction {
                 $this->response->setRedirect($this->getUrl(
                     'cms.node.layout',
                     array(
-                    	'locale' => $locale,
+                        'locale' => $locale,
                         'site' => $site->getId(),
                         'node' => $node->getId(),
                         'region' => $region,
@@ -125,7 +130,7 @@ class TemplateWidgetAction extends AbstractWidgetAction {
 
         $referer = $this->request->getQueryParameter('referer');
 
-        $this->setTemplateView('cms/backend/widget.templates', array(
+        $this->setTemplateView('cms/backend/widget.style', array(
             'site' => $site,
             'node' => $node,
             'referer' => $referer,
@@ -135,7 +140,6 @@ class TemplateWidgetAction extends AbstractWidgetAction {
             'widget' => $widget,
             'widgetId' => $widgetId,
             'widgetName' => $this->getTranslator()->translate('widget.' . $widget->getName()),
-            'templates' => $templates,
             'form' => $form->getView(),
         ));
     }

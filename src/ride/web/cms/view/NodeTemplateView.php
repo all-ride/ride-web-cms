@@ -7,7 +7,6 @@ use ride\library\cms\node\Node;
 use ride\library\cms\theme\Theme;
 use ride\library\mvc\exception\MvcException;
 use ride\library\mvc\view\HtmlView;
-use ride\library\mvc\view\View;
 use ride\library\template\GenericThemedTemplate;
 
 use ride\web\mvc\view\TemplateView;
@@ -19,7 +18,7 @@ class NodeTemplateView extends TemplateView {
 
     /**
      * Constructs a new template view
-     * @param ride\library\template\Template $template Instance of the
+     * @param \ride\library\template\Template $template Instance of the
      * template to render
      * @return null
      */
@@ -40,7 +39,7 @@ class NodeTemplateView extends TemplateView {
 
     /**
      * Gets the node of this view
-     * @return ride\library\cms\node\Node
+     * @return \ride\library\cms\node\Node
      */
     public function getNode() {
         $app = $this->template->get('app');
@@ -117,6 +116,7 @@ class NodeTemplateView extends TemplateView {
                     $widgetApp['cms']['node'] = $app['cms']['node'];
                     $widgetApp['cms']['context'] = $app['cms']['context'];
                     $widgetApp['cms']['region'] = $region;
+                    $widgetApp['cms']['properties'] = $app['cms']['node']->getWidgetProperties($widgetId);
                     $widgetApp['cms']['widget'] = $widgetId;
 
                     $app['cms'] = $widgetApp['cms'];

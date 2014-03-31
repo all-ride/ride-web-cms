@@ -26,7 +26,7 @@ class ErrorNodeAction extends AbstractNodeAction {
 
     /**
      * Checks if this action is available for the node
-     * @param ride\library\cms\node\Node $node
+     * @param \ride\library\cms\node\Node $node
      * @return boolean True if available
      */
     public function isAvailableForNode(Node $node) {
@@ -71,13 +71,13 @@ class ErrorNodeAction extends AbstractNodeAction {
 
                 $data = $form->getData();
 
-                foreach ($data as $statusCode => $node) {
+                foreach ($data as $statusCode => $errorNode) {
                     $statusCode = str_replace('node', '', $statusCode);
 
-                    $site->set('error.' . $statusCode, $node);
+                    $site->set('error.' . $statusCode, $errorNode);
                 }
 
-                $nodeModel->setNode($site, "Set error pages for " . $node->getName());
+                $nodeModel->setNode($site, "Set error pages for " . $site->getName());
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $site->getName($locale)
