@@ -208,14 +208,17 @@ class NodeDispatcher {
                     $this->log->logDebug('Rendering widget ' . $widget->getName() . '#' . $widgetId . ' for region ' . $regionName, null, ApplicationListener::LOG_SOURCE);
                 }
 
+                $widgetProperties = $this->node->getWidgetProperties($widgetId);
+                if (!$widgetProperties->isPublished()) {
+                    continue;
+                }
+
                 if ($isCacheable) {
                     $cacheKey = 'node.widget.view.' . $this->node->getId() . '.' . $regionName . '.' . $widgetId . '.' . $this->locale . $parameters;
                     if ($user) {
                         $cacheKey .= '-authenticated';
                     }
                 }
-
-                $widgetProperties = $this->node->getWidgetProperties($widgetId);
 
             	if ($isCacheable && !$isNoCache && !$widgetProperties->isCacheDisabled()) {
 	                $cachedItem = $cache->get($cacheKey);
