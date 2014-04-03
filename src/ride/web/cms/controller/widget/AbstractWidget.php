@@ -157,6 +157,10 @@ class AbstractWidget extends AbstractController implements Widget {
      * action, a callback for the action otherwise
      */
     public function getPropertiesCallback() {
+        if (method_exists($this, 'propertiesAction')) {
+            return array($this, 'propertiesAction');
+        }
+
         return null;
     }
 
