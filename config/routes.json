@@ -1,6 +1,13 @@
 {
     "routes": [
         {
+            "path": "/ajax/cms/tree/toggle/%node%",
+            "controller": "ride\\web\\cms\\controller\\backend\\TreeController",
+            "action": "toggleNodeAction",
+            "id": "cms.tree.toggle",
+            "methods": "post"
+        },
+        {
             "path": "/sites",
             "controller": "ride\\web\\cms\\controller\\backend\\SiteController",
             "action": "indexAction",
