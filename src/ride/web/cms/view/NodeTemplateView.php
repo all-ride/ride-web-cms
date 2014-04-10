@@ -132,18 +132,7 @@ class NodeTemplateView extends TemplateView {
         }
         $this->template->set('regions', $regions);
 
-        // handle asset resources
-        $this->setResources();
-
-        // render main template
-        $output = $this->templateFacade->render($this->template);
-
-        // return
-        if ($willReturnValue) {
-            return $output;
-        }
-
-        echo $output;
+        return parent::render($willReturnValue);
     }
 
 }

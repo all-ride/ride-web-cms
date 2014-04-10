@@ -307,19 +307,15 @@ class AbstractWidget extends AbstractController implements Widget {
      * Sets a template view to the response
      * @param string $resource Resource to the template
      * @param array $variables Variables for the template
-     * @return \ride\web\base\view\BaseTemplateView
+     * @param string $id Id of the template view in the dependency injector
+     * @return \ride\web\mvc\view\TemplateView
      */
-    protected function setTemplateView($resource, array $variables = null) {
-        $templateFacade = $this->dependencyInjector->get('ride\\library\\template\\TemplateFacade');
+    protected function setTemplateView($resource, array $variables = null, $id = null) {
+        if ($id === null) {
+            $id = 'widget';
+        }
 
-        $template = $templateFacade->createTemplate($resource, $variables);
-
-        $view = new TemplateView($template);
-        $view->setTemplateFacade($templateFacade);
-
-        $this->response->setView($view);
-
-        return $view;
+        return parent::setTemplateView($resource, $variables, $id);
     }
 
     /**
