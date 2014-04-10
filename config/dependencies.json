@@ -370,6 +370,11 @@
             "id": "dependency"
         },
         {
+            "interfaces": "ride\\web\\mvc\\view\\TemplateView",
+            "class": "ride\\web\\mvc\\view\\TemplateView",
+            "id": "widget"
+        },
+        {
             "interfaces": "ride\\library\\cms\\content\\mapper\\ContentMapper",
             "class": "ride\\library\\cms\\content\\mapper\\NodeContentMapper",
             "id": "node"
