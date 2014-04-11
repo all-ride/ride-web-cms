@@ -69,8 +69,8 @@ class ApplicationListener {
             'locale' => $locale,
             'site' => $site->getRootNodeId(),
         );
-        foreach ($nodeTypes as $nodeTypeName => $null) {
-            $url = $web->getUrl('cms.' . $nodeTypeName . '.add', $parameters);
+        foreach ($nodeTypes as $nodeTypeName => $nodeType) {
+            $url = $web->getUrl($nodeType->getRouteAdd(), $parameters);
             if ($securityManager->isUrlAllowed($url)) {
                 $nodeCreateActions[$nodeTypeName] = $url;
             }
