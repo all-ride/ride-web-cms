@@ -1,5 +1,5 @@
 {
-    "app.taskbar": [
+    "app.taskbar.pre": [
         {
             "interface": "ride\\web\\cms\\ApplicationListener",
             "method": "prepareTaskbar"
@@ -9,11 +9,11 @@
         {
             "interface": "ride\\web\\cms\\ApplicationListener",
             "method": "prepareTemplateView"
-        },    
+        },
         {
             "interface": "ride\\web\\cms\\ApplicationListener",
             "method": "handleHttpError",
-            "weight": 25 
+            "weight": 25
         }
     ]
 }
