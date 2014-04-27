@@ -302,7 +302,7 @@
             "id": "dependency"
         },
         {
-            "interfaces": ["ride\\library\\cms\\theme\\ThemeModel", "ride\\web\\cms\\theme\\ThemeModel", "ride\\library\\template\\theme\\ThemeModel"],
+            "interfaces": ["ride\\library\\cms\\theme\\ThemeModel", "ride\\web\\cms\\theme\\ThemeModel"],
             "class": "ride\\web\\cms\\theme\\ThemeModel",
             "id": "cms",
             "calls": [

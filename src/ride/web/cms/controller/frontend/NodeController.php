@@ -12,6 +12,7 @@ use ride\library\http\Response;
 use ride\library\log\Log;
 use ride\library\router\GenericRouter;
 use ride\library\router\RouteContainer;
+use ride\library\template\TemplateFacade;
 
 use ride\web\cms\node\dispatcher\NodeDispatcher;
 use ride\web\cms\view\NodeTemplateView;
@@ -26,7 +27,7 @@ class NodeController extends AbstractController {
      * Dispatches the frontend of a node
      * @return null
 	 */
-	public function indexAction(WebApplication $web, EventManager $eventManager, Log $log, LayoutModel $layoutModel, ThemeModel $themeModel, WidgetModel $widgetModel, NodeModel $nodeModel, $node, $locale = null) {
+	public function indexAction(WebApplication $web, EventManager $eventManager, Log $log, LayoutModel $layoutModel, ThemeModel $themeModel, WidgetModel $widgetModel, TemplateFacade $templateFacade, NodeModel $nodeModel, $node, $locale = null) {
         $cache = null;
 
         $i18n = $this->getI18n();
@@ -40,9 +41,16 @@ class NodeController extends AbstractController {
         if ($nodeDispatcher) {
             $node = $nodeDispatcher->getNode();
             if ($node->isPublished() && $node->isAvailableInLocale($locale)) {
+                $nodeView = $nodeDispatcher->getView();
+                $nodeView->setTemplateFacade($templateFacade);
+
+                $templateFacade->setThemeModel($themeModel);
+                $templateFacade->setDefaultTheme($nodeView->getTemplate()->getTheme());
+
                 $nodeDispatcher->setDispatcher($web->getDispatcher());
                 $nodeDispatcher->setEventManager($eventManager);
                 $nodeDispatcher->setLog($log);
+
                 $nodeDispatcher->dispatch($this->request, $this->response, $this->getUser(), $cache);
 
                 if ($this->response->getStatusCode() != Response::STATUS_CODE_NOT_FOUND) {

@@ -99,6 +99,14 @@ class NodeDispatcher {
     }
 
     /**
+     * Gets the view
+     * @return \ride\web\cms\view\NodeTemplateView
+     */
+    public function getView() {
+        return $this->view;
+    }
+
+    /**
      * Sets the event manager
      * @param \ride\library\event\EventManager $eventManager
      * @return null
