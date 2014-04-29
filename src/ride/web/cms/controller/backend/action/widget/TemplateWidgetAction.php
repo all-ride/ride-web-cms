@@ -64,6 +64,8 @@ class TemplateWidgetAction extends AbstractWidgetAction {
             return;
         }
 
+        $templateFacade->setThemeModel($themeModel);
+
         $widgetId = $widget;
         $widget = $site->getWidget($widgetId);
         $widget = clone $widgetModel->getWidget($widget);
