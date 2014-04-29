@@ -5,6 +5,7 @@ namespace ride\web\cms\controller\backend\action\node;
 use ride\library\cms\node\type\NodeTypeManager;
 use ride\library\cms\node\Node;
 use ride\library\cms\node\NodeModel;
+use ride\library\cms\theme\ThemeModel;
 use ride\library\i18n\I18n;
 use ride\library\system\file\browser\FileBrowser;
 use ride\library\template\TemplateFacade;
@@ -61,12 +62,14 @@ class TemplateNodeAction extends AbstractNodeAction {
     /**
      * Perform the template node action
      */
-    public function indexAction(TemplateFacade $templateFacade, FileBrowser $fileBrowser, I18n $i18n, $locale, NodeModel $nodeModel, $site, $node) {
+    public function indexAction(TemplateFacade $templateFacade, ThemeModel $themeModel, FileBrowser $fileBrowser, I18n $i18n, $locale, NodeModel $nodeModel, $site, $node) {
         if (!$this->resolveNode($nodeModel, $site, $node)) {
             return;
         }
 
         $this->setLastAction(self::NAME);
+
+        $templateFacade->setThemeModel($themeModel);
 
         $templates = array(
         	'index' => 'cms/frontend/index',
