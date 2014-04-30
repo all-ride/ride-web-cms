@@ -172,8 +172,8 @@ class NodeDispatcher {
 
         $context = array(
         	'title' => array(
-        	    'site' => $this->node->getRootNode()->getName($this->locale),
-        	    'node' => $this->node->getName($this->locale),
+        	    'site' => $this->node->getRootNode()->getName($this->locale, 'title'),
+        	    'node' => $this->node->getName($this->locale, 'title'),
             ),
             'breadcrumbs' => $this->breadcrumbs,
             'styles' => array(),
