@@ -3,7 +3,7 @@
 namespace ride\web\cms\theme;
 
 use ride\library\cms\theme\Theme;
-use ride\library\String;
+use ride\library\StringHelper;
 
 /**
  * Generic theme
@@ -50,9 +50,7 @@ class GenericTheme implements Theme {
      * @return null
      */
     public function __construct($name, $displayName, $engines, $regions, $parent = null) {
-        $name = new String($name);
-
-        $this->name = $name->safeString();
+        $this->name = StringHelper::safeString($name);
         $this->displayName = $displayName;
         $this->engines = $engines;
         $this->regions = $regions;
