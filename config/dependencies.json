@@ -302,7 +302,7 @@
             "id": "dependency"
         },
         {
-            "interfaces": ["ride\\library\\cms\\theme\\ThemeModel", "ride\\web\\cms\\theme\\ThemeModel", "ride\\library\\template\\theme\\ThemeModel"],
+            "interfaces": ["ride\\library\\cms\\theme\\ThemeModel", "ride\\web\\cms\\theme\\ThemeModel"],
             "class": "ride\\web\\cms\\theme\\ThemeModel",
             "id": "cms",
             "calls": [
@@ -370,6 +370,11 @@
             "id": "dependency"
         },
         {
+            "interfaces": "ride\\web\\mvc\\view\\TemplateView",
+            "class": "ride\\web\\mvc\\view\\TemplateView",
+            "id": "widget"
+        },
+        {
             "interfaces": "ride\\library\\cms\\content\\mapper\\ContentMapper",
             "class": "ride\\library\\cms\\content\\mapper\\NodeContentMapper",
             "id": "node"
@@ -407,6 +412,69 @@
                             "type": "dependency",
                             "properties": {
                                 "interface": "ride\\web\\cms\\content\\mapper\\io\\DependencyContentMapperIO"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "interfaces": "ride\\library\\cms\\content\\text\\variable\\VariableParser",
+            "class": "ride\\library\\cms\\content\\text\\variable\\NodeVariableParser",
+            "id": "node"
+        },
+        {
+            "interfaces": "ride\\library\\cms\\content\\text\\TextParser",
+            "class": "ride\\library\\cms\\content\\text\\UrlTextParser",
+            "id": "url"
+        },
+        {
+            "interfaces": "ride\\library\\cms\\content\\text\\TextParser",
+            "class": "ride\\library\\cms\\content\\text\\VariablesTextParser",
+            "id": "variables",
+            "calls": [
+                {
+                    "method": "addVariableParser",
+                    "arguments": [
+                        {
+                            "name": "variableParser",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\cms\\content\\text\\variable\\VariableParser",
+                                "id": "node"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "interfaces": "ride\\library\\cms\\content\\text\\TextParser",
+            "class": "ride\\library\\cms\\content\\text\\ChainTextParser",
+            "id": "chain",
+            "calls": [
+                {
+                    "method": "addTextParser",
+                    "arguments": [
+                        {
+                            "name": "textParser",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\cms\\content\\text\\TextParser",
+                                "id": "variables"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addTextParser",
+                    "arguments": [
+                        {
+                            "name": "textParser",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\cms\\content\\text\\TextParser",
+                                "id": "url"
                             }
                         }
                     ]

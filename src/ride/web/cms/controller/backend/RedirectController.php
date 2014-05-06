@@ -31,6 +31,11 @@ class RedirectController extends AbstractNodeTypeController {
         $nodeList = $nodeModel->getListFromNodes(array($rootNode), $locale, false);
         $nodeList = array($rootNode->getId() => '/' . $rootNode->getName($locale)) + $nodeList;
 
+        // filter out self
+        if ($node && isset($nodeList[$node->getId()])) {
+            unset($nodeList[$node->getId()]);
+        }
+
         // gather data
         $data = array(
             'name' => $node->getName($locale),

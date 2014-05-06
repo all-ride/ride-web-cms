@@ -32,12 +32,18 @@ class TemplatesComponent extends AbstractComponent {
                 $template->setResourceId($id);
             }
 
-            $data['file'][$name] = $templateFacade->getFile($template);
+            $file = $templateFacade->getFile($template);
+
+            $data['file'][$name] = $file;
             $data['content'][$name] = file_get_contents($data['file'][$name]);
 
             // add the id to the template path
             $path = explode('/view/', $data['file'][$name], 2);
             $pathTokens = explode('/', $path[1]);
+            if ($theme) {
+                $pathTokens[1] = $theme;
+            }
+
             $file = array_pop($pathTokens);
             $fileTokens = explode('.', $file);
             $fileExtension = array_pop($fileTokens);
@@ -65,7 +71,7 @@ class TemplatesComponent extends AbstractComponent {
         $builder->addRow('path', 'string', array(
             'label' => $translator->translate('label.template'),
             'multiselect' => true,
-            'disabled' => true,
+            'readonly' => true,
         ));
         $builder->addRow('content', 'text', array(
             'label' => $translator->translate('label.content'),

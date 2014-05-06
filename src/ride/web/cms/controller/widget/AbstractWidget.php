@@ -2,6 +2,7 @@
 
 namespace ride\web\cms\controller\widget;
 
+use ride\library\cms\node\NodeModel;
 use ride\library\cms\widget\Widget;
 use ride\library\system\file\File;
 use ride\library\widget\WidgetProperties;
@@ -139,6 +140,28 @@ class AbstractWidget extends AbstractController implements Widget {
         }
 
         return null;
+    }
+
+    /**
+     * Gets a list of frontend nodes
+     * @param \ride\library\cms\node\NodeModel $nodeModel Instance of the node
+     * model
+     * @param boolean $includeRootNode Set to false to omit the root node
+     * @return array Array with the id of node as key and the localized name of
+     * the node as value
+     */
+    protected function getNodeList(NodeModel $nodeModel, $includeRootNode = true) {
+        $node = $this->properties->getNode();
+        $rootNodeId = $node->getRootNodeId();
+        $rootNode = $nodeModel->getNode($rootNodeId, null, true);
+
+        $nodeList = $nodeModel->getListFromNodes(array($rootNode), $this->locale, true);
+
+        if ($includeRootNode) {
+            $nodeList = array($rootNode->getId() => '/' . $rootNode->getName($this->locale)) + $nodeList;
+        }
+
+        return array('' => '---') + $nodeList;
     }
 
     /**
@@ -307,19 +330,15 @@ class AbstractWidget extends AbstractController implements Widget {
      * Sets a template view to the response
      * @param string $resource Resource to the template
      * @param array $variables Variables for the template
-     * @return \ride\web\base\view\BaseTemplateView
+     * @param string $id Id of the template view in the dependency injector
+     * @return \ride\web\mvc\view\TemplateView
      */
-    protected function setTemplateView($resource, array $variables = null) {
-        $templateFacade = $this->dependencyInjector->get('ride\\library\\template\\TemplateFacade');
+    protected function setTemplateView($resource, array $variables = null, $id = null) {
+        if ($id === null) {
+            $id = 'widget';
+        }
 
-        $template = $templateFacade->createTemplate($resource, $variables);
-
-        $view = new TemplateView($template);
-        $view->setTemplateFacade($templateFacade);
-
-        $this->response->setView($view);
-
-        return $view;
+        return parent::setTemplateView($resource, $variables, $id);
     }
 
     /**

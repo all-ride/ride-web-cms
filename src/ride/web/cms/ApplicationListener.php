@@ -12,12 +12,12 @@ use ride\library\i18n\I18n;
 use ride\library\mvc\Request;
 use ride\library\security\SecurityManager;
 
-use ride\web\base\view\MenuItem;
-use ride\web\base\view\Menu;
+use ride\web\base\menu\MenuItem;
+use ride\web\base\menu\Menu;
+use ride\web\cms\node\type\SiteNodeType;
 use ride\web\cms\node\NodeTreeGenerator;
 use ride\web\mvc\view\TemplateView;
 use ride\web\WebApplication;
-use ride\web\cms\node\type\SiteNodeType;
 
 class ApplicationListener {
 
@@ -27,6 +27,10 @@ class ApplicationListener {
      */
     const EVENT_MENU_CONTENT = 'cms.menu.content';
 
+    /**
+     * Source for logging messages
+     * @var string
+     */
     const LOG_SOURCE = 'cms';
 
     public function prepareTemplateView(Event $event, I18n $i18n, NodeModel $nodeModel, NodeTreeGenerator $nodeTreeGenerator, SecurityManager $securityManager) {
@@ -69,8 +73,8 @@ class ApplicationListener {
             'locale' => $locale,
             'site' => $site->getRootNodeId(),
         );
-        foreach ($nodeTypes as $nodeTypeName => $null) {
-            $url = $web->getUrl('cms.' . $nodeTypeName . '.add', $parameters);
+        foreach ($nodeTypes as $nodeTypeName => $nodeType) {
+            $url = $web->getUrl($nodeType->getRouteAdd(), $parameters);
             if ($securityManager->isUrlAllowed($url)) {
                 $nodeCreateActions[$nodeTypeName] = $url;
             }
@@ -82,8 +86,9 @@ class ApplicationListener {
         $template->set('nodeCreateActions', $nodeCreateActions);
     }
 
-    public function prepareTaskbar(Event $event, Request $request, I18n $i18n, NodeModel $nodeModel, ThemeModel $themeModel, WebApplication $web, SecurityManager $securityManager, EventManager $eventManager) {
+    public function prepareTaskbar(Event $event, I18n $i18n, NodeModel $nodeModel, ThemeModel $themeModel, WebApplication $web, SecurityManager $securityManager, EventManager $eventManager) {
         $locale = null;
+        $request = $web->getRequest();
         $route = $request->getRoute();
 
         if ($route) {
@@ -100,6 +105,7 @@ class ApplicationListener {
 
         // content menu
         $contentMenu = new Menu();
+        $contentMenu->setId('content');
         $contentMenu->setTranslation('label.content');
 
         $eventManager->triggerEvent(self::EVENT_MENU_CONTENT, array('menu' => $contentMenu, 'locale' => $locale));
@@ -177,6 +183,19 @@ class ApplicationListener {
         $menu->addMenuItem($menuItem);
 
         $applicationMenu->addMenu($menu);
+    }
+
+    /**
+     * Orders the items in the content menu
+     * @param \ride\library\event\Event $event
+     * @return null
+     */
+    public function processTaskbarMenu(Event $event) {
+        $taskbar = $event->getArgument('taskbar');
+
+        $applicationsMenu = $taskbar->getApplicationsMenu();
+        $contentMenu = $applicationsMenu->getItem('content');
+        $contentMenu->orderItems();
     }
 
     /**

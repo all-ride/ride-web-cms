@@ -14,7 +14,7 @@ use ride\library\mvc\Response;
 use ride\library\router\RouteContainer;
 use ride\library\router\Router;
 use ride\library\security\model\User;
-use ride\library\String;
+use ride\library\StringHelper;
 
 use ride\web\cms\view\NodeTemplateView;
 use ride\web\cms\ApplicationListener;
@@ -99,6 +99,14 @@ class NodeDispatcher {
     }
 
     /**
+     * Gets the view
+     * @return \ride\web\cms\view\NodeTemplateView
+     */
+    public function getView() {
+        return $this->view;
+    }
+
+    /**
      * Sets the event manager
      * @param \ride\library\event\EventManager $eventManager
      * @return null
@@ -164,8 +172,8 @@ class NodeDispatcher {
 
         $context = array(
         	'title' => array(
-        	    'site' => $this->node->getRootNode()->getName($this->locale),
-        	    'node' => $this->node->getName($this->locale),
+        	    'site' => $this->node->getRootNode()->getName($this->locale, 'title'),
+        	    'node' => $this->node->getName($this->locale, 'title'),
             ),
             'breadcrumbs' => $this->breadcrumbs,
             'styles' => array(),
@@ -366,8 +374,7 @@ class NodeDispatcher {
         $request = $web->getRequest();
         $response = $web->getResponse();
 
-        $url = new String($request->getUrl());
-        $cacheKey = 'node.response.' . $url->safeString();
+        $cacheKey = 'node.response.' . StringHelper::safeString($request->getUrl());
 
         if ($this->log) {
             $this->log->logDebug('Caching the request', 'Ttl: ' . $this->cacheTtl . ' - ' . $cacheKey, ApplicationListener::LOG_SOURCE);
