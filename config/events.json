@@ -5,6 +5,12 @@
             "method": "prepareTaskbar"
         }
     ],
+    "app.taskbar.post": [
+        {
+            "interface": "ride\\web\\cms\\ApplicationListener",
+            "method": "processTaskbarMenu"
+        }
+    ],
     "app.response.pre": [
         {
             "interface": "ride\\web\\cms\\ApplicationListener",
