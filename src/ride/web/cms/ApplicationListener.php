@@ -192,10 +192,12 @@ class ApplicationListener {
      */
     public function processTaskbarMenu(Event $event) {
         $taskbar = $event->getArgument('taskbar');
-
         $applicationsMenu = $taskbar->getApplicationsMenu();
+
         $contentMenu = $applicationsMenu->getItem('content');
-        $contentMenu->orderItems();
+        if ($contentMenu) {
+            $contentMenu->orderItems();
+        }
     }
 
     /**
