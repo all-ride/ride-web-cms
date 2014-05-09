@@ -157,10 +157,5 @@
     "title.widgets.available": "Available Widgets",
     "title.widgets.content": "Content Area",
     "warning.widget.properties.inherited": "You're about to change the properties of an inherited widget.",
-    "warning.layouts.none": "There are no layouts installed, add some layouts before you try this perform action.",
-    "widget.breadcrumbs": "Breadcrumbs",
-    "widget.language.select": "Language Select",
-    "widget.menu": "Menu",
-    "widget.text": "Text",
-    "widget.title": "Page Title"
+    "warning.layouts.none": "There are no layouts installed, add some layouts before you try this perform action."
 }
