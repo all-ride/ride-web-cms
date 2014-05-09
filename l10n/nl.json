@@ -153,10 +153,5 @@
     "title.widgets.available": "Beschikbare widgets",
     "title.widgets.content": "Inhoud",
     "warning.widget.properties.inherited": "Je gaat de eigenschappen van een overgeërfde widget aanpassen.",
-    "warning.layouts.none": "Er zijn geen layout geïnstalleerd, voeg een layout toe voor je deze actie uitvoert.",
-    "widget.breadcrumbs": "Broodkruimels",
-    "widget.language.select": "Taalkeuze",
-    "widget.menu": "Menu",
-    "widget.text": "Tekst",
-    "widget.title": "Paginatitel"
+    "warning.layouts.none": "Er zijn geen layout geïnstalleerd, voeg een layout toe voor je deze actie uitvoert."
 }
