@@ -5,6 +5,7 @@ namespace ride\web\cms\controller\backend;
 use ride\library\cms\node\Node;
 use ride\library\cms\node\NodeProperty;
 use ride\library\i18n\translator\Translator;
+use ride\library\image\ImageUrlGenerator;
 
 /**
  * Abstract controller for a node type
@@ -68,6 +69,23 @@ abstract class AbstractNodeTypeController extends AbstractBackendController {
 
         foreach ($themes as $id => $theme) {
             $options[$id] = $theme->getDisplayName();
+        }
+
+        return $options;
+    }
+
+    /**
+     * Gets the available layout options
+     * @param \ride\library\i18n\translator\Translator $translator
+     * @param array $layouts
+     * @return array Array with the layout machine name as key and the
+     * translation as value
+     */
+    protected function getLayoutOptions(ImageUrlGenerator $imageUrlGenerator, Translator $translator, array $layouts) {
+        $options = array();
+
+        foreach ($layouts as $layout => $null) {
+            $options[$layout] = '<img src="' . $imageUrlGenerator->generateUrl('img/cms/layout/' . $layout . '.png') . '" alt="' . $layout . '" title="' . $translator->translate('layout.' . $layout) . '" />';
         }
 
         return $options;
