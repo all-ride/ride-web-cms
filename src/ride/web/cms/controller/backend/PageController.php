@@ -36,6 +36,9 @@ class PageController extends AbstractNodeTypeController {
         // gather data
         $data = array(
             'name' => $node->getName($locale),
+            'name-title' => $node->get('name.' . $locale . '.title', null, false),
+            'name-menu' => $node->get('name.' . $locale . '.menu', null, false),
+            'name-breadcrumb' => $node->get('name.' . $locale . '.breadcrumb', null, false),
             'route' => $node->getRoute($locale, false),
             'layout' => $node->getLayout($locale),
             'theme' => $this->getThemeValueFromNode($node),
@@ -53,6 +56,27 @@ class PageController extends AbstractNodeTypeController {
             'validators' => array(
                 'required' => array(),
             )
+        ));
+        $form->addRow('name-title', 'string', array(
+            'label' => $translator->translate('label.name.title'),
+            'description' => $translator->translate('label.name.title.description'),
+            'filters' => array(
+                'trim' => array(),
+            ),
+        ));
+        $form->addRow('name-menu', 'string', array(
+            'label' => $translator->translate('label.name.menu'),
+            'description' => $translator->translate('label.name.menu.description'),
+            'filters' => array(
+                'trim' => array(),
+            ),
+        ));
+        $form->addRow('name-breadcrumb', 'string', array(
+            'label' => $translator->translate('label.name.breadcrumb'),
+            'description' => $translator->translate('label.name.breadcrumb.description'),
+            'filters' => array(
+                'trim' => array(),
+            ),
         ));
         $form->addRow('route', 'string', array(
             'label' => $translator->translate('label.route'),
@@ -94,6 +118,9 @@ class PageController extends AbstractNodeTypeController {
                 $data = $form->getData();
 
                 $node->setName($locale, $data['name']);
+                $node->setName($locale, $data['name-title'], 'title');
+                $node->setName($locale, $data['name-menu'], 'menu');
+                $node->setName($locale, $data['name-breadcrumb'], 'breadcrumb');
                 $node->setRoute($locale, $data['route']);
                 $node->setLayout($locale, $data['layout']);
                 $node->setTheme($this->getOptionValueFromForm($data['theme']));
