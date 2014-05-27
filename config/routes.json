@@ -1,6 +1,13 @@
 {
     "routes": [
         {
+            "path": "/ajax/cms/tree/order",
+            "controller": "ride\\web\\cms\\controller\\backend\\TreeController",
+            "action": "orderNodeAction",
+            "id": "cms.tree.order",
+            "methods": "post"
+        },
+        {
             "path": "/ajax/cms/tree/toggle/%node%",
             "controller": "ride\\web\\cms\\controller\\backend\\TreeController",
             "action": "toggleNodeAction",
