@@ -2,6 +2,8 @@
 
 namespace ride\web\cms\controller\backend;
 
+use ride\library\cms\node\NodeModel;
+
 use ride\web\base\controller\AbstractController;
 
 /**
@@ -14,6 +16,33 @@ class TreeController extends AbstractController {
      * @var string
      */
     const SESSION_TOGGLED_NODES = 'cms.tree.toggle';
+
+    /**
+     * Action to order the nodes
+     * @param \ride\library\cms\node\NodeModel $nodeModel
+     * @return null
+     */
+    public function orderNodeAction(NodeModel $nodeModel) {
+        $order = array();
+        $site = null;
+
+        $data = $this->request->getBodyParameter('data');
+        parse_str($data, $data);
+
+        foreach ($data['node'] as $nodeId => $parentId) {
+            $order[$nodeId] = 0;
+
+            if ($parentId === null || $parentId === 'null') {
+                $site = $nodeId;
+            } else {
+                $order[$parentId]++;
+            }
+        }
+
+        unset($order[$site]);
+
+        $nodeModel->orderNodes($site, $order);
+    }
 
     /**
      * Action to toggle the collapse state of the provided node
