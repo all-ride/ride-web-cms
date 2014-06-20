@@ -1,6 +1,26 @@
 {
     "dependencies": [
         {
+            "interfaces": "ride\\application\\cache\\control\\CacheControl",
+            "class": "ride\\application\\cache\\control\\CmsCacheControl",
+            "id": "cms",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "io",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\cms\\node\\io\\NodeIO",
+                                "id": "%cms.node.io.default|ini%"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "class": "ride\\library\\system\\file\\File",
             "id": "cms.node",
             "calls": [
@@ -12,6 +32,24 @@
                             "type": "parameter",
                             "properties": {
                                 "key": "cms.directory.node"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "ride\\library\\system\\file\\File",
+            "id": "cache.cms",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "system.cache.cms"
                             }
                         }
                     ]
@@ -51,9 +89,52 @@
             ]
         },
         {
+            "interfaces": "ride\\library\\cms\\node\\io\\NodeIO",
+            "class": "ride\\library\\cms\\node\\io\\CacheNodeIO",
+            "id": "cache",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "file",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\system\\file\\File",
+                                "id": "cache.cms"
+                            }
+                        },
+                        {
+                            "name": "io",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\cms\\node\\io\\NodeIO",
+                                "id": "%cms.node.io.cache|ini%"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "class": "ride\\library\\cms\\node\\NodeModel",
             "id": "cms",
-            "calls": ["setEventManager"]
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "io",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\cms\\node\\io\\NodeIO",
+                                "id": "%cms.node.io.default|ini%"
+                            }
+                        }
+                    ]
+                },
+                "setEventManager"
+            ]
         },
         {
             "class": "ride\\library\\system\\file\\File",
