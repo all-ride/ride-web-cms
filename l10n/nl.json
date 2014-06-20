@@ -10,6 +10,7 @@
     "button.theme.add": "Maak Thema",
     "button.theme.delete": "Verwijder dit thema",
     "button.templates": "Templates",
+    "cache.control.cms": "CMS cache",
     "label.confirm.node.clone": "Ben je zeker dat je %node% wil klonen?",
     "label.confirm.node.delete": "Ben je zeker dat je %node% wil verwijderen? Alle kinderen van deze node zullen mee verwijderd worden.",
     "label.confirm.theme.delete": "Ben je zeker dat je %theme% wil verwijderen? Alle custom templates zullen mee verwijderd worden?",

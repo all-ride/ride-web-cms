@@ -31,7 +31,8 @@
     },
     "autoload": {
         "psr-0": {
-            "ride\\web\\cms\\": ["src/"]
+            "ride\\application\\cache\\control\\CmsCacheControl": ["src/"],
+            "ride\\web\\cms\\": ["src/"],
         }
     }
 }

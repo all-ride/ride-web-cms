@@ -1,4 +1,5 @@
 {
     "cms.directory.node": "%application%/data/cms",
-    "cms.file.expired": "%application%/data/cms/expired.xml"
+    "cms.file.expired": "%application%/data/cms/expired.xml",
+    "system.cache.cms": "%application%/data/cache/cms-nodes.php"
 }

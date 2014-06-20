@@ -10,6 +10,7 @@
     "button.theme.add": "Create Theme",
     "button.theme.delete": "Delete this theme",
     "button.templates": "Templates",
+    "cache.control.cms": "CMS cache",
     "error.validation.date.cms": "%value% is not in the correct format",
     "label.breadcrumbs.label": "Label",
     "label.breadcrumbs.label.description": "Label before the breadcrumbs",
