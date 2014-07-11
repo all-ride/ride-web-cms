@@ -59,6 +59,8 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
         $widget->setProperties($node->getWidgetProperties($widgetId));
         $widget->setLocale($locale);
         $widget->setRegion($region);
+        $widget->setIdentifier($widgetId);
+
         if ($widget instanceof AbstractController) {
             $widget->setConfig($this->config);
             $widget->setDependencyInjector($this->dependencyInjector);
