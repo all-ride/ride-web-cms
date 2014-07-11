@@ -74,6 +74,7 @@ abstract class AbstractBackendController extends AbstractController {
                 $isLayoutRegion = $layout->hasRegion($region);
             } else {
                 $layouts = $layoutModel->getLayouts();
+                $isLayoutRegion = false;
                 foreach ($layouts as $l) {
                     if ($l->hasRegion($region)) {
                         $isLayoutRegion = true;
