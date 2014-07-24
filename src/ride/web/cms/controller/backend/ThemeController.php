@@ -88,6 +88,7 @@ class ThemeController extends AbstractController {
             'type' => 'string',
             'label' => $translator->translate('label.regions'),
             'description' => $translator->translate('label.theme.regions.description'),
+            'order' => true,
             'filters' => array(
                 'trim' => array('empty' => true),
             )
