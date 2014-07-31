@@ -116,7 +116,6 @@ class MetaNodeAction extends AbstractNodeAction {
         ));
         $form->addRow('og-image', 'image', array(
             'label' => $translator->translate('label.image'),
-            'path' => $fileBrowser->getPublicDirectory()->getChild('files'),
         ));
         $form->addRow('meta', 'collection', array(
             'label' => $translator->translate('label.meta'),
