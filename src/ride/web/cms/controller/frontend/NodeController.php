@@ -10,6 +10,7 @@ use ride\library\cms\widget\WidgetModel;
 use ride\library\event\EventManager;
 use ride\library\http\Response;
 use ride\library\log\Log;
+use ride\library\security\exception\UnauthorizedException;
 use ride\library\router\GenericRouter;
 use ride\library\router\RouteContainer;
 use ride\library\template\TemplateFacade;
@@ -41,6 +42,11 @@ class NodeController extends AbstractController {
         if ($nodeDispatcher) {
             $node = $nodeDispatcher->getNode();
             if ($node->isPublished() && $node->isAvailableInLocale($locale)) {
+                $user = $this->getUser();
+                if (!$node->isAllowed($user)) {
+                    throw new UnauthorizedException();
+                }
+
                 $nodeView = $nodeDispatcher->getView();
                 $nodeView->setTemplateFacade($templateFacade);
 
@@ -51,7 +57,7 @@ class NodeController extends AbstractController {
                 $nodeDispatcher->setEventManager($eventManager);
                 $nodeDispatcher->setLog($log);
 
-                $nodeDispatcher->dispatch($this->request, $this->response, $this->getUser(), $cache);
+                $nodeDispatcher->dispatch($this->request, $this->response, $user, $cache);
 
                 if ($this->response->getStatusCode() != Response::STATUS_CODE_NOT_FOUND) {
                     return;

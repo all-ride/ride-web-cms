@@ -208,7 +208,7 @@ class ApplicationListener {
         $response = $web->getResponse();
 
         $statusCode = $response->getStatusCode();
-        if (($statusCode != 403 && $statusCode != 404) || $response->getView() || $response->getBody()) {
+        if (($statusCode != Response::STATUS_CODE_FORBIDDEN && $statusCode != Response::STATUS_CODE_NOT_FOUND)) {
             return;
         }
 
@@ -263,7 +263,7 @@ class ApplicationListener {
         $dispatcher = $web->getDispatcher();
         $dispatcher->dispatch($request, $response);
 
-        $response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
+        $response->setStatusCode($statusCode);
     }
 
 }
