@@ -36,9 +36,10 @@ class VisibilityNodeAction extends AbstractNodeAction {
         $this->setLastAction(self::NAME);
 
         $data = array(
-        	'published' => $node->get(Node::PROPERTY_PUBLISH, 'inherit', false),
-        	'publishStart' => $node->get(Node::PROPERTY_PUBLISH_START, null, false),
-        	'publishStop' => $node->get(Node::PROPERTY_PUBLISH_STOP, null, false),
+            'published' => $node->get(Node::PROPERTY_PUBLISH, 'inherit', false),
+            'publishStart' => $node->get(Node::PROPERTY_PUBLISH_START, null, false),
+            'publishStop' => $node->get(Node::PROPERTY_PUBLISH_STOP, null, false),
+            'security' => $node->get(Node::PROPERTY_SECURITY, 'inherit', false),
         );
 
         $nodeTypeManager = $nodeModel->getNodeTypeManager();
@@ -81,11 +82,18 @@ class VisibilityNodeAction extends AbstractNodeAction {
                 'trim' => array(),
             ),
             'validators' => array(
-            	'regex' => array(
-            	    'required' => false,
-            	    'regex' => '/2([0-9]){3}-([0-9]){2}-([0-9]){2} ([0-9]){2}:([0-9]){2}:([0-9]){2}/',
-            	    'error.regex' => 'error.validation.date.cms',
+                'regex' => array(
+                    'required' => false,
+                    'regex' => '/2([0-9]){3}-([0-9]){2}-([0-9]){2} ([0-9]){2}:([0-9]){2}:([0-9]){2}/',
+                    'error.regex' => 'error.validation.date.cms',
                 ),
+            ),
+        ));
+        $form->addRow('security', 'option', array(
+            'label' => $translator->translate('label.allow'),
+            'options' => $this->getSecurityOptions($node, $translator),
+            'validators' => array(
+            	'required' => array(),
             ),
         ));
 
@@ -111,6 +119,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
                 $node->set(Node::PROPERTY_PUBLISH, $this->getPublishedValue($data['published']));
                 $node->set(Node::PROPERTY_PUBLISH_START, $data['publishStart']);
                 $node->set(Node::PROPERTY_PUBLISH_STOP, $data['publishStop']);
+                $node->set(Node::PROPERTY_SECURITY, $this->getSecurityValue($data['security']));
 
                 if ($isFrontendNode) {
                     if ($node->getLevel() === 0) {
@@ -181,6 +190,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
 
     /**
      * Gets the publish options
+     * @param \ride\library\cms\node\Node $node
      * @param \ride\library\i18n\translator\Translator $translator
      * @return array Array with the publish code as key and the translation as
      * value
@@ -201,12 +211,12 @@ class VisibilityNodeAction extends AbstractNodeAction {
 
     /**
      * Get a suffix for the publish inherit label based on the inherited settings
-     * @param ride\library\cms\\
+     * @param \ride\library\cms\node\Node $node
      * @param \ride\library\i18n\translator\Translator $translator
      * @return string if a publish setting is found the suffix will be " (Yes)" or " (No)"
      */
     protected function getPublishedInheritSuffix(Node $node, Translator $translator) {
-        $published = $node->get(Node::PROPERTY_PUBLISH, Node::AUTHENTICATION_STATUS_EVERYBODY, true, true);
+        $published = $node->get(Node::PROPERTY_PUBLISH, true, true, true);
 
         $suffix = ' (';
         if ($published) {
@@ -217,6 +227,74 @@ class VisibilityNodeAction extends AbstractNodeAction {
         $suffix .= ')';
 
         return $suffix;
+    }
+
+    /**
+     * Gets the security value
+     * @param string $security Form value
+     * @return null|string
+     */
+    private function getSecurityValue($security) {
+        if ($security == 'inherit') {
+            return null;
+        } else {
+            return $security;
+        }
+    }
+
+    /**
+     * Gets the security options
+     * @param \ride\library\cms\node\Node $node
+     * @param \ride\library\i18n\translator\Translator $translator
+     * @return array Array with the publish code as key and the translation as
+     * value
+     */
+    protected function getSecurityOptions(Node $node, Translator $translator) {
+        $options = array();
+
+        $parentNode = $node->getParentNode();
+        if ($parentNode) {
+            $options['inherit'] = $translator->translate('label.inherited') . $this->getSecurityInheritSuffix($parentNode, $translator);
+        }
+
+        $options[Node::AUTHENTICATION_STATUS_EVERYBODY] = $translator->translate('label.allow.everybody');
+        $options[Node::AUTHENTICATION_STATUS_ANONYMOUS] = $translator->translate('label.allow.anonymous');
+        $options[Node::AUTHENTICATION_STATUS_AUTHENTICATED] = $translator->translate('label.allow.authenticated');
+
+        return $options;
+    }
+
+    /**
+     * Get a suffix for the security inherit label based on the inherited settings
+     * @param \ride\library\cms\node\Node $node
+     * @param \ride\library\i18n\translator\Translator $translator
+     * @return string if a publish setting is found the suffix will be " (Yes)" or " (No)"
+     */
+    protected function getSecurityInheritSuffix(Node $node, Translator $translator) {
+        $security = $node->get(Node::PROPERTY_SECURITY, Node::AUTHENTICATION_STATUS_EVERYBODY, true, true);
+
+        $suffix = ' (';
+        switch ($security) {
+            case Node::AUTHENTICATION_STATUS_EVERYBODY:
+                $suffix .= $translator->translate('label.allow.everybody');
+
+                break;
+            case Node::AUTHENTICATION_STATUS_ANONYMOUS:
+                $suffix .= $translator->translate('label.allow.anonymous');
+
+                break;
+            case Node::AUTHENTICATION_STATUS_AUTHENTICATED:
+                $suffix .= $translator->translate('label.allow.authenticated');
+
+                break;
+            default:
+                $suffix .= $security;
+
+                break;
+        }
+        $suffix .= ')';
+
+        return strtolower($suffix);
     }
 
 }
