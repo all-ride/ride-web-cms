@@ -7,6 +7,7 @@ use ride\library\cms\node\Node;
 use ride\library\cms\theme\ThemeModel;
 use ride\library\event\EventManager;
 use ride\library\event\Event;
+use ride\library\http\Header;
 use ride\library\http\Response;
 use ride\library\i18n\I18n;
 use ride\library\mvc\Request;
@@ -16,6 +17,7 @@ use ride\web\base\menu\MenuItem;
 use ride\web\base\menu\Menu;
 use ride\web\cms\node\type\SiteNodeType;
 use ride\web\cms\node\NodeTreeGenerator;
+use ride\web\mvc\view\JsonView;
 use ride\web\mvc\view\TemplateView;
 use ride\web\WebApplication;
 
@@ -205,17 +207,18 @@ class ApplicationListener {
      * @return null
      */
     public function handleHttpError(Event $event, WebApplication $web, I18n $i18n, NodeModel $nodeModel) {
+        $request = $web->getRequest();
         $response = $web->getResponse();
 
         $statusCode = $response->getStatusCode();
-        if (($statusCode != Response::STATUS_CODE_FORBIDDEN && $statusCode != Response::STATUS_CODE_NOT_FOUND)) {
+        if (($statusCode != Response::STATUS_CODE_FORBIDDEN && $statusCode != Response::STATUS_CODE_NOT_FOUND) || ($request->isXmlHttpRequest() && $response->getView() instanceof JsonView)) {
             return;
         }
 
         $locale = $i18n->getLocale()->getCode();
 
         // lookup site with the current base URL
-        $baseUrl = $web->getRequest()->getBaseUrl();
+        $baseUrl = $request->getBaseUrl();
         $site = null;
         $defaultSite = null;
 
@@ -258,6 +261,7 @@ class ApplicationListener {
 
         $response->setView(null);
         $response->setStatusCode(Response::STATUS_CODE_OK);
+        $response->removeHeader(Header::HEADER_CONTENT_TYPE);
         $response->clearRedirect();
 
         $dispatcher = $web->getDispatcher();
