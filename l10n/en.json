@@ -106,6 +106,7 @@
     "label.site": "Site",
     "label.site.description": "Enter the name of the site.",
     "label.template": "Template",
+    "label.template.widget.description": "Select the template for this widget instance",
     "label.text": "Text",
     "label.text.locales.all": "Use this text for all languages",
     "label.theme": "Theme",
