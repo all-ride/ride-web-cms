@@ -22,6 +22,12 @@ class AbstractWidget extends AbstractController implements Widget {
     const ICON =  'img/cms/widget.png';
 
     /**
+     * Name of the template property
+     * @var string
+     */
+    const PROPERTY_TEMPLATE = 'template';
+
+    /**
      * Unique identifier of this widget
      * @var string
      */
@@ -135,11 +141,68 @@ class AbstractWidget extends AbstractController implements Widget {
      * @return array Array with the resource names of the templates
      */
     public function getTemplates() {
-        if (defined('static::TEMPLATE')) {
-            return array(static::TEMPLATE);
+        $templates = array();
+
+        $templateProperties = $this->properties->getWidgetProperties(self::PROPERTY_TEMPLATE);
+        foreach ($templateProperties as $template) {
+            $templates[$template] = $template;
         }
 
-        return null;
+        return $templates;
+    }
+
+    /**
+     * Gets the available templates for the provided namespace
+     * @param string $namespace
+     * @return array Array with the relative path to the template resource as
+     * key and the name of the template as value
+     */
+    public function getAvailableTemplates($namespace) {
+        $themeModel = $this->dependencyInjector->get('ride\\library\\cms\\theme\\ThemeModel');
+
+        $templateFacade = $this->dependencyInjector->get('ride\\library\\template\\TemplateFacade');
+        $templateFacade->setThemeModel($themeModel);
+
+        $files = $templateFacade->getFiles($namespace, $this->properties->getNode()->getTheme());
+        foreach ($files as $path => $name) {
+            if (strpos($name, 'properties') === 0) {
+                unset($files[$path]);
+            }
+        }
+
+        ksort($files);
+
+        return $files;
+    }
+
+    /**
+     * Gets a the path to a template resource from the properties
+     * @param string $default Fallback template when no property set
+     * @param string $context Name of the template context
+     * @return string Path to the requested template resource
+     */
+    public function getTemplate($default = null, $context = null) {
+        $templateKey = self::PROPERTY_TEMPLATE;
+        if ($context) {
+            $templateKey .= '.' . $context;
+        }
+
+        return $this->properties->getWidgetProperty($templateKey, $default);
+    }
+
+    /**
+     * Sets the path for a template resource to the properties
+     * @param string $template Path to the template resource
+     * @param string $context Name of the template context
+     * @return null
+     */
+    public function setTemplate($template, $context = null) {
+        $templateKey = self::PROPERTY_TEMPLATE;
+        if ($context) {
+            $templateKey .= '.' . $context;
+        }
+
+        $this->properties->setWidgetProperty($templateKey, $template);
     }
 
     /**
@@ -150,7 +213,7 @@ class AbstractWidget extends AbstractController implements Widget {
      * @return array Array with the id of node as key and the localized name of
      * the node as value
      */
-    protected function getNodeList(NodeModel $nodeModel, $includeRootNode = true) {
+    public function getNodeList(NodeModel $nodeModel, $includeRootNode = true) {
         $node = $this->properties->getNode();
         $rootNodeId = $node->getRootNodeId();
         $rootNode = $nodeModel->getNode($rootNodeId, null, true);
@@ -364,7 +427,7 @@ class AbstractWidget extends AbstractController implements Widget {
      * @throws \ride\library\router\exception\RouterException If the route is
      * not found
      */
-    protected function getUrl($id, array $variables = array()) {
+    public function getUrl($id, array $variables = array()) {
         $routes = $this->getRoutes();
         if ($routes) {
             foreach ($routes as $route) {
@@ -382,4 +445,5 @@ class AbstractWidget extends AbstractController implements Widget {
 
         return parent::getUrl($id, $variables);
     }
+
 }

@@ -102,6 +102,7 @@
     "label.site": "Site",
     "label.site.description": "Geef de naam van de site.",
     "label.template": "Template",
+    "label.template.widget.description": "Selecteer een template voor deze widget",
     "label.text": "Tekst",
     "label.text.locales.all": "Gebruik deze tekst voor alle talen",
     "label.theme": "Thema",
