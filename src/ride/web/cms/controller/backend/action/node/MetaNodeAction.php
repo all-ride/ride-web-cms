@@ -2,12 +2,10 @@
 
 namespace ride\web\cms\controller\backend\action\node;
 
-use ride\library\cms\node\NodeModel;
-use ride\library\i18n\I18n;
-use ride\library\system\file\browser\FileBrowser;
 use ride\library\validation\exception\ValidationException;
 
 use ride\web\cms\form\MetaComponent;
+use ride\web\cms\Cms;
 
 /**
  * Controller of the meta node action
@@ -15,7 +13,7 @@ use ride\web\cms\form\MetaComponent;
 class MetaNodeAction extends AbstractNodeAction {
 
     /**
-     * The name of this action
+     * Name of this action
      * @var string
      */
     const NAME = 'meta';
@@ -29,15 +27,15 @@ class MetaNodeAction extends AbstractNodeAction {
     /**
      * Perform the meta node action
      */
-    public function indexAction(I18n $i18n, $locale, FileBrowser $fileBrowser, NodeModel $nodeModel, $site, $node) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
+    public function indexAction(Cms $cms, MetaComponent $metaComponent, $locale, $site, $revision, $node) {
+        if (!$cms->resolveNode($site, $revision, $node)) {
             return;
         }
 
-        $this->setLastAction(self::NAME);
+        $cms->setLastAction(self::NAME);
 
         $translator = $this->getTranslator();
-        $metaComponent = new MetaComponent();
+        $referer = $this->request->getQueryParameter('referer');
 
         $data = array(
             'meta' => array(),
@@ -52,34 +50,34 @@ class MetaNodeAction extends AbstractNodeAction {
         $meta = $node->getMeta($locale, null, false);
         foreach ($meta as $property => $content) {
             switch ($property) {
-            	case 'title':
-        	        $data['title'] = $content;
+                case 'title':
+                    $data['title'] = $content;
 
-            	    break;
-            	case 'description':
-        	        $data['description'] = $content;
+                    break;
+                case 'description':
+                    $data['description'] = $content;
 
-            	    break;
-            	case 'keywords':
-        	        $data['keywords'] = $content;
+                    break;
+                case 'keywords':
+                    $data['keywords'] = $content;
 
-            	    break;
-            	case 'og:title':
-        	        $data['og-title'] = $content;
+                    break;
+                case 'og:title':
+                    $data['og-title'] = $content;
 
-            	    break;
-            	case 'og:description':
-        	        $data['og-description'] = $content;
+                    break;
+                case 'og:description':
+                    $data['og-description'] = $content;
 
-            	    break;
-            	case 'og:image':
-        	        $data['og-image'] = $content;
+                    break;
+                case 'og:image':
+                    $data['og-image'] = $content;
 
-            	    break;
-            	default:
+                    break;
+                default:
                     $data['meta'][] = $property . '=' . $content;
 
-            	    break;
+                    break;
             }
         }
 
@@ -124,7 +122,6 @@ class MetaNodeAction extends AbstractNodeAction {
                 'component' => $metaComponent,
             ),
         ));
-        $form->setRequest($this->request);
 
         $form = $form->build();
         if ($form->isSubmitted()) {
@@ -161,13 +158,23 @@ class MetaNodeAction extends AbstractNodeAction {
 
                 $node->setMeta($locale, $meta);
 
-                $nodeModel->setNode($node, 'Set meta tags to ' . $node->getName());
+                $cms->saveNode($node, 'Set meta tags to ' . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $node->getName($locale)
                 ));
 
-                $this->response->setRedirect($this->request->getUrl());
+                $url = $this->getUrl(self::ROUTE, array(
+                    'site' => $site->getId(),
+                    'revision' => $node->getRevision(),
+                    'locale' => $locale,
+                    'node' => $node->getId(),
+                ));
+                if ($referer) {
+                    $url .= '?referer=' . urlencode($referer);
+                }
+
+                $this->response->setRedirect($url);
 
                 return;
             } catch (ValidationException $validationException) {
@@ -175,15 +182,13 @@ class MetaNodeAction extends AbstractNodeAction {
             }
         }
 
-        $referer = $this->request->getQueryParameter('referer');
-
         $this->setTemplateView('cms/backend/node.meta', array(
             'site' => $site,
             'node' => $node,
             'form' => $form->getView(),
             'referer' => $referer,
             'locale' => $locale,
-            'locales' => $i18n->getLocaleCodeList(),
+            'locales' => $cms->getLocales(),
             'parentMeta' => $parentMeta,
         ));
     }

@@ -2,67 +2,94 @@
 
 namespace ride\web\cms\controller\backend;
 
-use ride\library\cms\node\NodeModel;
+use ride\library\cms\exception\CmsException;
 use ride\library\cms\node\SiteNode;
-use ride\library\cms\theme\ThemeModel;
-use ride\library\i18n\I18n;
 use ride\library\validation\exception\ValidationException;
 
+use ride\web\cms\Cms;
+
+/**
+ * Controller for site management
+ */
 class SiteController extends AbstractNodeTypeController {
 
     /**
      * Action to show an overview of the sites
-     * @param \ride\library\cms\node\NodeModel $nodeModel
+     * @param \ride\web\cms\Cms $cms Facade of the CMS
+     * @param string $locale Code of the locale
      * @return null
      */
-    public function indexAction(NodeModel $nodeModel) {
+    public function indexAction(Cms $cms, $locale = null) {
+        if (!$locale) {
+            $locale = $this->getLocale();
+        }
+
         $this->setTemplateView('cms/backend/site', array(
-            'sites' => $nodeModel->getNodesByType('site'),
-            'locale' => $this->getLocale(),
+            'sites' => $sites = $cms->getSites(),
+            'locale' => $locale,
         ));
     }
 
     /**
      * Action to show the detail of a site
-     * @param \ride\library\cms\node\NodeModel $nodeModel
-     * @param string $site
-     * @param string $locale
+     * @param \ride\web\cms\Cms $cms Facade of the CMS
+     * @param string $site Id of the site
+     * @param string $revision Name of the revision
+     * @param string $locale Code of the locale
      * @return null
      */
-    public function detailAction(I18n $i18n, NodeModel $nodeModel, $site, $locale = null) {
+    public function detailAction(Cms $cms, $site, $revision = null, $locale = null) {
         if (!$locale) {
+            if ($revision === null) {
+                $revision = $cms->getDraftRevision();
+            }
+
             $this->response->setRedirect($this->getUrl('cms.site.detail.locale', array(
-            	"site" => $site,
+                "site" => $site,
+                "revision" => $revision,
                 "locale" => $this->getLocale(),
             )));
 
             return;
         }
 
-        if (!$this->resolveNode($nodeModel, $site)) {
+        if (!$cms->resolveNode($site, $revision)) {
             return;
         }
 
         $this->setTemplateView('cms/backend/site.detail', array(
             'site' => $site,
             'locale' => $locale,
-            'locales' => $i18n->getLocaleCodeList(),
+            'locales' => $cms->getLocales(),
         ));
     }
 
-    public function formAction(I18n $i18n, $locale, ThemeModel $themeModel, NodeModel $nodeModel, $site = null) {
-        $themes = $themeModel->getThemes();
-        $locales = $i18n->getLocaleCodeList();
-        $translator = $i18n->getTranslator();
-
+    /**
+     * Action to add or edit a site
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @param string $locale Code of the locale
+     * @param string $site Id of the site
+     * @param string $revision Name of the revision
+     * @return null
+     */
+    public function formAction(Cms $cms, $locale, $site = null, $revision = null) {
         if ($site) {
-            if (!$this->resolveNode($nodeModel, $site)) {
+            if (!$cms->resolveNode($site, $revision)) {
                 return;
             }
 
-            $this->setLastAction('edit');
+            $cms->setLastAction('edit');
         } else {
-            $site = $nodeModel->createNode('site');
+            $site = $cms->createNode('site');
+        }
+
+        $translator = $this->getTranslator();
+        $locales = $cms->getLocales();
+        $themes = $cms->getThemes();
+
+        $referer = $this->request->getQueryParameter('referer');
+        if (!$referer) {
+            $referer = $this->getUrl('cms.site');
         }
 
         $data = array(
@@ -71,6 +98,7 @@ class SiteController extends AbstractNodeTypeController {
             'baseUrl' => $site->getBaseUrl($locale),
             'theme' => $site->getTheme(),
             'availableLocales' => $this->getLocalesValueFromNode($site),
+            'autoPublish' => $site->isAutoPublish(),
         );
 
         $form = $this->createFormBuilder($data);
@@ -102,6 +130,10 @@ class SiteController extends AbstractNodeTypeController {
                 'required' => array(),
             )
         ));
+        $form->addRow('autoPublish', 'boolean', array(
+            'label' => $translator->translate('label.publish.auto'),
+            'description' => $translator->translate('label.publish.auto.description'),
+        ));
         $form->addRow('availableLocales', 'select', array(
             'label' => $translator->translate('label.locales'),
             'description' => $translator->translate('label.locales.available.description'),
@@ -123,45 +155,59 @@ class SiteController extends AbstractNodeTypeController {
                 'required' => array(),
             )
         ));
-        $form->setRequest($this->request);
 
         $form = $form->build();
         if ($form->isSubmitted()) {
             try {
                 $form->validate();
 
+                $oldIsAutoPublish = $data['autoPublish'];
+
                 $data = $form->getData();
 
                 $site->setName($locale, $data['name']);
                 if (!$site->getId()) {
-                    $site->setLocalizationMethod($data['localizationMethod']);
+                    $locales = $cms->getLocales();
+                    foreach ($locales as $l) {
+                        if ($l == $locale) {
+                            continue;
+                        }
+
+                        $site->setName($l, $data['name']);
+                    }
                 }
+                $site->setLocalizationMethod($data['localizationMethod']);
                 $site->setBaseUrl($locale, $data['baseUrl']);
                 $site->setTheme($data['theme']);
                 $site->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
+                $site->setIsAutoPublish($data['autoPublish']);
 
-                $nodeModel->setNode($site, (!$site->getId() ? 'Created new site ' : 'Updated site ') . $site->getName());
+                $cms->saveNode($site, (!$site->getId() ? 'Created new site ' : 'Updated site ') . $site->getName());
+
+                if (!$oldIsAutoPublish && $site->isAutoPublish()) {
+                    $cms->publishNode($site);
+                }
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $site->getName($locale),
                 ));
 
-                $this->response->setRedirect($this->getUrl(
-                    'cms.site.edit', array(
-                        'locale' => $locale,
-                        'site' => $site->getId(),
-                    )
+                $url = $this->getUrl('cms.site.edit', array(
+                    'site' => $site->getId(),
+                    'revision' => $site->getRevision(),
+                    'locale' => $locale,
                 ));
+
+                if ($referer) {
+                    $url .= '?referer=' . urlencode($url);
+                }
+
+                $this->response->setRedirect($url);
 
                 return;
             } catch (ValidationException $validationException) {
                 $this->setValidationException($validationException, $form);
             }
-        }
-
-        $referer = $this->request->getQueryParameter('referer');
-        if (!$referer) {
-            $referer = $this->getUrl('cms.site');
         }
 
         $this->setTemplateView('cms/backend/site.form', array(
@@ -175,24 +221,36 @@ class SiteController extends AbstractNodeTypeController {
 
     /**
      * Action to delete a site
-     * @param \ride\library\i18n\I18n $i18n
-     * @param string $locale
-     * @param \ride\library\cms\node\NodeModel $nodeModel
-     * @param string $site
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @param string $locale Code of the locale
+     * @param string $site Id of the site
+     * @param string $revision Name of the revision
      * @return null
      */
-    public function deleteAction(I18n $i18n, $locale, NodeModel $nodeModel, $site) {
-        if (!$this->resolveNode($nodeModel, $site)) {
+    public function deleteAction(Cms $cms, $locale, $site, $revision) {
+        if (!$cms->resolveNode($site, $revision)) {
             return;
         }
 
+        $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');
         if (!$referer) {
             $referer = $this->getUrl('cms.site');
         }
 
-        if ($this->request->isPost() || $this->request->isDelete()) {
-            $nodeModel->removeNode($site);
+        $form = $this->createFormBuilder();
+        $form->addRow('recursive', 'option', array(
+            'label' => '',
+            'description' => $translator->translate('label.confirm.node.delete.recursive'),
+            'disabled' => true,
+            'default' => true,
+        ));
+        $form = $form->build();
+
+        if ($form->isSubmitted()) {
+            $data = $form->getData();
+
+            $cms->removeNode($site, true);
 
             $this->addSuccess('success.node.deleted', array(
                 'node' => $site->getName($locale),
@@ -203,13 +261,161 @@ class SiteController extends AbstractNodeTypeController {
             return;
         }
 
-        $this->setTemplateView('cms/backend/confirm.form', array(
-            'type' => 'delete',
+        $this->setTemplateView('cms/backend/delete.form', array(
+            'form' => $form->getView(),
             'referer' => $referer,
             'site' => $site,
             'node' => $site,
             'locale' => $locale,
-            'locales' => $i18n->getLocaleCodeList(),
+            'locales' => $cms->getLocales(),
+        ));
+    }
+
+    /**
+     * Action to order the nodes of a site
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @param string $site Id of the site
+     * @param string $revision Name of the revision to work with
+     * @param string $locale Code of the locale
+     * @return null
+     */
+    public function orderAction(Cms $cms, $site, $revision, $locale) {
+        if (!$cms->resolveNode($site, $revision)) {
+            return;
+        }
+
+        $siteId = $site->getId();
+        $order = array();
+
+        $data = $this->request->getBodyParameter('data');
+        parse_str($data, $data);
+
+        foreach ($data['node'] as $nodeId => $parentId) {
+            $order[$nodeId] = 0;
+
+            $isRootNode = $parentId === null || $parentId === 'null';
+            if ($isRootNode && $nodeId != $siteId) {
+                throw new CmsException('Could not order the tree: nodes are not part of the provided site');
+            } elseif (!$isRootNode) {
+                $order[$parentId]++;
+            }
+        }
+
+        unset($order[$siteId]);
+
+        $cms->orderNodes($site, $order, $locale);
+    }
+
+    /**
+     * Action to publish a revision of a site
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @param string $site Id of the site
+     * @param string $revision Name of the revision to work with
+     * @param string $locale Code of the locale
+     * @return null
+     */
+    public function publishAction(Cms $cms, $site, $revision, $locale) {
+        if (!$cms->resolveNode($site, $revision)) {
+            return;
+        }
+
+        $publishRevision = $cms->getDefaultRevision();
+
+        $cms->publishNode($site, $publishRevision, true);
+
+        $this->addSuccess('success.node.published', array(
+            'node' => $site->getName($locale),
+            'revision' => $publishRevision,
+        ));
+
+        $referer = $this->request->getQueryParameter('referer');
+        if (!$referer) {
+            $referer = $this->getUrl('cms.site.detail', array(
+                'site' => $site->getId(),
+                'revision' => $revision,
+                'locale' => $locale,
+            ));
+        }
+
+        $this->response->setRedirect($referer);
+    }
+
+    /**
+     * Action to manage the trash of a site
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @param string $site Id of the site
+     * @param string $revision Name of the revision to work with
+     * @param string $locale Code of the locale
+     * @return null
+     */
+    public function trashAction(Cms $cms, $site, $revision, $locale) {
+        if (!$cms->resolveNode($site, $revision)) {
+            return;
+        }
+
+        $translator = $this->getTranslator();
+        $referer = $this->request->getQueryParameter('referer');
+        if (!$referer) {
+            $referer = $this->getUrl('cms.site.detail', array(
+                'site' => $site->getId(),
+                'revision' => $revision,
+                'locale' => $locale,
+            ));
+        }
+
+        $trashNodeOptions = array();
+
+        $trashNodes = $cms->getTrashNodes($site->getId());
+        foreach ($trashNodes as $trashNodeId => $trashNode) {
+            $trashNodeOptions[$trashNodeId] = $trashNode->getNode()->getName($locale) . ' (' . date('Y-m-d H:i:s', $trashNode->getDate()) . ')';
+        }
+
+        $form = $this->createFormBuilder();
+        $form->addRow('nodes', 'option', array(
+            'label' => $translator->translate('label.nodes.trash'),
+            'description' => $translator->translate('label.nodes.trash.description'),
+            'options' => $trashNodeOptions,
+            'multiple' => true,
+            'validators' => array(
+                'required' => array(),
+            ),
+        ));
+        $form->addRow('destination', 'select', array(
+            'label' => $translator->translate('label.destination'),
+            'description' => $translator->translate('label.destination.restore.description'),
+            'options' => $cms->getNodeList($site, $locale, true),
+        ));
+
+        $form = $form->build();
+        if ($form->isSubmitted()) {
+            try {
+                $form->validate();
+
+                $data = $form->getData();
+
+                $restoreNodes = array();
+                foreach ($data['nodes'] as $trashNodeId => $trashNodeName) {
+                    $restoreNodes[] = $trashNodes[$trashNodeId];
+                }
+
+                $cms->restoreTrashNodes($site, $restoreNodes, $data['destination']);
+
+                $this->response->setRedirect($referer);
+
+                return;
+            } catch (ValidationException $exception) {
+                $this->setValidationException($exception, $form);
+            }
+        }
+
+        $this->setTemplateView('cms/backend/site.trash', array(
+            'referer' => $referer,
+            'site' => $site,
+            'node' => $site,
+            'form' => $form->getView(),
+            'trashNodes' => $trashNodes,
+            'locale' => $locale,
+            'locales' => $cms->getLocales(),
         ));
     }
 

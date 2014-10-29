@@ -2,9 +2,9 @@
 
 namespace ride\web\cms\controller\backend\action\node;
 
-use ride\library\cms\node\type\NodeTypeManager;
 use ride\library\cms\node\Node;
-use ride\library\cms\node\NodeModel;
+
+use ride\web\cms\Cms;
 
 /**
  * Controller of the go node action
@@ -12,7 +12,7 @@ use ride\library\cms\node\NodeModel;
 class GoNodeAction extends AbstractNodeAction {
 
     /**
-     * The name of this action
+     * Name of this action
      * @var string
      */
     const NAME = 'go';
@@ -24,17 +24,18 @@ class GoNodeAction extends AbstractNodeAction {
     const ROUTE = 'cms.node.go';
 
     /**
-     * Instance of the node type manager
-     * @var \ride\library\cms\node\type\NodeTypeManager
+     * Instance of the CMS facade
+     * @var \ride\web\cms\Cms
      */
-    protected $nodeTypeManager;
+    protected $cms;
 
     /**
      * Constructs a new go action
-     * @param \ride\library\cms\node\type\NodeTypeManager $nodeTypeManager
+     * @param \ride\web\cms\Cms $cms
+     * @return null
      */
-    public function __construct(NodeTypeManager $nodeTypeManager) {
-        $this->nodeTypeManager = $nodeTypeManager;
+    public function __construct(Cms $cms) {
+        $this->cms = $cms;
     }
 
     /**
@@ -47,7 +48,7 @@ class GoNodeAction extends AbstractNodeAction {
             return true;
         }
 
-        $nodeType = $this->nodeTypeManager->getNodeType($node->getType());
+        $nodeType = $this->cms->getNodeType($node);
 
         return $nodeType->getFrontendCallback() ? true : false;
     }
@@ -56,19 +57,14 @@ class GoNodeAction extends AbstractNodeAction {
      * Perform the go node action
      * @return null
      */
-    public function indexAction($locale, NodeModel $nodeModel, $site, $node) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
+    public function indexAction($locale, $site, $revision, $node) {
+        if (!$this->cms->resolveNode($site, $revision, $node)) {
             return;
         }
 
-        $route = $node->getRoute($locale);
+        $url = $node->getUrl($locale, $this->request->getBaseScript());
 
-        $baseUrl = $node->getRootNode()->getBaseUrl($locale);
-        if (!$baseUrl) {
-            $baseUrl = $this->request->getBaseScript();
-        }
-
-        $this->response->setRedirect($baseUrl . $route);
+        $this->response->setRedirect($url);
     }
 
 }

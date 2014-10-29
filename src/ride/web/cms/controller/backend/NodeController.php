@@ -2,42 +2,43 @@
 
 namespace ride\web\cms\controller\backend;
 
-use ride\library\cms\node\NodeModel;
-use ride\library\i18n\I18n;
-
 use ride\web\cms\controller\backend\action\node\LayoutNodeAction;
 use ride\web\cms\controller\backend\action\node\NodeActionManager;
+use ride\web\cms\Cms;
+
+use ride\web\base\controller\AbstractController;
 
 /**
  * Controller for generic node actions
  */
-class NodeController extends AbstractBackendController {
+class NodeController extends AbstractController {
 
     /**
      * Action to go to the previous type of action for the provided node
+     * @param \ride\web\cms\Cms $cms
      * @param \ride\web\cms\controller\backend\action\node\NodeActionManager $nodeActionManager
      * @param string $locale
-     * @param \ride\library\cms\node\NodeModel $nodeModel
      * @param string $site
+     * @param string $revision
      * @param string $node
      * @return null
      */
-    public function defaultAction(NodeActionManager $nodeActionManager, $locale, NodeModel $nodeModel, $site, $node) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
+    public function defaultAction(Cms $cms, NodeActionManager $nodeActionManager, $locale, $site, $revision, $node) {
+        if (!$cms->resolveNode($site, $revision, $node)) {
             return;
         }
 
-        $nodeTypeManager = $nodeModel->getNodeTypeManager();
-        $nodeType = $nodeTypeManager->getNodeType($node->getType());
+        $nodeType = $cms->getNodeType($node);
 
         $urlVars = array(
             'site' => $node->getRootNodeId(),
+            'revision' => $node->getRevision(),
             'node' => $node->getId(),
             'locale' => $locale,
         );
         $redirectUrl = null;
 
-        $action = $this->getLastAction(LayoutNodeAction::NAME);
+        $action = $cms->getLastAction(LayoutNodeAction::NAME);
         if ($action == 'edit') {
             $redirectUrl = $this->getUrl($nodeType->getRouteEdit(), $urlVars);
         } else {
@@ -59,42 +60,47 @@ class NodeController extends AbstractBackendController {
 
     /**
      * Action to clone a node
-     * @param \ride\library\i18n\I18n $i18n
+     * @param \ride\web\cms\Cms $cms
      * @param string $locale
-     * @param \ride\library\cms\node\NodeModel $nodeModel
      * @param string $site
+     * @param string $revision
      * @param string $node
      * @return null
      */
-    public function cloneAction(I18n $i18n, $locale, NodeModel $nodeModel, $site, $node) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
+    public function cloneAction(Cms $cms, $locale, $site, $revision, $node) {
+        if (!$cms->resolveNode($site, $revision, $node)) {
             return;
         }
 
         $referer = $this->request->getQueryParameter('referer');
         if (!$referer) {
             $referer = $this->getUrl('cms.site.detail.locale', array(
-                'locale' => $locale,
                 'site' => $site->getId(),
+                'revision' => $site->getRevision(),
+                'locale' => $locale,
             ));
         }
 
-        if ($this->request->isPost() || $this->request->isDelete()) {
-            $clone = $nodeModel->cloneNode($node);
+        if ($this->request->isPost()) {
+            $clone = $cms->cloneNode($node);
 
             $this->addSuccess('success.node.cloned', array(
                 'node' => $node->getName($locale),
             ));
 
-            $nodeType = $nodeModel->getNodeTypeManager()->getNodeType($clone->getType());
+            $nodeType = $cms->getNodeType($clone);
 
-            $this->response->setRedirect($this->getUrl(
-            	$nodeType->getRouteEdit(), array(
-                    'locale' => $locale,
-                    'site' => $site->getId(),
-            	    'node' => $clone->getId(),
-                )
+            $url = $this->getUrl($nodeType->getRouteEdit(), array(
+                'site' => $site->getId(),
+                'revision' => $clone->getRevision(),
+                'locale' => $locale,
+                'node' => $clone->getId(),
             ));
+            if ($referer) {
+                $url .= '?referer=' . urlencode($referer);
+            }
+
+            $this->response->setRedirect($url);
 
             return;
         }
@@ -105,57 +111,90 @@ class NodeController extends AbstractBackendController {
             'site' => $site,
             'node' => $node,
             'locale' => $locale,
-            'locales' => $i18n->getLocaleCodeList(),
+            'locales' => $cms->getLocales(),
         ));
     }
 
     /**
      * Action to delete a node
-     * @param \ride\library\i18n\I18n $i18n
+     * @param \ride\web\cms\Cms $cms
      * @param string $locale
-     * @param \ride\library\cms\node\NodeModel $nodeModel
      * @param string $site
+     * @param string $revision
      * @param string $node
      * @return null
      */
-    public function deleteAction(I18n $i18n, $locale, NodeModel $nodeModel, $site, $node) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
+    public function deleteAction(Cms $cms, $locale, $site, $revision, $node) {
+        if (!$cms->resolveNode($site, $revision, $node)) {
             return;
         }
 
+        $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');
         if (!$referer) {
             $referer = $this->getUrl('cms.site.detail.locale', array(
                 'locale' => $locale,
                 'site' => $site->getId(),
+                'revision' => $site->getRevision(),
             ));
         }
 
-        if ($this->request->isPost() || $this->request->isDelete()) {
-            $nodeModel->removeNode($node);
+        $form = $this->createFormBuilder();
+        $form->addRow('recursive', 'option', array(
+            'label' => '',
+            'description' => $translator->translate('label.confirm.node.delete.recursive'),
+        ));
+        $form = $form->build();
+
+        if ($form->isSubmitted()) {
+            $data = $form->getData();
+
+            $cms->removeNode($node, $data['recursive']);
 
             $this->addSuccess('success.node.deleted', array(
                 'node' => $node->getName($locale),
             ));
 
-            $this->response->setRedirect($this->getUrl(
-            	'cms.site.detail', array(
-                    'locale' => $locale,
-                    'site' => $site->getId(),
-                )
+            $url = $this->getUrl('cms.site.detail.locale', array(
+                'site' => $site->getId(),
+                'revision' => $node->getRevision(),
+                'locale' => $locale,
+                'node' => $node->getId(),
             ));
+            if ($referer) {
+                $url .= '?referer=' . urlencode($referer);
+            }
+
+            $this->response->setRedirect($url);
 
             return;
         }
 
-        $this->setTemplateView('cms/backend/confirm.form', array(
-            'type' => 'delete',
+        $this->setTemplateView('cms/backend/delete.form', array(
+            'form' => $form->getView(),
             'referer' => $referer,
             'site' => $site,
             'node' => $node,
             'locale' => $locale,
-            'locales' => $i18n->getLocaleCodeList(),
+            'locales' => $cms->getLocales(),
         ));
+    }
+
+    /**
+     * Action to store the collapse status of a node
+     * @param \ride\web\cms\Cms $cms
+     * @param string $locale
+     * @param string $site
+     * @param string $revision
+     * @param string $node
+     * @return null
+     */
+    public function collapseAction(Cms $cms, $locale, $site, $revision, $node) {
+        if (!$cms->resolveNode($site, $revision, $node)) {
+            return;
+        }
+
+        $cms->collapseNode($node);
     }
 
 }

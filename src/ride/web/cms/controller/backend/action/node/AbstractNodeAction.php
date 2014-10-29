@@ -4,12 +4,12 @@ namespace ride\web\cms\controller\backend\action\node;
 
 use ride\library\cms\node\Node;
 
-use ride\web\cms\controller\backend\AbstractBackendController;
+use ride\web\base\controller\AbstractController;
 
 /**
  * Abstract controller of a node action
  */
-abstract class AbstractNodeAction extends AbstractBackendController implements NodeAction {
+abstract class AbstractNodeAction extends AbstractController implements NodeAction {
 
     /**
      * Get the machine name of this action

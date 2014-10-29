@@ -2,24 +2,21 @@
 
 namespace ride\web\cms\controller\backend\action\node;
 
-use ride\library\cms\node\type\NodeTypeManager;
 use ride\library\cms\node\Node;
-use ride\library\cms\node\NodeModel;
-use ride\library\cms\theme\ThemeModel;
-use ride\library\i18n\I18n;
 use ride\library\system\file\browser\FileBrowser;
 use ride\library\template\TemplateFacade;
 use ride\library\validation\exception\ValidationException;
 
 use ride\web\cms\form\TemplatesComponent;
+use ride\web\cms\Cms;
 
 /**
- * Controller of the advanced node action
+ * Controller of the template node action
  */
 class TemplateNodeAction extends AbstractNodeAction {
 
     /**
-     * The name of this action
+     * Name of this action
      * @var string
      */
     const NAME = 'templates';
@@ -31,17 +28,18 @@ class TemplateNodeAction extends AbstractNodeAction {
     const ROUTE = 'cms.node.templates';
 
     /**
-     * Instance of the node type manager
-     * @var \ride\library\cms\node\type\NodeTypeManager
+     * Instance of the CMS facade
+     * @var \ride\web\cms\Cms
      */
-    protected $nodeTypeManager;
+    protected $cms;
 
     /**
-     * Constructs a new go action
-     * @param \ride\library\cms\node\type\NodeTypeManager $nodeTypeManager
+     * Constructs a new template action
+     * @param \ride\web\cms\Cms $cms
+     * @return null
      */
-    public function __construct(NodeTypeManager $nodeTypeManager) {
-        $this->nodeTypeManager = $nodeTypeManager;
+    public function __construct(Cms $cms) {
+        $this->cms = $cms;
     }
 
     /**
@@ -54,7 +52,7 @@ class TemplateNodeAction extends AbstractNodeAction {
             return true;
         }
 
-        $nodeType = $this->nodeTypeManager->getNodeType($node->getType());
+        $nodeType = $this->cms->getNodeType($node);
 
         return $nodeType->getFrontendCallback() ? true : false;
     }
@@ -62,17 +60,17 @@ class TemplateNodeAction extends AbstractNodeAction {
     /**
      * Perform the template node action
      */
-    public function indexAction(TemplateFacade $templateFacade, ThemeModel $themeModel, FileBrowser $fileBrowser, I18n $i18n, $locale, NodeModel $nodeModel, $site, $node) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
+    public function indexAction(TemplateFacade $templateFacade, FileBrowser $fileBrowser, $locale, $site, $revision, $node) {
+        if (!$this->cms->resolveNode($site, $revision, $node)) {
             return;
         }
 
-        $this->setLastAction(self::NAME);
+        $this->cms->setLastAction(self::NAME);
 
-        $templateFacade->setThemeModel($themeModel);
-
+        $referer = $this->request->getQueryParameter('referer');
+        $templateFacade->setThemeModel($this->cms->getThemeModel());
         $templates = array(
-        	'index' => 'cms/frontend/index',
+            'index' => 'cms/frontend/index',
         );
 
         if ($node->getType() == 'page') {
@@ -108,15 +106,23 @@ class TemplateNodeAction extends AbstractNodeAction {
                     'node' => $node->getName($locale)
                 ));
 
-                $this->response->setRedirect($this->request->getUrl());
+                $url = $this->getUrl(self::ROUTE, array(
+                    'site' => $site->getId(),
+                    'revision' => $node->getRevision(),
+                    'locale' => $locale,
+                    'node' => $node->getId(),
+                ));
+                if ($referer) {
+                    $url .= '?referer=' . urlencode($referer);
+                }
+
+                $this->response->setRedirect($url);
 
                 return;
             } catch (ValidationException $validationException) {
                 $this->setValidationException($validationException, $form);
             }
         }
-
-        $referer = $this->request->getQueryParameter('referer');
 
         $this->setTemplateView('cms/backend/node.templates', array(
             'site' => $site,
@@ -125,7 +131,7 @@ class TemplateNodeAction extends AbstractNodeAction {
             'form' => $form->getView(),
             'referer' => $referer,
             'locale' => $locale,
-            'locales' => $i18n->getLocaleCodeList(),
+            'locales' => $this->cms->getLocales(),
         ));
     }
 

@@ -5,12 +5,12 @@ namespace ride\web\cms\controller\backend\action\widget;
 use ride\library\cms\node\Node;
 use ride\library\cms\widget\Widget;
 
-use ride\web\cms\controller\backend\AbstractBackendController;
+use ride\web\base\controller\AbstractController;
 
 /**
  * Abstract controller of a widget action
  */
-abstract class AbstractWidgetAction extends AbstractBackendController implements WidgetAction {
+abstract class AbstractWidgetAction extends AbstractController implements WidgetAction {
 
     /**
      * Get the machine name of this action

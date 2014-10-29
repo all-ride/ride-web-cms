@@ -2,18 +2,12 @@
 
 namespace ride\web\cms\controller\backend\action\widget;
 
-use ride\library\cms\layout\LayoutModel;
 use ride\library\cms\node\Node;
-use ride\library\cms\node\NodeModel;
-use ride\library\cms\theme\ThemeModel;
 use ride\library\cms\widget\Widget;
-use ride\library\cms\widget\WidgetModel;
-use ride\library\i18n\I18n;
-use ride\library\system\file\browser\FileBrowser;
-use ride\library\template\TemplateFacade;
 use ride\library\validation\exception\ValidationException;
 
 use ride\web\cms\controller\widget\StyleWidget;
+use ride\web\cms\Cms;
 
 /**
  * Controller of the style widget action
@@ -44,22 +38,17 @@ class StyleWidgetAction extends AbstractWidgetAction {
 
     /**
      * Action to dispatch to the properties of a widget
-     * @param I18n $i18n
+     * @param \ride\web\cms\Cms $cms
      * @param string $locale
-     * @param ThemeModel $themeModel
-     * @param LayoutModel $layoutModel
-     * @param WidgetModel $widgetModel
-     * @param NodeModel $nodeModel
      * @param string $site
+     * @param string $revision
      * @param string $node
      * @param string $region
      * @param string $widget
-     * @param FileBrowser $fileBrowser
-     * @param TemplateFacade $templateFacade
      * @return null
      */
-    public function indexAction(I18n $i18n, $locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, NodeModel $nodeModel, $site, $node, $region, $widget) {
-        if (!$this->resolveNode($nodeModel, $site, $node) || !$this->resolveRegion($themeModel, $layoutModel, $node, $locale, $region)) {
+    public function indexAction(Cms $cms, $locale, $site, $revision, $node, $region, $widget) {
+        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
             return;
         }
 
@@ -67,7 +56,7 @@ class StyleWidgetAction extends AbstractWidgetAction {
         $widgetProperties = $node->getWidgetProperties($widgetId);
 
         $widget = $site->getWidget($widgetId);
-        $widget = clone $widgetModel->getWidget($widget);
+        $widget = clone $cms->getWidget($widget);
         $widget->setRequest($this->request);
         $widget->setResponse($this->response);
         $widget->setProperties($widgetProperties);
@@ -93,7 +82,6 @@ class StyleWidgetAction extends AbstractWidgetAction {
                 'label' => $translator->translate($styleTranslationKey),
             ));
         }
-        $form->setRequest($this->request);
 
         $form = $form->build();
         if ($form->isSubmitted()) {
@@ -106,7 +94,7 @@ class StyleWidgetAction extends AbstractWidgetAction {
                     $widgetProperties->setWidgetProperty('style.' . $styleOption, $data[$styleOption]);
                 }
 
-                $nodeModel->setNode($node, 'Updated style for widget ' . $widgetId . ' in ' . $node->getName());
+                $cms->saveNode($node, 'Updated style for widget ' . $widgetId . ' in ' . $node->getName());
 
                 $this->addSuccess('success.widget.saved', array(
                     'widget' => $this->getTranslator()->translate('widget.' . $widget->getName()),
@@ -117,6 +105,7 @@ class StyleWidgetAction extends AbstractWidgetAction {
                     array(
                         'locale' => $locale,
                         'site' => $site->getId(),
+                        'revision' => $node->getRevision(),
                         'node' => $node->getId(),
                         'region' => $region,
                     )
@@ -135,7 +124,7 @@ class StyleWidgetAction extends AbstractWidgetAction {
             'node' => $node,
             'referer' => $referer,
             'locale' => $locale,
-            'locales' => $i18n->getLocaleCodeList(),
+            'locales' => $cms->getLocales(),
             'region' => $region,
             'widget' => $widget,
             'widgetId' => $widgetId,

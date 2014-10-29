@@ -2,36 +2,41 @@
 
 namespace ride\web\cms\controller\backend;
 
-use ride\library\cms\node\NodeModel;
-use ride\library\i18n\I18n;
 use ride\library\validation\exception\ValidationException;
+
+use ride\web\cms\Cms;
 
 class RedirectController extends AbstractNodeTypeController {
 
-    public function formAction(I18n $i18n, $locale, NodeModel $nodeModel, $site, $node = null) {
-        $locales = $i18n->getLocaleCodeList();
-        $translator = $i18n->getTranslator();
-
+    public function formAction(Cms $cms, $site, $revision = null, $node = null) {
         if ($node) {
-            if (!$this->resolveNode($nodeModel, $site, $node, 'redirect')) {
+            if (!$cms->resolveNode($site, $revision, $node, 'redirect')) {
                 return;
             }
 
-            $this->setLastAction('edit');
+            $cms->setLastAction('edit');
         } else {
-            if (!$this->resolveNode($nodeModel, $site)) {
+            if (!$this->resolveNode($nodeModel, $site, $revision)) {
                 return;
             }
 
-            $node = $nodeModel->createNode('redirect');
-            $node->setParentNode($site);
+            $node = $cms->createNode('redirect', $site);
         }
 
-        $rootNode = $nodeModel->getNode($node->getRootNodeId(), null, true);
-        $nodeList = $nodeModel->getListFromNodes(array($rootNode), $locale, false);
-        $nodeList = array($rootNode->getId() => '/' . $rootNode->getName($locale)) + $nodeList;
+        $translator = $this->getTranslator();
+        $locales = $cms->getLocales();
 
-        // filter out self
+        $referer = $this->request->getQueryParameter('referer');
+        if (!$referer) {
+            $referer = $this->getUrl('cms.site.detail.locale', array(
+                'site' => $site->getId(),
+                'revision' => $site->getRevision(),
+                'locale' => $locale,
+            ));
+        }
+
+        // get available nodes
+        $nodeList = $cms->getNodeList($site, $locale, true, false);
         if ($node && isset($nodeList[$node->getId()])) {
             unset($nodeList[$node->getId()]);
         }
@@ -92,16 +97,18 @@ class RedirectController extends AbstractNodeTypeController {
                 'trim' => array(),
             ),
         ));
-        $form->addRow('availableLocales', 'select', array(
-            'label' => $translator->translate('label.locales'),
-            'description' => $translator->translate('label.locales.available.description'),
-            'options' => $this->getLocalesOptions($node, $translator, $locales),
-            'multiple' => true,
-            'validators' => array(
-                'required' => array(),
-            )
-        ));
-        $form->setRequest($this->request);
+
+        if ($site->isLocalizationMethodCopy()) {
+            $form->addRow('availableLocales', 'select', array(
+                'label' => $translator->translate('label.locales'),
+                'description' => $translator->translate('label.locales.available.description'),
+                'options' => $this->getLocalesOptions($node, $translator, $locales),
+                'multiple' => true,
+                'validators' => array(
+                    'required' => array(),
+                )
+            ));
+        }
 
         // process form
         $form = $form->build();
@@ -113,7 +120,12 @@ class RedirectController extends AbstractNodeTypeController {
 
                 $node->setName($locale, $data['name']);
                 $node->setRoute($locale, $data['route']);
-                $node->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
+                if ($site->isLocalizationMethodCopy()) {
+                    $node->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
+                } else {
+                    $node->setAvailableLocales($locale);
+                }
+
                 if ($data['redirect-type'] == 'node') {
                     $node->setRedirectNode($locale, $data['redirect-node']);
                     $node->setRedirectUrl($locale, null);
@@ -122,32 +134,29 @@ class RedirectController extends AbstractNodeTypeController {
                     $node->setRedirectUrl($locale, $data['redirect-url']);
                 }
 
-                $nodeModel->setNode($node, (!$node->getId() ? 'Created new redirect ' : 'Updated redirect ') . $node->getName());
+                $cms->saveNode($node, (!$node->getId() ? 'Created new redirect ' : 'Updated redirect ') . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $node->getName($locale),
                 ));
 
-                $this->response->setRedirect($this->getUrl(
-                    'cms.redirect.edit', array(
-                        'locale' => $locale,
-                        'site' => $site->getId(),
-                        'node' => $node->getId(),
-                    )
+                $url = $this->getUrl('cms.redirect.edit', array(
+                    'locale' => $locale,
+                    'site' => $site->getId(),
+                    'revision' => $node->getRevision(),
+                    'node' => $node->getId(),
                 ));
+
+                if ($referer) {
+                    $url .= '?referer=' . urlencode($referer);
+                }
+
+                $this->response->setRedirect($url);
 
                 return;
             } catch (ValidationException $validationException) {
                 $this->setValidationException($validationException, $form);
             }
-        }
-
-        $referer = $this->request->getQueryParameter('referer');
-        if (!$referer) {
-            $referer = $this->getUrl('cms.site.detail.locale', array(
-                'site' => $site->getId(),
-                'locale' => $locale,
-            ));
         }
 
         // show view

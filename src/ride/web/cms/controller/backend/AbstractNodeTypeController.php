@@ -7,10 +7,12 @@ use ride\library\cms\node\NodeProperty;
 use ride\library\i18n\translator\Translator;
 use ride\library\image\ImageUrlGenerator;
 
+use ride\web\base\controller\AbstractController;
+
 /**
  * Abstract controller for a node type
  */
-abstract class AbstractNodeTypeController extends AbstractBackendController {
+abstract class AbstractNodeTypeController extends AbstractController {
 
     /**
      * Value for the inherited value

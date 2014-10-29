@@ -2,9 +2,7 @@
 
 namespace ride\web\cms;
 
-use ride\library\cms\node\NodeModel;
 use ride\library\cms\node\Node;
-use ride\library\cms\theme\ThemeModel;
 use ride\library\event\EventManager;
 use ride\library\event\Event;
 use ride\library\http\Header;
@@ -15,8 +13,7 @@ use ride\library\security\SecurityManager;
 
 use ride\web\base\menu\MenuItem;
 use ride\web\base\menu\Menu;
-use ride\web\cms\node\type\SiteNodeType;
-use ride\web\cms\node\NodeTreeGenerator;
+use ride\web\cms\node\tree\NodeTreeGenerator;
 use ride\web\mvc\view\JsonView;
 use ride\web\mvc\view\TemplateView;
 use ride\web\WebApplication;
@@ -35,7 +32,7 @@ class ApplicationListener {
      */
     const LOG_SOURCE = 'cms';
 
-    public function prepareTemplateView(Event $event, I18n $i18n, NodeModel $nodeModel, NodeTreeGenerator $nodeTreeGenerator, SecurityManager $securityManager) {
+    public function prepareTemplateView(Event $event, Cms $cms, NodeTreeGenerator $nodeTreeGenerator, SecurityManager $securityManager) {
         $web = $event->getArgument('web');
         $response = $web->getResponse();
         if (!$response) {
@@ -65,16 +62,16 @@ class ApplicationListener {
             $site = $node;
         }
 
-        $translator = $i18n->getTranslator();
-
-        $nodeTypes = $nodeModel->getNodeTypeManager()->getNodeTypes();
-        $nodeTree = $nodeTreeGenerator->getTreeHtml($node, $locale);
-        $nodeCreateActions = array();
+        $siteTreeNode = $nodeTreeGenerator->getTree($node, $locale);
 
         $parameters = array(
-            'locale' => $locale,
             'site' => $site->getRootNodeId(),
+            'revision' => $site->getRevision(),
+            'locale' => $locale,
         );
+        $nodeCreateActions = array();
+
+        $nodeTypes = $cms->getNodeTypes();
         foreach ($nodeTypes as $nodeTypeName => $nodeType) {
             $url = $web->getUrl($nodeType->getRouteAdd(), $parameters);
             if ($securityManager->isUrlAllowed($url)) {
@@ -83,12 +80,11 @@ class ApplicationListener {
         }
 
         $template->set('site', $site);
-        $template->set('nodeTree', $nodeTree);
-        $template->set('nodeTypes', $nodeTypes);
+        $template->set('siteTreeNode', $siteTreeNode);
         $template->set('nodeCreateActions', $nodeCreateActions);
     }
 
-    public function prepareTaskbar(Event $event, I18n $i18n, NodeModel $nodeModel, ThemeModel $themeModel, WebApplication $web, SecurityManager $securityManager, EventManager $eventManager) {
+    public function prepareTaskbar(Event $event, Cms $cms, I18n $i18n, WebApplication $web, SecurityManager $securityManager, EventManager $eventManager) {
         $locale = null;
         $request = $web->getRequest();
         $route = $request->getRoute();
@@ -118,27 +114,37 @@ class ApplicationListener {
         $menu = new Menu();
         $menu->setTranslation('label.sites');
 
-        $sites = $nodeModel->getNodesByType('site');
+        $defaultRevision = $cms->getDefaultRevision();
+        $draftRevision = $cms->getDraftRevision();
+
+        $sites = $cms->getSites();
         if ($sites) {
-            foreach ($sites as $nodeId => $node) {
-                $availableLocales = $node->getAvailableLocales();
+            foreach ($sites as $siteId => $site) {
+                $availableLocales = $site->getAvailableLocales();
                 if ($availableLocales == Node::LOCALES_ALL || isset($availableLocales[$locale])) {
                     $siteLocale = $locale;
                 } else {
-                    $siteLocale = each($availableLocales);
-                    $siteLocale = $siteLocale['value'];
+                    $siteLocale = reset($availableLocales);
+                }
+
+                if ($site->hasRevision($draftRevision)) {
+                    $revision = $draftRevision;
+                } elseif ($site->hasRevision($defaultRevision)) {
+                    $revision = $defaultRevision;
+                } else {
+                    $revision = $site->getRevision();
                 }
 
                 $menuItem = new MenuItem();
-                $menuItem->setLabel($node->getName($locale));
+                $menuItem->setLabel($site->getName($locale));
                 $menuItem->setRoute('cms.site.detail.locale', array(
-                    'site' => $node->getId(),
+                    'site' => $site->getId(),
+                    'revision' => $revision,
                     'locale' => $siteLocale,
                 ));
 
                 $menu->addMenuItem($menuItem);
             }
-
         }
 
         $url = $web->getUrl('cms.site.add', array(
@@ -163,7 +169,7 @@ class ApplicationListener {
         $menu = new Menu();
         $menu->setTranslation('label.themes');
 
-        $themes = $themeModel->getThemes();
+        $themes = $cms->getThemes();
         if ($themes) {
             foreach ($themes as $theme) {
                 $menuItem = new MenuItem();
@@ -206,7 +212,7 @@ class ApplicationListener {
      * Sets a error view to the response if a status code above 399 is set
      * @return null
      */
-    public function handleHttpError(Event $event, WebApplication $web, I18n $i18n, NodeModel $nodeModel) {
+    public function handleHttpError(Event $event, Cms $cms, I18n $i18n, WebApplication $web) {
         $request = $web->getRequest();
         $response = $web->getResponse();
 
@@ -222,7 +228,7 @@ class ApplicationListener {
         $site = null;
         $defaultSite = null;
 
-        $sites = $nodeModel->getNodesByType(SiteNodeType::NAME);
+        $sites = $cms->getSites();
         foreach ($sites as $site) {
             if ($site->getBaseUrl($locale) == $baseUrl) {
                 break;

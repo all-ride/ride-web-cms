@@ -63,70 +63,79 @@ class CmsRouteContainerIO implements RouteContainerIO {
 
         $nodeTypeManager = $this->nodeModel->getNodeTypeManager();
         $nodeTypes = $nodeTypeManager->getNodeTypes();
+        $defaultRevision = $this->nodeModel->getDefaultRevision();
 
         $registeredPaths = array();
+        $expiredCallback = array('ride\\web\\cms\\controller\\frontend\\ExpiredController', 'indexAction');
 
-        $nodes = $this->nodeModel->getNodes();
-        foreach ($nodes as $node) {
-            if (!$node->getParent()) {
-                continue;
-            }
-
-            $rootNode = $node->getRootNode();
+        $sites = $this->nodeModel->getSites();
+        foreach ($sites as $siteId => $site) {
+            $nodes = $this->nodeModel->getNodes($siteId, $defaultRevision);
 
             foreach ($this->locales as $locale) {
-                $nodeType = $nodeTypes[$node->getType()];
+                $baseUrl = $site->getBaseUrl($locale);
 
-                $callback = $nodeType->getFrontendCallback();
-                if (!$callback) {
+                foreach ($nodes as $nodeId => $node) {
+                    if (!$node->getParent()) {
+                        continue;
+                    }
+
+                    $nodeType = $nodeTypes[$node->getType()];
+
+                    $callback = $nodeType->getFrontendCallback();
+                    if (!$callback) {
+                        continue;
+                    }
+
+                    if (!$node->isAvailableInLocale($locale)) {
+                        continue;
+                    }
+
+                    $path = $node->getRoute($locale, false);
+                    if (!$path) {
+                        continue;
+                    }
+
+                    $route = new Route($path, $callback, 'cms.front.' . $siteId . '.' . $nodeId . '.' . $locale);
+                    $route->setIsDynamic(true);
+                    $route->setPredefinedArguments(array(
+                        'site' => $siteId,
+                        'node' => $nodeId,
+                    ));
+                    $route->setLocale($locale);
+
+                    if ($baseUrl) {
+                        $route->setBaseUrl($baseUrl);
+                    }
+
+                    $container->addRoute($route);
+
+                    $registeredPaths[$path] = true;
+                }
+            }
+
+            $expiredRoutes = $this->expiredRouteModel->getExpiredRoutes($siteId);
+            foreach ($expiredRoutes as $expiredRoute) {
+                $path = $expiredRoute->getPath();
+                if (isset($registeredPaths[$path]) || $path == '/') {
                     continue;
                 }
 
-                if (!$node->isAvailableInLocale($locale)) {
-                    continue;
-                }
-
-                $path = $node->getRoute($locale, false);
-                if (!$path) {
-                    continue;
-                }
-
-                $route = new Route($path, $callback, 'cms.front.' . $node->getId() . '.' . $locale);
+                $route = new Route($path, $expiredCallback);
                 $route->setIsDynamic(true);
-                $route->setPredefinedArguments(array('node' => $node->getId()));
-                $route->setLocale($locale);
+                $route->setPredefinedArguments(array(
+                    'site' => $siteId,
+                    'node' => $expiredRoute->getNode(),
+                ));
+                $route->setLocale($expiredRoute->getLocale());
 
-                $baseUrl = $rootNode->getBaseUrl($locale);
+                $baseUrl = $expiredRoute->getBaseUrl();
                 if ($baseUrl) {
                     $route->setBaseUrl($baseUrl);
                 }
 
                 $container->addRoute($route);
-
-                $registeredPaths[$path] = true;
             }
-        }
-
-        $expiredCallback = array('ride\\web\\cms\\controller\\frontend\\ExpiredController', 'indexAction');
-
-        $expiredRoutes = $this->expiredRouteModel->getExpiredRoutes();
-        foreach ($expiredRoutes as $expiredRoute) {
-            $path = $expiredRoute->getPath();
-            if (isset($registeredPaths[$path]) || $path == '/') {
-                continue;
-            }
-
-            $route = new Route($path, $expiredCallback);
-            $route->setIsDynamic(true);
-            $route->setPredefinedArguments(array('node' => $expiredRoute->getNode()));
-            $route->setLocale($expiredRoute->getLocale());
-
-            $baseUrl = $expiredRoute->getBaseUrl();
-            if ($baseUrl) {
-                $route->setBaseUrl($baseUrl);
-            }
-
-            $container->addRoute($route);
         }
 
         return $container;

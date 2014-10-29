@@ -5,13 +5,10 @@ namespace ride\web\cms\controller\backend\action\node;
 use ride\library\cms\layout\Layout;
 use ride\library\cms\layout\LayoutModel;
 use ride\library\cms\node\Node;
-use ride\library\cms\node\NodeModel;
 use ride\library\cms\theme\Theme;
-use ride\library\cms\theme\ThemeModel;
-use ride\library\cms\widget\WidgetModel;
-use ride\library\i18n\I18n;
 
 use ride\web\cms\controller\backend\action\widget\WidgetActionManager;
+use ride\web\cms\Cms;
 use ride\web\mvc\controller\AbstractController;
 
 /**
@@ -20,7 +17,7 @@ use ride\web\mvc\controller\AbstractController;
 class LayoutNodeAction extends AbstractNodeAction {
 
     /**
-     * The name of this action
+     * Name of this action
      * @var string
      */
     const NAME = 'layout';
@@ -32,38 +29,37 @@ class LayoutNodeAction extends AbstractNodeAction {
     const ROUTE = 'cms.node.layout';
 
     /**
-     * Session key for the last region
-     * @var string
-     */
-    const SESSION_LAST_REGION = 'cms.region.last.';
-
-    /**
      * Detects the current region and redirects to the region page
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @param string $locale Code of the locale
+     * @param string $site Id of the site
+     * @param string $revision Name of the revision
+     * @param string $node Id of the node
      * @return null
      */
-    public function indexAction($locale, ThemeModel $themeModel, LayoutModel $layoutModel, NodeModel $nodeModel, $site, $node) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
+    public function indexAction(Cms $cms, $locale, $site, $revision, $node) {
+        if (!$cms->resolveNode($site, $revision, $node)) {
             return;
         }
 
-        $this->setLastAction(self::NAME);
+        $cms->setLastAction(self::NAME);
 
         $layout = null;
         if (method_exists($node, 'getLayout') && $layout = $node->getLayout($locale)) {
-            $layout = $layoutModel->getLayout($layout);
+            $layout = $cms->getLayout($layout);
         }
 
         $theme = $node->getTheme();
         if ($theme) {
-            $theme = $themeModel->getTheme($theme);
+            $theme = $cms->getTheme($theme);
         }
 
-        $form = $this->createRegionForm($node, $layoutModel, $layout, $theme);
+        $form = $this->buildRegionForm($node, $cms->getLayoutModel(), $layout, $theme);
         if ($form->isSubmitted()) {
             $data = $form->getData();
             $region = $data['region'];
         } else {
-            $region = $this->getLastRegion($layout !== null);
+            $region = $cms->getLastRegion($layout !== null);
         }
 
         if (!$region || ($region && (($layout && !$layout->hasRegion($region)) && !$theme->hasRegion($region)))) {
@@ -72,7 +68,7 @@ class LayoutNodeAction extends AbstractNodeAction {
             } else {
                 $regions = array();
 
-                $layouts = $layoutModel->getLayouts();
+                $layouts = $cms->getLayouts();
                 foreach ($layouts as $layout) {
                     $regions += $layout->getRegions();
                 }
@@ -86,6 +82,7 @@ class LayoutNodeAction extends AbstractNodeAction {
         $this->response->setRedirect($this->getUrl('cms.node.layout.region', array(
             'locale' => $locale,
             'site' => $site->getId(),
+            'revision' => $node->getRevision(),
             'node' => $node->getId(),
             'region' => $region,
         )));
@@ -93,24 +90,30 @@ class LayoutNodeAction extends AbstractNodeAction {
 
     /**
      * Action to show the region editor
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @param \ride\web\cms\controller\backend\actino\widget\WidgetActionManager $widgetActionManager
+     * @param string $locale Code of the locale
+     * @param string $site Id of the site
+     * @param string $revision Name of the revision
+     * @param string $node Id of the node
+     * @param string $region Name of the region
      * @return null
      */
-    public function regionAction(I18n $i18n, $locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, WidgetActionManager $widgetActionManager, NodeModel $nodeModel, $site, $node, $region) {
+    public function regionAction(Cms $cms, WidgetActionManager $widgetActionManager, $locale, $site, $revision, $node, $region) {
         $theme = null;
         $layout = null;
-        if (!$this->resolveNode($nodeModel, $site, $node) || !$this->resolveRegion($themeModel, $layoutModel, $node, $locale, $region, $theme, $layout)) {
+        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region, $theme, $layout)) {
             return;
         }
 
         $regions = $theme->getRegions();
-
-        $this->setLastAction(self::NAME);
-        $this->setLastRegion($region, isset($regions[$region]) ? 'theme' : 'layout');
-
-        $form = $this->createRegionForm($node, $layoutModel, $layout, $theme, $region);
-
-        $availableWidgets = $widgetModel->getWidgets();
+        $availableWidgets = $cms->getWidgets();
         $inheritedWidgets = $node->getInheritedWidgets($region);
+
+        $cms->setLastAction(self::NAME);
+        $cms->setLastRegion($region, isset($regions[$region]) ? 'theme' : 'layout');
+
+        $form = $this->buildRegionForm($node, $cms->getLayoutModel(), $layout, $theme, $region);
 
         $regionWidgets = $node->getWidgets($region);
         foreach ($regionWidgets as $widgetId => $widget) {
@@ -130,6 +133,7 @@ class LayoutNodeAction extends AbstractNodeAction {
         $baseAction = $this->getUrl('cms.node.layout.region', array(
             'locale' => $locale,
             'site' => $site->getId(),
+            'revision' => $node->getRevision(),
             'node' => $node->getId(),
             'region' => $region,
         ));
@@ -139,7 +143,7 @@ class LayoutNodeAction extends AbstractNodeAction {
             'node' => $node,
             'form' => $form->getView(),
             'locale' => $locale,
-            'locales' => $i18n->getLocaleCodeList(),
+            'locales' => $cms->getLocales(),
             'region' => $region,
             'availableWidgets' => $availableWidgets,
             'regionWidgets' => $regionWidgets,
@@ -151,19 +155,28 @@ class LayoutNodeAction extends AbstractNodeAction {
 
     /**
      * Action to add a widget to the provided region
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @param \ride\web\cms\controller\backend\actino\widget\WidgetActionManager $widgetActionManager
+     * @param string $locale Code of the locale
+     * @param string $site Id of the site
+     * @param string $revision Name of the revision
+     * @param string $node Id of the node
+     * @param string $region Name of the region
+     * @param string $widget Id of the widget instance
+     * @return null
      */
-    public function widgetAddAction($locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, WidgetActionManager $widgetActionManager, NodeModel $nodeModel, $site, $node, $region, $widget) {
-        if (!$this->resolveNode($nodeModel, $site, $node) || !$this->resolveRegion($themeModel, $layoutModel, $node, $locale, $region)) {
+    public function widgetAddAction(Cms $cms, WidgetActionManager $widgetActionManager, $locale, $site, $revision, $node, $region, $widget) {
+        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
             return;
         }
 
         $widgetId = $site->createWidget($widget);
         $node->addWidget($region, $widgetId);
 
-        $nodeModel->setNode($site, 'Created new widget in ' . $site->getName());
-        $nodeModel->setNode($node, 'Added widget to ' . $node->getName());
+        $cms->saveNode($site, 'Created new widget in ' . $site->getName());
+        $cms->saveNode($node, 'Added widget to ' . $node->getName());
 
-        $widget = clone $widgetModel->getWidget($widget);
+        $widget = clone $cms->getWidget($widget);
         $widget->setProperties($node->getWidgetProperties($widgetId));
         $widget->setLocale($locale);
         $widget->setRegion($region);
@@ -186,22 +199,37 @@ class LayoutNodeAction extends AbstractNodeAction {
 
     /**
      * Action to delete a widget from the provided region
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @param string $locale Code of the locale
+     * @param string $site Id of the site
+     * @param string $revision Name of the revision
+     * @param string $node Id of the node
+     * @param string $region Name of the region
+     * @param string $widget Id of the widget instance
+     * @return null
      */
-    public function widgetDeleteAction($locale, ThemeModel $themeModel, LayoutModel $layoutModel, NodeModel $nodeModel, $site, $node, $region, $widget) {
-        if (!$this->resolveNode($nodeModel, $site, $node) || !$this->resolveRegion($themeModel, $layoutModel, $node, $locale, $region)) {
+    public function widgetDeleteAction(Cms $cms, $locale, $site, $revision, $node, $region, $widget) {
+        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
             return;
         }
 
         $node->deleteWidget($region, $widget);
 
-        $nodeModel->setNode($node, 'Deleted widget from ' . $node->getName());
+        $cms->saveNode($node, 'Deleted widget from ' . $node->getName());
     }
 
     /**
      * Action to reorder the widgets of the provided region
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @param string $locale Code of the locale
+     * @param string $site Id of the site
+     * @param string $revision Name of the revision
+     * @param string $node Id of the node
+     * @param string $region Name of the region
+     * @return null
      */
-    public function orderAction($locale, ThemeModel $themeModel, LayoutModel $layoutModel, NodeModel $nodeModel, $site, $node, $region) {
-        if (!$this->resolveNode($nodeModel, $site, $node) || !$this->resolveRegion($themeModel, $layoutModel, $node, $locale, $region)) {
+    public function orderAction(Cms $cms, $locale, $site, $revision, $node, $region) {
+        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
             return;
         }
 
@@ -210,18 +238,19 @@ class LayoutNodeAction extends AbstractNodeAction {
 
         $node->orderWidgets($region, $widgetsValue);
 
-        $nodeModel->setNode($node, 'Reordered widgets on ' . $node->getName());
+        $cms->saveNode($node, 'Reordered widgets on ' . $node->getName());
     }
 
     /**
      * Creates a form to select the region
      * @param \ride\library\cms\node\Node $node
+     * @param \ride\library\cms\layout\LayoutModel $layoutModel
      * @param \ride\library\cms\layout\Layout $layout
      * @param \ride\library\cms\theme\Theme $theme
      * @param string $region
      * @return \ride\library\form\Form
      */
-    protected function createRegionForm(Node $node, LayoutModel $layoutModel, Layout $layout = null, Theme $theme = null, $region = null) {
+    protected function buildRegionForm(Node $node, LayoutModel $layoutModel, Layout $layout = null, Theme $theme = null, $region = null) {
         $regions = array();
 
         if ($layout) {
@@ -249,48 +278,8 @@ class LayoutNodeAction extends AbstractNodeAction {
         $form->addRow('region', 'select', array(
             'options' => $regions,
         ));
-        $form->setRequest($this->request);
 
         return $form->build();
-    }
-
-    /**
-     * Gets the last region type which has been executed.
-     *
-     * This is used to if a user changes node in the UI, he will stay in the
-     * same region if available
-     * @param boolean isLayoutAvailable Flag to see if the layout is available
-     * @return string|null Name of the region if a node has been opened, null
-     * otherwise
-     */
-    protected function getLastRegion($isLayoutAvailable) {
-        if (!$this->request->hasSession()) {
-            return null;
-        }
-
-        $session = $this->request->getSession();
-        $region = null;
-
-        if ($isLayoutAvailable && $session->get(self::SESSION_LAST_REGION . 'type') != 'theme') {
-            $region = $session->get(self::SESSION_LAST_REGION . 'layout');
-        }
-
-        if (!$region) {
-            $region = $session->get(self::SESSION_LAST_REGION . 'theme');
-        }
-
-        return $region;
-    }
-
-    /**
-     * Sets the last region type to the session
-     * @param string $region Name of the last region
-     * @return null
-     */
-    protected function setLastRegion($region, $type) {
-        $session = $this->request->getSession();
-        $session->set(self::SESSION_LAST_REGION . $type, $region);
-        $session->set(self::SESSION_LAST_REGION . 'type', $type);
     }
 
 }

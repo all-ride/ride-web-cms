@@ -2,32 +2,30 @@
 
 namespace ride\web\cms\controller\backend;
 
-use ride\library\cms\node\NodeModel;
-use ride\library\cms\theme\ThemeModel;
-use ride\library\i18n\I18n;
 use ride\library\validation\exception\ValidationException;
+
+use ride\web\cms\Cms;
 
 class FolderController extends AbstractNodeTypeController {
 
-    public function formAction(I18n $i18n, $locale, ThemeModel $themeModel, NodeModel $nodeModel, $site, $node = null) {
-        $themes = $themeModel->getThemes();
-        $locales = $i18n->getLocaleCodeList();
-        $translator = $i18n->getTranslator();
-
+    public function formAction(Cms $cms, $locale, $site, $revision = null, $node = null) {
         if ($node) {
-            if (!$this->resolveNode($nodeModel, $site, $node, 'folder')) {
+            if (!$cms->resolveNode($site, $revision, $node, 'folder')) {
                 return;
             }
 
-            $this->setLastAction('edit');
+            $cms->setLastAction('edit');
         } else {
-            if (!$this->resolveNode($nodeModel, $site)) {
+            if (!$cms->resolveNode($site, $revision)) {
                 return;
             }
 
-            $node = $nodeModel->createNode('folder');
-            $node->setParentNode($site);
+            $node = $cms->createNode('folder', $site);
         }
+
+        $translator = $this->getTranslator();
+        $locales = $cms->getLocales();
+        $themes = $cms->getThemes();
 
         $data = array(
             'name' => $node->getName($locale),
@@ -51,16 +49,18 @@ class FolderController extends AbstractNodeTypeController {
             'description' => $translator->translate('label.theme.description'),
             'options' => $this->getThemeOptions($node, $translator, $themes),
         ));
-        $form->addRow('availableLocales', 'select', array(
-            'label' => $translator->translate('label.locales'),
-            'description' => $translator->translate('label.locales.available.description'),
-            'options' => $this->getLocalesOptions($node, $translator, $locales),
-            'multiple' => true,
-            'validators' => array(
-                'required' => array(),
-            )
-        ));
-        $form->setRequest($this->request);
+
+        if ($site->isLocalizationMethodCopy()) {
+            $form->addRow('availableLocales', 'select', array(
+                'label' => $translator->translate('label.locales'),
+                'description' => $translator->translate('label.locales.available.description'),
+                'options' => $this->getLocalesOptions($node, $translator, $locales),
+                'multiple' => true,
+                'validators' => array(
+                    'required' => array(),
+                )
+            ));
+        }
 
         $form = $form->build();
         if ($form->isSubmitted()) {
@@ -71,9 +71,13 @@ class FolderController extends AbstractNodeTypeController {
 
                 $node->setName($locale, $data['name']);
                 $node->setTheme($this->getOptionValueFromForm($data['theme']));
-                $node->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
+                if ($site->isLocalizationMethodCopy()) {
+                    $node->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
+                } else {
+                    $node->setAvailableLocales($locale);
+                }
 
-                $nodeModel->setNode($node, (!$node->getId() ? 'Created new folder ' : 'Updated folder ') . $node->getName());
+                $cms->saveNode($node, (!$node->getId() ? 'Created new folder ' : 'Updated folder ') . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(
                 	'node' => $node->getName($locale),
@@ -83,6 +87,7 @@ class FolderController extends AbstractNodeTypeController {
                     'cms.folder.edit', array(
                         'locale' => $locale,
                         'site' => $site->getId(),
+                        'revision' => $node->getRevision(),
                         'node' => $node->getId(),
                     )
                 ));
@@ -96,7 +101,8 @@ class FolderController extends AbstractNodeTypeController {
         $referer = $this->request->getQueryParameter('referer');
         if (!$referer) {
             $referer = $this->getUrl('cms.site.detail.locale', array(
-            	'site' => $site->getId(),
+                'site' => $site->getId(),
+            	'revision' => $site->getRevision(),
                 'locale' => $locale,
             ));
         }

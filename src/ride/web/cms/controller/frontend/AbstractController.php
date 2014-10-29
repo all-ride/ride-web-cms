@@ -10,7 +10,7 @@ use ride\web\base\controller\AbstractController as BaseAbstractController;
 /**
  * Abstract controller of the CMS frontend
  */
-class AbstractController extends BaseAbstractController {
+abstract class AbstractController extends BaseAbstractController {
 
     /**
      * Chains the current request to the public web controller

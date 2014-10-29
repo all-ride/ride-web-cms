@@ -2,22 +2,13 @@
 
 namespace ride\web\cms\controller\frontend;
 
-use ride\library\cache\pool\CachePool;
-use ride\library\cms\layout\LayoutModel;
-use ride\library\cms\node\NodeModel;
-use ride\library\cms\theme\ThemeModel;
-use ride\library\cms\widget\WidgetModel;
-use ride\library\event\EventManager;
 use ride\library\http\Response;
 use ride\library\log\Log;
 use ride\library\security\exception\UnauthorizedException;
-use ride\library\router\GenericRouter;
-use ride\library\router\RouteContainer;
 use ride\library\template\TemplateFacade;
 
-use ride\web\cms\node\dispatcher\NodeDispatcher;
-use ride\web\cms\view\NodeTemplateView;
-use ride\web\WebApplication;
+use ride\web\cms\node\dispatcher\NodeDispatcherFactory;
+use ride\web\cms\Cms;
 
 /**
  * Controller of the CMS frontend
@@ -28,17 +19,32 @@ class NodeController extends AbstractController {
      * Dispatches the frontend of a node
      * @return null
 	 */
-	public function indexAction(WebApplication $web, EventManager $eventManager, Log $log, LayoutModel $layoutModel, ThemeModel $themeModel, WidgetModel $widgetModel, TemplateFacade $templateFacade, NodeModel $nodeModel, $node, $locale = null) {
+	public function indexAction(Cms $cms, NodeDispatcherFactory $nodeDispatcherFactory, TemplateFacade $templateFacade, $node, $locale = null) {
         $cache = null;
-
         $i18n = $this->getI18n();
-        if ($locale === null) {
-            $locale = $i18n->getLocale()->getCode();
-        } else {
-            $i18n->setCurrentLocale($locale);
+        $siteLocale = null;
+
+        $site = $cms->getCurrentSite($this->request->getBaseUrl(), $siteLocale);
+        if (!$site) {
+            // not found, try the public web controller
+            return $this->chainWebRequest();
         }
 
-        $nodeDispatcher = $this->getNodeDispatcher($layoutModel, $themeModel, $widgetModel, $nodeModel, $node, $locale, $cache);
+        if ($siteLocale && $locale && $siteLocale != $locale) {
+            // locale inconsistency, not found, try the public web controller
+            return $this->chainWebRequest();
+        } elseif ($siteLocale) {
+            // set the locale of the site
+            $i18n->setCurrentLocale($siteLocale);
+        } elseif ($locale) {
+            // set the requested locale
+            $i18n->setCurrentLocale($locale);
+        } else {
+            // fallback locale
+            $locale = $i18n->getLocale()->getCode();
+        }
+
+        $nodeDispatcher = $nodeDispatcherFactory->createNodeDispatcher($site, $node, $this->request->getBaseScript(), $locale);
         if ($nodeDispatcher) {
             $node = $nodeDispatcher->getNode();
             if ($node->isPublished() && $node->isAvailableInLocale($locale)) {
@@ -50,12 +56,8 @@ class NodeController extends AbstractController {
                 $nodeView = $nodeDispatcher->getView();
                 $nodeView->setTemplateFacade($templateFacade);
 
-                $templateFacade->setThemeModel($themeModel);
+                $templateFacade->setThemeModel($cms->getThemeModel());
                 $templateFacade->setDefaultTheme($nodeView->getTemplate()->getTheme());
-
-                $nodeDispatcher->setDispatcher($web->getDispatcher());
-                $nodeDispatcher->setEventManager($eventManager);
-                $nodeDispatcher->setLog($log);
 
                 $nodeDispatcher->dispatch($this->request, $this->response, $user, $cache);
 
@@ -67,58 +69,6 @@ class NodeController extends AbstractController {
 
         // not found, try the public web controller
         return $this->chainWebRequest();
-    }
-
-    /**
-     * Gets the dispatcher of a node
-     * @param \ride\library\cms\layout\LayoutModel $layoutModel Instance of the
-     * layout model
-     * @param \ride\library\cms\theme\ThemeModel $themeModel Instance of the
-     * theme model
-     * @param \ride\library\cms\widget\WidgetModel $widgetModel Instance of the
-     * widget model
-     * @param \ride\library\cms\node\NodeModel $nodeModel Instance of the node
-     * model
-     * @param string $node Id of the node
-     * @param string $locale Code of the current locale
-     * @param \ride\library\cache\pool\CachePool $cache Cache to store the
-     * dispatcher
-     * @return \ride\web\cms\node\dispatcher\NodeDispatcher|null A node
-     * dispatcher or null when no node could be found
-     */
-    private function getNodeDispatcher(LayoutModel $layoutModel, ThemeModel $themeModel, WidgetModel $widgetModel, NodeModel $nodeModel, $node, $locale, CachePool $cache = null) {
-        if ($cache) {
-            $cacheKey = 'node.dispatcher.' . $node . '.' . $locale;
-
-            $cacheItem = $cache->get($cacheKey);
-            if ($cacheItem->isValid()) {
-                return $cacheItem->getValue();
-            }
-        }
-
-        try {
-            $node = $nodeModel->getNode($node);
-        } catch (NodeNotFoundException $e) {
-            return null;
-        }
-
-        $layout = $layoutModel->getLayout($node->getLayout($locale));
-        $theme = $themeModel->getTheme($node->getTheme());
-
-        $nodeView = new NodeTemplateView($node, $layout, $theme, $locale);
-        $router = new GenericRouter(new RouteContainer());
-        $breadcrumbs = $nodeModel->getBreadcrumbsForNode($node, $this->request->getBaseScript(), $locale);
-
-        $nodeDispatcher = new NodeDispatcher($node, $nodeView, $router, $breadcrumbs);
-        $nodeDispatcher->loadWidgets($widgetModel, $layout->getRegions() + $theme->getRegions());
-
-        if ($cache) {
-            $cacheItem->setValue($nodeDispatcher);
-
-            $cache->set($cacheItem);
-        }
-
-        return $nodeDispatcher;
     }
 
 }

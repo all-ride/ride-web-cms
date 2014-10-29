@@ -3,11 +3,11 @@
 namespace ride\web\cms\controller\backend\action\node;
 
 use ride\library\cms\node\Node;
-use ride\library\cms\node\NodeModel;
 use ride\library\cms\node\NodeProperty;
-use ride\library\i18n\I18n;
 use ride\library\validation\exception\ValidationException;
 use ride\library\validation\ValidationError;
+
+use ride\web\cms\Cms;
 
 /**
  * Controller of the advanced node action
@@ -15,7 +15,7 @@ use ride\library\validation\ValidationError;
 class AdvancedNodeAction extends AbstractNodeAction {
 
     /**
-     * The name of this action
+     * Name of this action
      * @var string
      */
     const NAME = 'advanced';
@@ -29,13 +29,14 @@ class AdvancedNodeAction extends AbstractNodeAction {
     /**
      * Perform the advanced node action
      */
-    public function indexAction(I18n $i18n, $locale, NodeModel $nodeModel, $site, $node) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
+    public function indexAction(Cms $cms, $locale, $site, $revision, $node) {
+        if (!$cms->resolveNode($site, $revision, $node)) {
             return;
         }
 
-        $this->setLastAction(self::NAME);
+        $cms->setLastAction(self::NAME);
 
+        $referer = $this->request->getQueryParameter('referer');
         $ini = $this->getIniFromNodeProperties($node->getProperties());
         $translator = $this->getTranslator();
 
@@ -50,7 +51,6 @@ class AdvancedNodeAction extends AbstractNodeAction {
                 'trim' => array(),
             )
         ));
-        $form->setRequest($this->request);
 
         $form = $form->build();
         if ($form->isSubmitted()) {
@@ -63,21 +63,29 @@ class AdvancedNodeAction extends AbstractNodeAction {
 
                 $node->setProperties($nodeProperties);
 
-                $nodeModel->setNode($node, 'Edited advanced properties of node ' . $node->getName());
+                $cms->saveNode($node, 'Edited advanced properties of node ' . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $node->getName($locale)
                 ));
 
-                $this->response->setRedirect($this->request->getUrl());
+                $url = $this->getUrl(self::ROUTE, array(
+                    'site' => $site->getId(),
+                    'revision' => $node->getRevision(),
+                    'locale' => $locale,
+                    'node' => $node->getId(),
+                ));
+                if ($referer) {
+                    $url .= '?referer=' . urlencode($referer);
+                }
+
+                $this->response->setRedirect($url);
 
                 return;
             } catch (ValidationException $validationException) {
                 $this->setValidationException($validationException, $form);
             }
         }
-
-        $referer = $this->request->getQueryParameter('referer');
 
         $this->setTemplateView('cms/backend/node.advanced', array(
             'site' => $site,
@@ -86,7 +94,7 @@ class AdvancedNodeAction extends AbstractNodeAction {
             'form' => $form->getView(),
             'referer' => $referer,
             'locale' => $locale,
-            'locales' => $i18n->getLocaleCodeList(),
+            'locales' => $cms->getLocales(),
         ));
     }
 

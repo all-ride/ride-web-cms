@@ -2,18 +2,14 @@
 
 namespace ride\web\cms\controller\backend\action\widget;
 
-use ride\library\cms\layout\LayoutModel;
 use ride\library\cms\node\Node;
-use ride\library\cms\node\NodeModel;
-use ride\library\cms\theme\ThemeModel;
 use ride\library\cms\widget\Widget;
-use ride\library\cms\widget\WidgetModel;
-use ride\library\i18n\I18n;
 use ride\library\system\file\browser\FileBrowser;
 use ride\library\template\TemplateFacade;
 use ride\library\validation\exception\ValidationException;
 
 use ride\web\cms\form\TemplatesComponent;
+use ride\web\cms\Cms;
 use ride\web\mvc\controller\AbstractController;
 
 /**
@@ -44,31 +40,28 @@ class TemplateWidgetAction extends AbstractWidgetAction {
     }
 
     /**
-     * Action to dispatch to the properties of a widget
-     * @param I18n $i18n
+     * Action to edit the templates of the widget
+     * @param Cms $cms
+     * @param TemplateFacade $templateFacade
+     * @param FileBrowser $fileBrowser
      * @param string $locale
-     * @param ThemeModel $themeModel
-     * @param LayoutModel $layoutModel
-     * @param WidgetModel $widgetModel
-     * @param NodeModel $nodeModel
      * @param string $site
+     * @param string $revision
      * @param string $node
      * @param string $region
      * @param string $widget
-     * @param FileBrowser $fileBrowser
-     * @param TemplateFacade $templateFacade
      * @return null
      */
-    public function indexAction(I18n $i18n, $locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, NodeModel $nodeModel, $site, $node, $region, $widget, FileBrowser $fileBrowser, TemplateFacade $templateFacade) {
-        if (!$this->resolveNode($nodeModel, $site, $node) || !$this->resolveRegion($themeModel, $layoutModel, $node, $locale, $region)) {
+    public function indexAction(Cms $cms, TemplateFacade $templateFacade, FileBrowser $fileBrowser, $locale, $site, $revision, $node, $region, $widget) {
+        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
             return;
         }
 
-        $templateFacade->setThemeModel($themeModel);
+        $templateFacade->setThemeModel($cms->getThemeModel());
 
         $widgetId = $widget;
         $widget = $site->getWidget($widgetId);
-        $widget = clone $widgetModel->getWidget($widget);
+        $widget = clone $cms->getWidget($widget);
         $widget->setRequest($this->request);
         $widget->setResponse($this->response);
         $widget->setProperties($node->getWidgetProperties($widgetId));
@@ -114,6 +107,7 @@ class TemplateWidgetAction extends AbstractWidgetAction {
                     array(
                     	'locale' => $locale,
                         'site' => $site->getId(),
+                        'revision' => $node->getRevision(),
                         'node' => $node->getId(),
                         'region' => $region,
                     )
@@ -132,7 +126,7 @@ class TemplateWidgetAction extends AbstractWidgetAction {
             'node' => $node,
             'referer' => $referer,
             'locale' => $locale,
-            'locales' => $i18n->getLocaleCodeList(),
+            'locales' => $cms->getLocales(),
             'region' => $region,
             'widget' => $widget,
             'widgetId' => $widgetId,
