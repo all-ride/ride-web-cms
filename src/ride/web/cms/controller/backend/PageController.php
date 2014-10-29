@@ -2,35 +2,40 @@
 
 namespace ride\web\cms\controller\backend;
 
-use ride\library\cms\layout\LayoutModel;
-use ride\library\cms\node\NodeModel;
-use ride\library\cms\theme\ThemeModel;
-use ride\library\i18n\translator\Translator;
-use ride\library\i18n\I18n;
 use ride\library\image\ImageUrlGenerator;
 use ride\library\validation\exception\ValidationException;
 
+use ride\web\cms\Cms;
+
 class PageController extends AbstractNodeTypeController {
 
-    public function formAction(I18n $i18n, $locale, ImageUrlGenerator $imageUrlGenerator, LayoutModel $layoutModel, ThemeModel $themeModel, NodeModel $nodeModel, $site, $node = null) {
-        $themes = $themeModel->getThemes();
-        $layouts = $layoutModel->getLayouts();
-        $locales = $i18n->getLocaleCodeList();
-        $translator = $i18n->getTranslator();
-
+    public function formAction(Cms $cms, $locale, ImageUrlGenerator $imageUrlGenerator, $site, $revision, $node = null) {
         if ($node) {
-            if (!$this->resolveNode($nodeModel, $site, $node, 'page')) {
+            if (!$cms->resolveNode($site, $revision, $node, 'page')) {
                 return;
             }
 
-            $this->setLastAction('edit');
+            $cms->setLastAction('edit');
         } else {
-            if (!$this->resolveNode($nodeModel, $site)) {
+            if (!$cms->resolveNode($site, $revision)) {
                 return;
             }
 
-            $node = $nodeModel->createNode('page');
-            $node->setParentNode($site);
+            $node = $cms->createNode('page', $site);
+        }
+
+        $translator = $this->getTranslator();
+        $locales = $cms->getLocales();
+        $themes = $cms->getThemes();
+        $layouts = $cms->getLayouts();
+
+        $referer = $this->request->getQueryParameter('referer');
+        if (!$referer) {
+            $referer = $this->getUrl('cms.site.detail.locale', array(
+                'site' => $site->getId(),
+            	'revision' => $site->getRevision(),
+                'locale' => $locale,
+            ));
         }
 
         // gather data
@@ -98,16 +103,18 @@ class PageController extends AbstractNodeTypeController {
                 'required' => array(),
             )
         ));
-        $form->addRow('availableLocales', 'select', array(
-            'label' => $translator->translate('label.locales'),
-            'description' => $translator->translate('label.locales.available.description'),
-            'options' => $this->getLocalesOptions($node, $translator, $locales),
-            'multiple' => true,
-            'validators' => array(
-                'required' => array(),
-            )
-        ));
-        $form->setRequest($this->request);
+
+        if ($site->isLocalizationMethodCopy()) {
+            $form->addRow('availableLocales', 'select', array(
+                'label' => $translator->translate('label.locales'),
+                'description' => $translator->translate('label.locales.available.description'),
+                'options' => $this->getLocalesOptions($node, $translator, $locales),
+                'multiple' => true,
+                'validators' => array(
+                    'required' => array(),
+                )
+            ));
+        }
 
         // process form
         $form = $form->build();
@@ -124,34 +131,36 @@ class PageController extends AbstractNodeTypeController {
                 $node->setRoute($locale, $data['route']);
                 $node->setLayout($locale, $data['layout']);
                 $node->setTheme($this->getOptionValueFromForm($data['theme']));
-                $node->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
 
-                $nodeModel->setNode($node, (!$node->getId() ? 'Created new page ' : 'Updated page ') . $node->getName());
+                if ($site->isLocalizationMethodCopy()) {
+                    $node->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
+                } else {
+                    $node->setAvailableLocales($locale);
+                }
+
+                $cms->saveNode($node, (!$node->getId() ? 'Created new page ' : 'Updated page ') . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $node->getName($locale),
                 ));
 
-                $this->response->setRedirect($this->getUrl(
-                    'cms.page.edit', array(
-                        'locale' => $locale,
-                        'site' => $site->getId(),
-                        'node' => $node->getId(),
-                    )
+                $url = $this->getUrl('cms.page.edit', array(
+                    'locale' => $locale,
+                    'site' => $site->getId(),
+                    'revision' => $node->getRevision(),
+                    'node' => $node->getId(),
                 ));
+
+                if ($referer) {
+                    $url .= '?referer=' . urlencode($referer);
+                }
+
+                $this->response->setRedirect($url);
 
                 return;
             } catch (ValidationException $validationException) {
                 $this->setValidationException($validationException, $form);
             }
-        }
-
-        $referer = $this->request->getQueryParameter('referer');
-        if (!$referer) {
-            $referer = $this->getUrl('cms.site.detail.locale', array(
-            	'site' => $site->getId(),
-                'locale' => $locale,
-            ));
         }
 
         if (!$layouts) {

@@ -137,24 +137,6 @@
             ]
         },
         {
-            "class": "ride\\library\\system\\file\\File",
-            "id": "cms.expired",
-            "calls": [
-                {
-                    "method": "__construct",
-                    "arguments": [
-                        {
-                            "name": "path",
-                            "type": "parameter",
-                            "properties": {
-                                "key": "cms.file.expired"
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "interfaces": "ride\\library\\cms\\expired\\io\\ExpiredRouteIO",
             "class": "ride\\library\\cms\\expired\\io\\XmlExpiredRouteIO",
             "id": "xml",
@@ -163,11 +145,11 @@
                     "method": "__construct",
                     "arguments": [
                         {
-                            "name": "file",
+                            "name": "directory",
                             "type": "dependency",
                             "properties": {
                                 "interface": "ride\\library\\system\\file\\File",
-                                "id": "cms.expired"
+                                "id": "cms.node"
                             }
                         }
                     ]
@@ -257,6 +239,30 @@
                             "type": "dependency",
                             "properties": {
                                 "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\GoNodeAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeAction",
+                    "arguments": [
+                        {
+                            "name": "nodeAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\PreviewNodeAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeAction",
+                    "arguments": [
+                        {
+                            "name": "nodeAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\PublishNodeAction"
                             }
                         }
                     ]
@@ -454,6 +460,43 @@
             "interfaces": "ride\\web\\mvc\\view\\TemplateView",
             "class": "ride\\web\\mvc\\view\\TemplateView",
             "id": "widget"
+        },
+        {
+            "interfaces": "ride\\web\\cms\\node\\dispatcher\\NodeDispatcherFactory",
+            "class": "ride\\web\\cms\\node\\dispatcher\\GenericNodeDispatcherFactory",
+            "id": "generic",
+            "calls": [
+                "setEventManager",
+                "setLog"
+            ]
+        },
+        {
+            "interfaces": "ride\\web\\cms\\node\\tree\\NodeTreeGenerator",
+            "class": "ride\\web\\cms\\node\\tree\\GenericNodeTreeGenerator",
+            "id": "generic",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "translator",
+                            "type": "call",
+                            "properties": {
+                                "interface": "ride\\library\\i18n\\I18n",
+                                "method": "getTranslator"
+                            }
+                        },
+                        {
+                            "name": "actions",
+                            "type": "call",
+                            "properties": {
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\NodeActionManager",
+                                "method": "getNodeActions"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
             "interfaces": "ride\\library\\cms\\content\\mapper\\ContentMapper",

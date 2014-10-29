@@ -8,21 +8,21 @@ use ride\library\validation\exception\ValidationException;
 use ride\web\cms\Cms;
 
 /**
- * Controller of the error node action
+ * Controller of the publish node action
  */
-class ErrorNodeAction extends AbstractNodeAction {
+class PublishNodeAction extends AbstractNodeAction {
 
     /**
      * Name of this action
      * @var string
      */
-    const NAME = 'error';
+    const NAME = 'publish';
 
     /**
      * Route of this action
      * @var string
      */
-    const ROUTE = 'cms.site.error';
+    const ROUTE = 'cms.node.publish';
 
     /**
      * Checks if this action is available for the node
@@ -30,38 +30,46 @@ class ErrorNodeAction extends AbstractNodeAction {
      * @return boolean True if available
      */
     public function isAvailableForNode(Node $node) {
-        return !$node->hasParent();
+        return !$node->getRootNode()->isAutoPublish();
     }
 
     /**
-     * Perform the error node action
+     * Perform the publish node action
      */
-    public function indexAction(Cms $cms, $locale, $site, $revision) {
-        $node = $site;
-        if (!$cms->resolveNode($site, $revision, $node, null, true)) {
+    public function indexAction(Cms $cms, $locale, $site, $revision, $node) {
+        if (!$cms->resolveNode($site, $revision, $node)) {
             return;
         }
 
-        $cms->setLastAction(self::NAME);
-
         $translator = $this->getTranslator();
-        $referer = $this->request->getQueryParameter('referer');
-        $nodeList = $cms->getNodeList($node, $locale);
+        $defaultRevision = $cms->getDefaultRevision();
 
         $data = array(
-            'node404' => $site->get('error.404'),
-            'node403' => $site->get('error.403'),
+            'revision' => $defaultRevision,
+            'recursive' => true,
         );
 
+        $revisions = $site->getRevisions();
+        if (!isset($revisions[$defaultRevision])) {
+            $revisions[$defaultRevision] = $defaultRevision;
+        }
+        unset($revisions[$node->getRevision()]);
+
         $form = $this->createFormBuilder($data);
-        $form->addRow('node404', 'select', array(
-            'label' => $translator->translate('label.node.404'),
-            'options' => $nodeList,
+        $form->addRow('revision', 'select', array(
+            'label' => $translator->translate('label.revision'),
+            'description' => $translator->translate('label.revision.publish.description'),
+            'options' => $revisions,
+            'validators' => array(
+                'required' => array(),
+            ),
         ));
-        $form->addRow('node403', 'select', array(
-            'label' => $translator->translate('label.node.403'),
-            'options' => $nodeList,
+        $form->addRow('recursive', 'option', array(
+            'label' => $translator->translate('label.recursive'),
+            'description' => $translator->translate('label.recursive.publish.description'),
         ));
+
+        $referer = $this->request->getQueryParameter('referer');
 
         $form = $form->build();
         if ($form->isSubmitted()) {
@@ -70,16 +78,11 @@ class ErrorNodeAction extends AbstractNodeAction {
 
                 $data = $form->getData();
 
-                foreach ($data as $statusCode => $errorNode) {
-                    $statusCode = str_replace('node', '', $statusCode);
+                $cms->publishNode($node, $data['revision'], $data['recursive']);
 
-                    $site->set('error.' . $statusCode, $errorNode);
-                }
-
-                $cms->saveNode($site, "Set error pages for " . $site->getName());
-
-                $this->addSuccess('success.node.saved', array(
-                    'node' => $site->getName($locale)
+                $this->addSuccess('success.node.published', array(
+                    'node' => $node->getName($locale),
+                    'revision' => $data['revision'],
                 ));
 
                 $url = $this->getUrl(self::ROUTE, array(
@@ -100,7 +103,7 @@ class ErrorNodeAction extends AbstractNodeAction {
             }
         }
 
-        $this->setTemplateView('cms/backend/site.error', array(
+        $this->setTemplateView('cms/backend/node.publish', array(
             'site' => $site,
             'node' => $node,
             'form' => $form->getView(),

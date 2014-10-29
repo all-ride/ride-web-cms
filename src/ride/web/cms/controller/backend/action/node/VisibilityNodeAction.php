@@ -3,18 +3,18 @@
 namespace ride\web\cms\controller\backend\action\node;
 
 use ride\library\cms\node\Node;
-use ride\library\cms\node\NodeModel;
 use ride\library\i18n\translator\Translator;
-use ride\library\i18n\I18n;
 use ride\library\validation\exception\ValidationException;
 
+use ride\web\cms\Cms;
+
 /**
- * Controller of the advanced node action
+ * Controller of the visibility node action
  */
 class VisibilityNodeAction extends AbstractNodeAction {
 
     /**
-     * The name of this action
+     * Name of this action
      * @var string
      */
     const NAME = 'visibility';
@@ -28,12 +28,15 @@ class VisibilityNodeAction extends AbstractNodeAction {
     /**
      * Perform the advanced node action
      */
-    public function indexAction(I18n $i18n, $locale, NodeModel $nodeModel, $site, $node) {
-        if (!$this->resolveNode($nodeModel, $site, $node)) {
+    public function indexAction(Cms $cms, $locale, $site, $revision, $node) {
+        if (!$cms->resolveNode($site, $revision, $node)) {
             return;
         }
 
-        $this->setLastAction(self::NAME);
+        $cms->setLastAction(self::NAME);
+
+        $translator = $this->getTranslator();
+        $referer = $this->request->getQueryParameter('referer');
 
         $data = array(
             'published' => $node->get(Node::PROPERTY_PUBLISH, 'inherit', false),
@@ -42,8 +45,8 @@ class VisibilityNodeAction extends AbstractNodeAction {
             'security' => $node->get(Node::PROPERTY_SECURITY, 'inherit', false),
         );
 
-        $nodeTypeManager = $nodeModel->getNodeTypeManager();
-        $nodeType = $nodeTypeManager->getNodeType($node->getType());
+        $nodeType = $cms->getNodeType($node);
+
         $isFrontendNode = $nodeType->getFrontendCallback() || $node->getLevel() === 0 ? true : false;
         if ($isFrontendNode) {
             $data['hide'] = array();
@@ -54,8 +57,6 @@ class VisibilityNodeAction extends AbstractNodeAction {
                 $data['hide']['breadcrumbs'] = 'breadcrumbs';
             }
         }
-
-        $translator = $this->getTranslator();
 
         $form = $this->createFormBuilder($data);
         $form->addRow('published', 'option', array(
@@ -69,10 +70,10 @@ class VisibilityNodeAction extends AbstractNodeAction {
                 'trim' => array(),
             ),
             'validators' => array(
-            	'regex' => array(
-            	    'required' => false,
+                'regex' => array(
+                    'required' => false,
                     'regex' => '/2([0-9]){3}-([0-9]){2}-([0-9]){2} ([0-9]){2}:([0-9]){2}:([0-9]){2}/',
-            	    'error.regex' => 'error.validation.date.cms',
+                    'error.regex' => 'error.validation.date.cms',
                 ),
             ),
         ));
@@ -93,7 +94,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
             'label' => $translator->translate('label.allow'),
             'options' => $this->getSecurityOptions($node, $translator),
             'validators' => array(
-            	'required' => array(),
+                'required' => array(),
             ),
         ));
 
@@ -101,13 +102,12 @@ class VisibilityNodeAction extends AbstractNodeAction {
             $form->addRow('hide', 'option', array(
                 'label' => $translator->translate('label.hide'),
                 'options' => array(
-            	    'menu' => $translator->translate('label.hide.menu'),
-            	    'breadcrumbs' => $translator->translate('label.hide.breadcrumbs'),
+                    'menu' => $translator->translate('label.hide.menu'),
+                    'breadcrumbs' => $translator->translate('label.hide.breadcrumbs'),
                 ),
                 'multiple' => true,
             ));
         }
-        $form->setRequest($this->request);
 
         $form = $form->build();
         if ($form->isSubmitted()) {
@@ -132,13 +132,23 @@ class VisibilityNodeAction extends AbstractNodeAction {
                     $node->setHideInBreadcrumbs(isset($data['hide']['breadcrumbs']), $inherit);
                 }
 
-                $nodeModel->setNode($node, 'Set visibility of ' . $node->getName());
+                $cms->saveNode($node, 'Set visibility of ' . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $node->getName($locale)
                 ));
 
-                $this->response->setRedirect($this->request->getUrl());
+                $url = $this->getUrl(self::ROUTE, array(
+                    'site' => $site->getId(),
+                    'revision' => $node->getRevision(),
+                    'locale' => $locale,
+                    'node' => $node->getId(),
+                ));
+                if ($referer) {
+                    $url .= '?referer=' . urlencode($referer);
+                }
+
+                $this->response->setRedirect($url);
 
                 return;
             } catch (ValidationException $exception) {
@@ -161,15 +171,13 @@ class VisibilityNodeAction extends AbstractNodeAction {
             }
         }
 
-        $referer = $this->request->getQueryParameter('referer');
-
         $this->setTemplateView('cms/backend/node.visibility', array(
             'site' => $site,
             'node' => $node,
             'form' => $form->getView(),
             'referer' => $referer,
             'locale' => $locale,
-            'locales' => $i18n->getLocaleCodeList(),
+            'locales' => $cms->getLocales(),
         ));
     }
 

@@ -14,54 +14,46 @@ use ride\web\cms\node\type\RedirectNodeType;
  */
 class RedirectController extends AbstractController {
 
-	/**
+    /**
      * Dispatches the frontend of a redirect node
      * @param integer $node Id of the node
      * @return null
-	 */
-	public function indexAction(NodeModel $nodeModel, I18n $i18n, $node, $locale = null) {
-	    try {
-	        $node = $nodeModel->getNode($node, RedirectNodeType::NAME);
-	    } catch (NodeNotFoundException $exception) {
-	        $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
+     */
+    public function indexAction(Cms $cms, I18n $i18n, $site, $node, $locale = null) {
+        if (!$cms->resolveNode($site, null, $node, RedirectNodeType::NAME) {
+            return;
+        }
 
-	        return;
-	    }
+        if ($locale === null) {
+            $locale = $i18n->getLocale()->getCode();
+        } else {
+            $i18n->setCurrentLocale($locale);
+        }
 
-	    if ($locale === null) {
-	        $locale = $i18n->getLocale()->getCode();
-	    } else {
-	        $i18n->setCurrentLocale($locale);
-	    }
+        $path = $this->request->getBasePath(true);
+        if (!$path || $path !== $node->getRoute($locale)) {
+            return $this->chainWebRequest();
+        }
 
-	    $path = $this->request->getBasePath(true);
-	    if (!$path || $path !== $node->getRoute($locale)) {
-	    	return $this->chainWebRequest();
-	    }
+        $url = $node->getRedirectUrl($locale);
+        if ($url) {
+            $this->response->setRedirect($url);
 
-	    $url = $node->getRedirectUrl($locale);
-	    if ($url) {
-	        $this->response->setRedirect($url);
+            return;
+        }
 
-	        return;
-	    }
+        $node = $node->getRedirectNode($locale);
+        if (!$node) {
+            throw new CmsException('No redirect properties set to this node for locale "' . $locale . '".');
+        }
 
-	    $node = $node->getRedirectNode($locale);
-	    if (!$node) {
-	        throw new CmsException('No redirect properties set to this node for locale "' . $locale . '".');
-	    }
+        if (!$cms->resolveNode($site->getId(), $site->getRevision(), $node)) {
+            return;
+        }
 
-	    try {
-	        $node = $nodeModel->getNode($node);
-	    } catch (NodeNotFoundException $exception) {
-	        $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
+        $redirectUrl = $this->request->getBaseScript() . $node->getRoute($locale);
 
-	        return;
-	    }
-
-	    $redirectUrl = $this->request->getBaseScript() . $node->getRoute($locale);
-
-	    $this->response->setRedirect($redirectUrl);
-	}
+        $this->response->setRedirect($redirectUrl);
+    }
 
 }

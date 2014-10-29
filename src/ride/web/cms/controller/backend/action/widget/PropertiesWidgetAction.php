@@ -2,16 +2,12 @@
 
 namespace ride\web\cms\controller\backend\action\widget;
 
-use ride\library\cms\layout\LayoutModel;
 use ride\library\cms\node\Node;
-use ride\library\cms\node\NodeModel;
-use ride\library\cms\theme\ThemeModel;
 use ride\library\cms\widget\Widget;
-use ride\library\cms\widget\WidgetModel;
 use ride\library\http\Response;
-use ride\library\i18n\I18n;
 use ride\library\reflection\Invoker;
 
+use ride\web\cms\Cms;
 use ride\web\mvc\controller\AbstractController;
 use ride\web\mvc\view\TemplateView;
 
@@ -45,15 +41,15 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
     /**
      * Action to dispatch to the properties of a widget
      */
-    public function indexAction(I18n $i18n, $locale, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, NodeModel $nodeModel, $site, $node, $region, $widget, Invoker $invoker) {
-        if (!$this->resolveNode($nodeModel, $site, $node) || !$this->resolveRegion($themeModel, $layoutModel, $node, $locale, $region)) {
+    public function indexAction(Cms $cms, $locale, $site, $revision, $node, $region, $widget, Invoker $invoker) {
+        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
             return;
         }
 
         $widgetId = $widget;
 
         $widget = $site->getWidget($widgetId);
-        $widget = clone $widgetModel->getWidget($widget);
+        $widget = clone $cms->getWidget($widget);
         $widget->setRequest($this->request);
         $widget->setResponse($this->response);
         $widget->setProperties($node->getWidgetProperties($widgetId));
@@ -74,7 +70,7 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
         }
 
         if ($invoker->invoke($propertiesCallback)) {
-            $nodeModel->setNode($node, 'Updated properties for widget ' . $widgetId . ' in ' . $node->getName());
+            $cms->saveNode($node, 'Updated properties for widget ' . $widgetId . ' in ' . $node->getName());
 
             $this->addSuccess('success.widget.saved', array(
             	'widget' => $this->getTranslator()->translate('widget.' . $widget->getName()),
@@ -85,7 +81,8 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
         if (!$widgetView && !$this->response->getBody() && $this->response->getStatusCode() == Response::STATUS_CODE_OK) {
             $this->response->setRedirect($this->getUrl('cms.node.layout.region', array(
                 'locale' => $locale,
-            	'site' => $site->getId(),
+                'site' => $site->getId(),
+            	'revision' => $node->getRevision(),
             	'node' => $node->getId(),
             	'region' => $region,
             )));
@@ -110,7 +107,7 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
             'node' => $node,
             'referer' => $referer,
             'locale' => $locale,
-            'locales' => $i18n->getLocaleCodeList(),
+            'locales' => $cms->getLocales(),
             'region' => $region,
             'widget' => $widget,
             'widgetId' => $widgetId,

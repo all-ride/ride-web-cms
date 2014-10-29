@@ -215,8 +215,9 @@ class AbstractWidget extends AbstractController implements Widget {
      */
     public function getNodeList(NodeModel $nodeModel, $includeRootNode = true) {
         $node = $this->properties->getNode();
+
         $rootNodeId = $node->getRootNodeId();
-        $rootNode = $nodeModel->getNode($rootNodeId, null, true);
+        $rootNode = $nodeModel->getNode($rootNodeId, $node->getRevision(), $rootNodeId, null, true);
 
         $nodeList = $nodeModel->getListFromNodes(array($rootNode), $this->locale, true);
 
