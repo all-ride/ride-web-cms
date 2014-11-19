@@ -153,24 +153,51 @@ class AbstractWidget extends AbstractController implements Widget {
 
     /**
      * Gets the available templates for the provided namespace
-     * @param string $namespace
+     * @param string $namespace Relative path inside the theme directory of the
+     * templates
+     * @param string $widget Name of the widget, if set, needs to match in the
+     * template meta
+     * @param string $action Name of the action, if set, needs to match in the
+     * template meta
      * @return array Array with the relative path to the template resource as
      * key and the name of the template as value
      */
-    public function getAvailableTemplates($namespace) {
+    public function getAvailableTemplates($namespace, $widget = null, $action = null) {
         $themeModel = $this->dependencyInjector->get('ride\\library\\cms\\theme\\ThemeModel');
 
         $templateFacade = $this->dependencyInjector->get('ride\\library\\template\\TemplateFacade');
         $templateFacade->setThemeModel($themeModel);
 
-        $files = $templateFacade->getFiles($namespace, $this->properties->getNode()->getTheme());
+        $theme = $this->properties->getNode()->getTheme();
+        $engine = null;
+        $files = $templateFacade->getFiles($namespace, $theme, $engine);
         foreach ($files as $path => $name) {
             if (strpos($name, 'properties') === 0) {
                 unset($files[$path]);
+
+                continue;
+            }
+
+            $template = $templateFacade->createTemplate($path);
+            $meta = $templateFacade->getTemplateMeta($template);
+
+            if ($widget && (!isset($meta['widget']) || $meta['widget'] != $widget)) {
+                unset($files[$path]);
+
+                continue;
+            }
+            if ($action && (!isset($meta['action']) || $meta['action'] != $action)) {
+                unset($files[$path]);
+
+                continue;
+            }
+
+            if (isset($meta['name'])) {
+                $files[$path] = $meta['name'];
             }
         }
 
-        ksort($files);
+        sort($files);
 
         return $files;
     }

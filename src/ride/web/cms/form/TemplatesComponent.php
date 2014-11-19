@@ -34,8 +34,8 @@ class TemplatesComponent extends AbstractComponent {
 
             $file = $templateFacade->getFile($template);
 
-            $data['file'][$name] = $file;
-            $data['content'][$name] = file_get_contents($data['file'][$name]);
+            $data['file'][$name] = $file->getPath();
+            $data['content'][$name] = $file->read();
 
             // add the id to the template path
             $path = explode('/view/', $data['file'][$name], 2);
