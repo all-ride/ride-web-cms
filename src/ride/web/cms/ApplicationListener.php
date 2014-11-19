@@ -254,7 +254,7 @@ class ApplicationListener {
 
         // dispatch the error page
         $routeContainer = $web->getRouter()->getRouteContainer();
-        $route = $routeContainer->getRouteById('cms.front.' . $node . '.' . $locale);
+        $route = $routeContainer->getRouteById('cms.front.' . $site->getId() . '.' . $node . '.' . $locale);
         if (!$route) {
             $route = $routeContainer->getRouteById('cms.node.frontend.locale');
             $route->setArguments(array('node' => $node, 'locale' => $locale));
