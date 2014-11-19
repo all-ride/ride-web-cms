@@ -163,6 +163,8 @@ class AbstractWidget extends AbstractController implements Widget {
      * key and the name of the template as value
      */
     public function getAvailableTemplates($namespace, $widget = null, $action = null) {
+        $translator = $this->getTranslator();
+
         $themeModel = $this->dependencyInjector->get('ride\\library\\cms\\theme\\ThemeModel');
 
         $templateFacade = $this->dependencyInjector->get('ride\\library\\template\\TemplateFacade');
@@ -192,7 +194,9 @@ class AbstractWidget extends AbstractController implements Widget {
                 continue;
             }
 
-            if (isset($meta['name'])) {
+            if (isset($meta['translation'])) {
+                $files[$path] = $translator->translate($meta['translation']);
+            } elseif (isset($meta['name'])) {
                 $files[$path] = $meta['name'];
             }
         }
