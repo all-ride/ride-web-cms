@@ -201,7 +201,7 @@ class AbstractWidget extends AbstractController implements Widget {
             }
         }
 
-        sort($files);
+        asort($files);
 
         return $files;
     }
