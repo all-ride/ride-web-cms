@@ -180,7 +180,7 @@ class AbstractWidget extends AbstractController implements Widget {
                 continue;
             }
 
-            $template = $templateFacade->createTemplate($path);
+            $template = $templateFacade->createTemplate($path, null, $theme);
             $meta = $templateFacade->getTemplateMeta($template);
 
             if ($widget && (!isset($meta['widget']) || $meta['widget'] != $widget)) {
