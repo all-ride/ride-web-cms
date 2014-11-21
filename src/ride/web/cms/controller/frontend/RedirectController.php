@@ -8,6 +8,7 @@ use ride\library\cms\node\NodeModel;
 use ride\library\i18n\I18n;
 
 use ride\web\cms\node\type\RedirectNodeType;
+use ride\web\cms\Cms;
 
 /**
  * Controller of the frontend for the redirect nodes

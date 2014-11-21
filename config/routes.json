@@ -267,14 +267,14 @@
         },
         {
             "path": "/nodes/%node%",
-            "controller": "ride\\web\\cms\\controller\\frontend\\NodeController",
+            "controller": "ride\\web\\cms\\controller\\frontend\\FrontController",
             "action": "indexAction",
             "id": "cms.node.frontend",
             "dynamic": true
         },
         {
             "path": "/nodes/%node%/%locale%",
-            "controller": "ride\\web\\cms\\controller\\frontend\\NodeController",
+            "controller": "ride\\web\\cms\\controller\\frontend\\FrontController",
             "action": "indexAction",
             "id": "cms.node.frontend.locale",
             "dynamic": true
