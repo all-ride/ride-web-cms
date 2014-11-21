@@ -16,7 +16,7 @@ class RedirectController extends AbstractNodeTypeController {
 
             $cms->setLastAction('edit');
         } else {
-            if (!$this->resolveNode($nodeModel, $site, $revision)) {
+            if (!$cms->resolveNode($site, $revision)) {
                 return;
             }
 
