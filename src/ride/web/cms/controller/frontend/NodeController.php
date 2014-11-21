@@ -2,8 +2,8 @@
 
 namespace ride\web\cms\controller\frontend;
 
+use ride\library\cms\exception\NodeNotFoundException;
 use ride\library\http\Response;
-use ride\library\log\Log;
 use ride\library\security\exception\UnauthorizedException;
 use ride\library\template\TemplateFacade;
 
@@ -24,8 +24,9 @@ class NodeController extends AbstractController {
         $i18n = $this->getI18n();
         $siteLocale = null;
 
-        $site = $cms->getCurrentSite($this->request->getBaseUrl(), $siteLocale);
-        if (!$site) {
+        try {
+            $site = $cms->getCurrentSite($this->request->getBaseUrl(), $siteLocale);
+        } catch (NodeNotFoundException $exception) {
             // not found, try the public web controller
             return $this->chainWebRequest();
         }
