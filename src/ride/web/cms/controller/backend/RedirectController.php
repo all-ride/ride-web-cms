@@ -8,7 +8,7 @@ use ride\web\cms\Cms;
 
 class RedirectController extends AbstractNodeTypeController {
 
-    public function formAction(Cms $cms, $site, $revision = null, $node = null) {
+    public function formAction(Cms $cms, $locale, $site, $revision = null, $node = null) {
         if ($node) {
             if (!$cms->resolveNode($site, $revision, $node, 'redirect')) {
                 return;
