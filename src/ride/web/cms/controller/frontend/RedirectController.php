@@ -20,7 +20,7 @@ class RedirectController extends AbstractController {
      * @return null
      */
     public function indexAction(Cms $cms, I18n $i18n, $site, $node, $locale = null) {
-        if (!$cms->resolveNode($site, null, $node, RedirectNodeType::NAME) {
+        if (!$cms->resolveNode($site, null, $node, RedirectNodeType::NAME)) {
             return;
         }
 
