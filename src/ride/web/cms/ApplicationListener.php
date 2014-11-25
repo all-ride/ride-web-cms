@@ -8,6 +8,7 @@ use ride\library\event\Event;
 use ride\library\http\Header;
 use ride\library\http\Response;
 use ride\library\i18n\I18n;
+use ride\library\mvc\message\Message;
 use ride\library\mvc\Request;
 use ride\library\security\SecurityManager;
 
@@ -250,6 +251,18 @@ class ApplicationListener {
         $node = $site->get('error.' . $statusCode);
         if (!$node) {
             return;
+        }
+
+        // resolve the locale
+        $locales = $site->getAvailableLocales();
+        if (!isset($locales[$locale])) {
+            $locale = array_pop($locales);
+            $i18n->setCurrentLocale($locale);
+
+            $message = $i18n->getTranslator()->translate('error.unauthorized');
+
+            $response->getMessageContainer()->removeAll();
+            $response->addMessage(new Message($message, Message::TYPE_ERROR));
         }
 
         // dispatch the error page
