@@ -4,6 +4,7 @@ namespace ride\web\cms\controller\frontend;
 
 use ride\library\cms\exception\NodeNotFoundException;
 use ride\library\http\Response;
+use ride\library\security\exception\AuthenticationException;
 use ride\library\security\exception\UnauthorizedException;
 use ride\library\template\TemplateFacade;
 
@@ -49,7 +50,12 @@ class NodeController extends AbstractController {
         if ($nodeDispatcher) {
             $node = $nodeDispatcher->getNode();
             if ($node->isPublished() && $node->isAvailableInLocale($locale)) {
-                $user = $this->getUser();
+                try {
+                    $user = $this->getUser();
+                } catch (AuthenticationException $exception) {
+                    $user = null;
+                }
+                
                 if (!$node->isAllowed($user)) {
                     throw new UnauthorizedException();
                 }

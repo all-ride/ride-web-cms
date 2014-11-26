@@ -135,10 +135,11 @@ class Cms extends LibraryCms {
 
         $this->request->getSession()->set(self::SESSION_COLLAPSED_NODES, $collapsedNodes);
 
-        if ($this->user) {
-            $this->user->setPreference(self::SESSION_COLLAPSED_NODES, $collapsedNodes);
+        $user = $this->securityManager->getUser();
+        if ($user) {
+            $user->setPreference(self::SESSION_COLLAPSED_NODES, $collapsedNodes);
 
-            $this->securityManager->getSecurityModel()->saveUser($this->user);
+            $this->securityManager->getSecurityModel()->saveUser($user);
         }
 
         return $isCollapsed;
@@ -150,8 +151,9 @@ class Cms extends LibraryCms {
      * a boolean as value
      */
     public function getCollapsedNodes() {
-        if ($this->user) {
-            $collapsedNodes = $this->user->getPreference(self::SESSION_COLLAPSED_NODES, array());
+        $user = $this->securityManager->getUser();
+        if ($user) {
+            $collapsedNodes = $user->getPreference(self::SESSION_COLLAPSED_NODES, array());
         } else {
             $collapsedNodes = array();
         }
