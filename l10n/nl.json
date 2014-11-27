@@ -31,6 +31,8 @@
     "label.folder": "Map",
     "label.folder.description": "Geef de naam van de map",
     "label.hide": "Verberg",
+    "label.hide.anonymous": "Verberg voor anonieme gebruikers",
+    "label.hide.authenticated": "Verberg voor geauthentificeerde gebruikers",
     "label.hide.breadcrumbs": "Verberg in de broodkruimels",
     "label.hide.menu": "Verberg in the menus",
     "label.html": "HTML",
