@@ -56,6 +56,12 @@ class VisibilityNodeAction extends AbstractNodeAction {
             if ($node->hideInBreadcrumbs()) {
                 $data['hide']['breadcrumbs'] = 'breadcrumbs';
             }
+            if ($node->hideForAnonymousUsers()) {
+                $data['hide']['anonymous'] = 'anonymous';
+            }
+            if ($node->hideForAuthenticatedUsers()) {
+                $data['hide']['authenticated'] = 'authenticated';
+            }
         }
 
         $form = $this->createFormBuilder($data);
@@ -104,6 +110,8 @@ class VisibilityNodeAction extends AbstractNodeAction {
                 'options' => array(
                     'menu' => $translator->translate('label.hide.menu'),
                     'breadcrumbs' => $translator->translate('label.hide.breadcrumbs'),
+                    'anonymous' => $translator->translate('label.hide.anonymous'),
+                    'authenticated' => $translator->translate('label.hide.authenticated'),
                 ),
                 'multiple' => true,
             ));
@@ -130,6 +138,8 @@ class VisibilityNodeAction extends AbstractNodeAction {
 
                     $node->setHideInMenu(isset($data['hide']['menu']), $inherit);
                     $node->setHideInBreadcrumbs(isset($data['hide']['breadcrumbs']), $inherit);
+                    $node->setHideForAnonymousUsers(isset($data['hide']['anonymous']), $inherit);
+                    $node->setHideForAuthenticatedUsers(isset($data['hide']['authenticated']), $inherit);
                 }
 
                 $cms->saveNode($node, 'Set visibility of ' . $node->getName());

@@ -36,6 +36,8 @@
     "label.folder": "Folder",
     "label.folder.description": "Enter the name of the folder",
     "label.hide": "Hide",
+    "label.hide.anonymous": "Hide for anonymous users",
+    "label.hide.authenticated": "Hide for authenticated users",
     "label.hide.breadcrumbs": "Hide in the breadcrumbs",
     "label.hide.menu": "Hide in the menus",
     "label.html": "HTML",
