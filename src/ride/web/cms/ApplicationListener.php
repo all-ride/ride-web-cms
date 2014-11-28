@@ -255,7 +255,7 @@ class ApplicationListener {
 
         // resolve the locale
         $locales = $site->getAvailableLocales();
-        if (!isset($locales[$locale])) {
+        if ($locales != Node::LOCALES_ALL && !isset($locales[$locale])) {
             $locale = array_pop($locales);
             $i18n->setCurrentLocale($locale);
 
