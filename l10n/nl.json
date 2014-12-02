@@ -12,6 +12,8 @@
     "button.theme.delete": "Verwijder dit thema",
     "button.templates": "Templates",
     "cache.control.cms": "CMS cache",
+    "error.validation.date.cms": "%value% is niet in het juiste formaat",
+    "error.route.used.node": "Route '%route%' is already used by node %node%",
     "label.allow": "Toegang",
     "label.allow.everybody": "Iedereen",
     "label.allow.anonymous": "Anonieme gebruikers",
