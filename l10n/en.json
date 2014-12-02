@@ -13,6 +13,7 @@
     "button.templates": "Templates",
     "cache.control.cms": "CMS cache",
     "error.validation.date.cms": "%value% is not in the correct format",
+    "error.route.used.node": "Route '%route%' is already used by node %node%",
     "label.allow": "Allow",
     "label.allow.everybody": "Everybody",
     "label.allow.anonymous": "Anonymous users",
