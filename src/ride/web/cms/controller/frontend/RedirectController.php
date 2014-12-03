@@ -48,7 +48,9 @@ class RedirectController extends AbstractController {
             throw new CmsException('No redirect properties set to this node for locale "' . $locale . '".');
         }
 
-        if (!$cms->resolveNode($site->getId(), $site->getRevision(), $node)) {
+        $revision = $site->getRevision();
+        $site = $site->getId();
+        if (!$cms->resolveNode($site, $revision, $node)) {
             return;
         }
 

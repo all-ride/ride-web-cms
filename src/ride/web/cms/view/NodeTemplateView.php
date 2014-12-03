@@ -30,6 +30,7 @@ class NodeTemplateView extends TemplateView {
         $template->set('app', array(
             'cms' => array(
                 'node' => $node,
+                'site' => $node->getRootNodeId(),
             ),
             'locale' => $locale
         ));
@@ -113,6 +114,7 @@ class NodeTemplateView extends TemplateView {
                     $template->setTheme($this->template->getTheme());
 
                     $widgetApp = $template->get('app');
+                    $widgetApp['cms']['site'] = $app['cms']['site'];
                     $widgetApp['cms']['node'] = $app['cms']['node'];
                     $widgetApp['cms']['context'] = $app['cms']['context'];
                     $widgetApp['cms']['region'] = $region;
