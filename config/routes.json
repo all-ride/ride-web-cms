@@ -169,8 +169,8 @@
         {
             "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/order",
             "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
-            "action": "widgetOrderAction",
-            "id": "cms.node.content.order",
+            "action": "orderAction",
+            "id": "cms.node.content.region.order",
             "methods": "POST"
         },
         {
@@ -178,13 +178,6 @@
             "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
             "action": "sectionAddAction",
             "id": "cms.node.content.section.add",
-            "methods": "POST"
-        },
-        {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/sections/order",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
-            "action": "sectionOrderAction",
-            "id": "cms.node.content.section.order",
             "methods": "POST"
         },
         {

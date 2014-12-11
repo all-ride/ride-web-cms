@@ -154,6 +154,33 @@ class ContentNodeAction extends AbstractNodeAction {
     }
 
     /**
+     * Action to reorder the sections and widgets of a region
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @param string $locale Code of the locale
+     * @param string $site Id of the site
+     * @param string $revision Name of the revision
+     * @param string $node Id of the node
+     * @param string $region Name of the region
+     * @return null
+     */
+    public function orderAction(Cms $cms, $locale, $site, $revision, $node, $region) {
+        $theme = null;
+        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region, $theme)) {
+            return;
+        }
+
+        $order = $this->request->getBodyParameter('order', array());
+        foreach ($order as $section => $blocks) {
+            $order[str_replace('section', '', $section)] = $blocks;
+            unset($order[$section]);
+        }
+
+        $node->orderSections($region, $order);
+
+        $cms->saveNode($node, 'Reordered sections and widgets from region ' . $region . ' on node ' . $node->getName());
+    }
+
+    /**
      * Action to show the HTML from a section
      * @param \ride\web\cms\Cms $cms Facade to the CMS
      * @param \ride\web\cms\controller\backend\action\widget\WidgetActionManager $widgetActionManager
@@ -224,7 +251,6 @@ class ContentNodeAction extends AbstractNodeAction {
         $this->setSectionView($cms, $widgetActionManager, $site, $node, $locale, $region, $section);
     }
 
-
     /**
      * Action to dispatch to the properties of a widget
      * @param \ride\web\cms\Cms $cms
@@ -292,29 +318,6 @@ class ContentNodeAction extends AbstractNodeAction {
             'section' => $section,
             'form' => $form->getView(),
         ));
-    }
-
-    /**
-     * Action to reorder the sections of a region
-     * @param \ride\web\cms\Cms $cms Facade to the CMS
-     * @param string $locale Code of the locale
-     * @param string $site Id of the site
-     * @param string $revision Name of the revision
-     * @param string $node Id of the node
-     * @param string $region Name of the region
-     * @return null
-     */
-    public function sectionOrderAction(Cms $cms, $locale, $site, $revision, $node, $region) {
-        $theme = null;
-        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region, $theme)) {
-            return;
-        }
-
-        $order = $this->request->getBodyParameter('order', array());
-
-        $node->orderSections($region, $order);
-
-        $cms->saveNode($node, 'Reordered sections from region ' . $region . ' on node ' . $node->getName());
     }
 
     /**
