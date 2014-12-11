@@ -351,7 +351,19 @@ class GenericNodeDispatcher implements NodeDispatcher {
 
                         $dispatchedViews[$this->region][$this->section][$this->block][$widgetId] = $view;
                     }
+
+                    if (!$dispatchedViews[$this->region][$this->section][$this->block]) {
+                        unset($dispatchedViews[$this->region][$this->section][$this->block]);
+                    }
                 }
+
+                if (!$dispatchedViews[$this->region][$this->section]) {
+                    unset($dispatchedViews[$this->region][$this->section]);
+                }
+            }
+
+            if (!$dispatchedViews[$this->region]) {
+                unset($dispatchedViews[$this->region]);
             }
         }
 
