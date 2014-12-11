@@ -169,16 +169,50 @@
         {
             "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/order",
             "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
-            "action": "orderAction",
+            "action": "widgetOrderAction",
             "id": "cms.node.layout.order",
             "methods": "POST"
         },
         {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/widget/%widget%",
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "action": "sectionAddAction",
+            "id": "cms.node.layout.section.add",
+            "methods": "POST"
+        },
+        {
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections/order",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "action": "sectionOrderAction",
+            "id": "cms.node.layout.section.order",
+            "methods": "POST"
+        },
+        {
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections/%section%",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "action": "sectionDeleteAction",
+            "id": "cms.node.layout.section.delete",
+            "methods": "DELETE"
+        },
+        {
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections/%section%/layout/%layout%",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "action": "sectionLayoutAction",
+            "id": "cms.node.layout.section.layout",
+            "methods": "POST"
+        },
+        {
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections/%section%/style",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "action": "sectionStyleAction",
+            "id": "cms.node.content.section.style"
+        },
+        {
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections/%section%/block/%block%/widget/%widget%",
             "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
             "action": "widgetAddAction",
             "id": "cms.node.layout.widget.add",
-            "methods": "post"
+            "methods": "POST"
         },
         {
             "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/widget/%widget%/cache",
@@ -187,11 +221,11 @@
             "id": "cms.node.layout.widget.cache"
         },
         {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/widget/%widget%/delete",
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections/%section%/block/%block%/widget/%widget%",
             "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
             "action": "widgetDeleteAction",
             "id": "cms.node.layout.widget.delete",
-            "methods": "POST"
+            "methods": "DELETE"
         },
         {
             "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/meta",
@@ -212,7 +246,7 @@
             "id": "cms.node.publish"
         },
         {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/widget/%widget%/properties",
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections/%section%/block/%block%/widget/%widget%/properties",
             "controller": "ride\\web\\cms\\controller\\backend\\action\\widget\\PropertiesWidgetAction",
             "action": "indexAction",
             "id": "cms.widget.properties"

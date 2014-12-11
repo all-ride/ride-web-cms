@@ -34,7 +34,7 @@ class Cms extends LibraryCms {
      * Session key for the last region
      * @var string
      */
-    const SESSION_LAST_REGION = 'cms.region.last.';
+    const SESSION_LAST_REGION = 'cms.region.last';
 
     /**
      * Constructs a new CMS facade
@@ -173,8 +173,8 @@ class Cms extends LibraryCms {
      * page, he will come in the advanced page of the other node
      * @param string $default Default action to return when the last action is
      * not set
-     * @return string|null Action type if a node has been opened, null
-     * otherwise
+     * @return string|null Action type if a node has been opened, provided
+     * default value otherwise
      */
     public function getLastAction($default = null) {
         if (!$this->request->hasSession()) {
@@ -199,27 +199,17 @@ class Cms extends LibraryCms {
      *
      * This is used to if a user changes node in the UI, he will stay in the
      * same region if available
-     * @param boolean isLayoutAvailable Flag to see if the layout is available
-     * @return string|null Name of the region if a node has been opened, null
+     * @param string $default Default region to return when the last region is
+     * not set
+     * @return string|null Name of the region if set, provided default value
      * otherwise
      */
-    public function getLastRegion($isLayoutAvailable) {
+    public function getLastRegion($default = null) {
         if (!$this->request->hasSession()) {
-            return null;
+            return $default;
         }
 
-        $session = $this->request->getSession();
-        $region = null;
-
-        if ($isLayoutAvailable && $session->get(self::SESSION_LAST_REGION . 'type') != 'theme') {
-            $region = $session->get(self::SESSION_LAST_REGION . 'layout');
-        }
-
-        if (!$region) {
-            $region = $session->get(self::SESSION_LAST_REGION . 'theme');
-        }
-
-        return $region;
+        return $this->request->getSession()->get(self::SESSION_LAST_REGION, $default);
     }
 
     /**
@@ -227,10 +217,9 @@ class Cms extends LibraryCms {
      * @param string $region Name of the last region
      * @return null
      */
-    public function setLastRegion($region, $type) {
+    public function setLastRegion($region) {
         $session = $this->request->getSession();
-        $session->set(self::SESSION_LAST_REGION . $type, $region);
-        $session->set(self::SESSION_LAST_REGION . 'type', $type);
+        $session->set(self::SESSION_LAST_REGION, $region);
     }
 
 }

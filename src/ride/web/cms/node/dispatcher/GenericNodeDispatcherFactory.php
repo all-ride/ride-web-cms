@@ -74,15 +74,13 @@ class GenericNodeDispatcherFactory implements NodeDispatcherFactory {
      * Constructs a new node dispatcher factory
      * @param \ride\library\cms\node\NodeModel $nodeModel
      * @param \ride\library\cms\theme\ThemeModel $themeModel
-     * @param \ride\library\cms\layout\LayoutModel $layoutModel
      * @param \ride\library\cms\widget\WidgetModel $widgetModel
      * @param \ride\library\mvc\dispatcher\Dispatcher $dispatcher
      * @return null
      */
-    public function __construct(NodeModel $nodeModel, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, Dispatcher $dispatcher) {
+    public function __construct(NodeModel $nodeModel, ThemeModel $themeModel, WidgetModel $widgetModel, Dispatcher $dispatcher) {
         $this->nodeModel = $nodeModel;
         $this->themeModel = $themeModel;
-        $this->layoutModel = $layoutModel;
         $this->widgetModel = $widgetModel;
         $this->dispatcher = $dispatcher;
     }
@@ -142,15 +140,14 @@ class GenericNodeDispatcherFactory implements NodeDispatcherFactory {
             return null;
         }
 
-        $layout = $this->layoutModel->getLayout($node->getLayout($locale));
         $theme = $this->themeModel->getTheme($node->getTheme());
 
-        $nodeView = new NodeTemplateView($node, $layout, $theme, $locale);
+        $nodeView = new NodeTemplateView($node, $theme, $locale);
         $router = new GenericRouter(new RouteContainer());
         $breadcrumbs = $this->nodeModel->getBreadcrumbsForNode($node, $baseUrl, $locale);
 
         $nodeDispatcher = new GenericNodeDispatcher($node, $nodeView, $router, $breadcrumbs);
-        $nodeDispatcher->loadWidgets($this->widgetModel, $layout->getRegions() + $theme->getRegions());
+        $nodeDispatcher->loadWidgets($this->widgetModel, $theme->getRegions());
 
         if ($this->cachePool) {
             $cacheItem->setValue($nodeDispatcher);

@@ -41,7 +41,7 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
     /**
      * Action to dispatch to the properties of a widget
      */
-    public function indexAction(Cms $cms, $locale, $site, $revision, $node, $region, $widget, Invoker $invoker) {
+    public function indexAction(Cms $cms, $locale, $site, $revision, $node, $region, $section, $block, $widget, Invoker $invoker) {
         if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
             return;
         }
@@ -94,8 +94,8 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
             return;
         }
 
-        $inheritedWidgets = $node->getInheritedWidgets($region);
-        if (isset($inheritedWidgets[$widgetId])) {
+        $inheritedWidgets = $node->getInheritedWidgets($region, $section);
+        if (isset($inheritedWidgets[$block][$widgetId])) {
             $this->addWarning('warning.widget.properties.inherited');
         }
 
@@ -109,6 +109,8 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
             'locale' => $locale,
             'locales' => $cms->getLocales(),
             'region' => $region,
+            'section' => $section,
+            'block' => $block,
             'widget' => $widget,
             'widgetId' => $widgetId,
             'widgetName' => $this->getTranslator()->translate('widget.' . $widget->getName()),
