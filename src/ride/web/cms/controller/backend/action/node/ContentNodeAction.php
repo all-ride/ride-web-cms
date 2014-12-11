@@ -13,21 +13,21 @@ use ride\web\cms\Cms;
 use ride\web\mvc\controller\AbstractController;
 
 /**
- * Controller of the layout node action
+ * Controller of the content node action
  */
-class LayoutNodeAction extends AbstractNodeAction {
+class ContentNodeAction extends AbstractNodeAction {
 
     /**
      * Name of this action
      * @var string
      */
-    const NAME = 'layout';
+    const NAME = 'content';
 
     /**
      * Route of this action
      * @var string
      */
-    const ROUTE = 'cms.node.layout';
+    const ROUTE = 'cms.node.content';
 
     /**
      * Name of the default layout
@@ -67,7 +67,7 @@ class LayoutNodeAction extends AbstractNodeAction {
             $region = array_shift($regions);
         }
 
-        $this->response->setRedirect($this->getUrl('cms.node.layout.region', array(
+        $this->response->setRedirect($this->getUrl('cms.node.content.region', array(
             'locale' => $locale,
             'site' => $site->getId(),
             'revision' => $node->getRevision(),
@@ -123,7 +123,7 @@ class LayoutNodeAction extends AbstractNodeAction {
             $this->processSectionWidgets($node, $locale, $region, $section, $availableWidgets, $regionWidgets[$section], $inheritedRegionWidgets[$section]);
         }
 
-        $baseAction = $this->getUrl('cms.node.layout.region', array(
+        $baseAction = $this->getUrl('cms.node.content.region', array(
             'locale' => $locale,
             'site' => $site->getId(),
             'revision' => $node->getRevision(),
@@ -136,7 +136,7 @@ class LayoutNodeAction extends AbstractNodeAction {
             $this->addWarning('warning.layouts.none');
         }
 
-        $this->setTemplateView('cms/backend/node.layout', array(
+        $this->setTemplateView('cms/backend/node.content', array(
             'site' => $site,
             'node' => $node,
             'form' => $form->getView(),
@@ -264,7 +264,7 @@ class LayoutNodeAction extends AbstractNodeAction {
                 $cms->saveNode($node, 'Updated style for section ' . $section . ' in region ' . $region . ' of node ' . $node->getName());
 
                 $this->response->setRedirect($this->getUrl(
-                    'cms.node.layout',
+                    'cms.node.content.region',
                     array(
                         'locale' => $locale,
                         'site' => $site->getId(),
@@ -366,6 +366,8 @@ class LayoutNodeAction extends AbstractNodeAction {
         $widget->setProperties($node->getWidgetProperties($widgetId));
         $widget->setLocale($locale);
         $widget->setRegion($region);
+        $widget->setSection($section);
+        $widget->setBlock($block);
 
         if ($widget instanceof AbstractController) {
             $widget->setConfig($this->config);

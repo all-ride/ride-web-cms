@@ -432,6 +432,8 @@ class GenericNodeDispatcher implements NodeDispatcher {
         $widget->setIdentifier($widgetId);
         $widget->setLocale($this->locale);
         $widget->setRegion($this->region);
+        $widget->setSection($this->section);
+        $widget->setBlock($this->block);
 
         $route = $request->getRoute();
         $route->setIsDynamic(false);

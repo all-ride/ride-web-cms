@@ -27,7 +27,7 @@ class TemplateWidgetAction extends AbstractWidgetAction {
      * Route of this action
      * @var string
      */
-    const ROUTE = 'cms.widget.templates';
+    const ROUTE = 'cms.node.content.widget.templates';
 
     /**
      * Checks if this action is available for the widget
@@ -103,7 +103,7 @@ class TemplateWidgetAction extends AbstractWidgetAction {
                 ));
 
                 $this->response->setRedirect($this->getUrl(
-                    'cms.node.layout',
+                    'cms.node.content.region',
                     array(
                     	'locale' => $locale,
                         'site' => $site->getId(),

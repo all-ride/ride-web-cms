@@ -155,77 +155,95 @@
             "id": "cms.node.go"
         },
         {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
             "action": "indexAction",
-            "id": "cms.node.layout"
+            "id": "cms.node.content"
         },
         {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
             "action": "regionAction",
-            "id": "cms.node.layout.region"
+            "id": "cms.node.content.region"
         },
         {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/order",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/order",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
             "action": "widgetOrderAction",
-            "id": "cms.node.layout.order",
+            "id": "cms.node.content.order",
             "methods": "POST"
         },
         {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/sections",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
             "action": "sectionAddAction",
-            "id": "cms.node.layout.section.add",
+            "id": "cms.node.content.section.add",
             "methods": "POST"
         },
         {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections/order",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/sections/order",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
             "action": "sectionOrderAction",
-            "id": "cms.node.layout.section.order",
+            "id": "cms.node.content.section.order",
             "methods": "POST"
         },
         {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections/%section%",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/sections/%section%",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
             "action": "sectionDeleteAction",
-            "id": "cms.node.layout.section.delete",
+            "id": "cms.node.content.section.delete",
             "methods": "DELETE"
         },
         {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections/%section%/layout/%layout%",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/sections/%section%/layout/%layout%",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
             "action": "sectionLayoutAction",
-            "id": "cms.node.layout.section.layout",
+            "id": "cms.node.content.section.layout",
             "methods": "POST"
         },
         {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections/%section%/style",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/sections/%section%/style",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
             "action": "sectionStyleAction",
             "id": "cms.node.content.section.style"
         },
         {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections/%section%/block/%block%/widget/%widget%",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/sections/%section%/block/%block%/widget/%widget%",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
             "action": "widgetAddAction",
-            "id": "cms.node.layout.widget.add",
+            "id": "cms.node.content.widget.add",
             "methods": "POST"
         },
         {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/widget/%widget%/cache",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/widget/%widget%/cache",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
             "action": "widgetCacheAction",
-            "id": "cms.node.layout.widget.cache"
+            "id": "cms.node.content.widget.cache"
         },
         {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections/%section%/block/%block%/widget/%widget%",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction",
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/sections/%section%/block/%block%/widget/%widget%",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
             "action": "widgetDeleteAction",
-            "id": "cms.node.layout.widget.delete",
+            "id": "cms.node.content.widget.delete",
             "methods": "DELETE"
+        },
+        {
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/sections/%section%/block/%block%/widget/%widget%/properties",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\widget\\PropertiesWidgetAction",
+            "action": "indexAction",
+            "id": "cms.node.content.widget.properties"
+        },
+        {
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/widget/%widget%/style",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\widget\\StyleWidgetAction",
+            "action": "indexAction",
+            "id": "cms.node.content.widget.style"
+        },
+        {
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/widget/%widget%/templates",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\widget\\TemplateWidgetAction",
+            "action": "indexAction",
+            "id": "cms.node.content.widget.templates"
         },
         {
             "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/meta",
@@ -244,24 +262,6 @@
             "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\PublishNodeAction",
             "action": "indexAction",
             "id": "cms.node.publish"
-        },
-        {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/sections/%section%/block/%block%/widget/%widget%/properties",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\widget\\PropertiesWidgetAction",
-            "action": "indexAction",
-            "id": "cms.widget.properties"
-        },
-        {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/widget/%widget%/style",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\widget\\StyleWidgetAction",
-            "action": "indexAction",
-            "id": "cms.widget.style"
-        },
-        {
-            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/layout/%region%/widget/%widget%/templates",
-            "controller": "ride\\web\\cms\\controller\\backend\\action\\widget\\TemplateWidgetAction",
-            "action": "indexAction",
-            "id": "cms.widget.templates"
         },
         {
             "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/templates",
