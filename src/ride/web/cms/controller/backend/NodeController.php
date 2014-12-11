@@ -2,7 +2,7 @@
 
 namespace ride\web\cms\controller\backend;
 
-use ride\web\cms\controller\backend\action\node\LayoutNodeAction;
+use ride\web\cms\controller\backend\action\node\ContentNodeAction;
 use ride\web\cms\controller\backend\action\node\NodeActionManager;
 use ride\web\cms\Cms;
 
@@ -38,7 +38,7 @@ class NodeController extends AbstractController {
         );
         $redirectUrl = null;
 
-        $action = $cms->getLastAction(LayoutNodeAction::NAME);
+        $action = $cms->getLastAction(ContentNodeAction::NAME);
         if ($action == 'edit') {
             $redirectUrl = $this->getUrl($nodeType->getRouteEdit(), $urlVars);
         } else {
