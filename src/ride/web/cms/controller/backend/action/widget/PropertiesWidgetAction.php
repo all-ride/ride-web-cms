@@ -26,7 +26,7 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
      * Route of this action
      * @var string
      */
-    const ROUTE = 'cms.widget.properties';
+    const ROUTE = 'cms.node.content.widget.properties';
 
     /**
      * Checks if this action is available for the widget
@@ -41,7 +41,7 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
     /**
      * Action to dispatch to the properties of a widget
      */
-    public function indexAction(Cms $cms, $locale, $site, $revision, $node, $region, $widget, Invoker $invoker) {
+    public function indexAction(Cms $cms, $locale, $site, $revision, $node, $region, $section, $block, $widget, Invoker $invoker) {
         if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
             return;
         }
@@ -55,6 +55,8 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
         $widget->setProperties($node->getWidgetProperties($widgetId));
         $widget->setLocale($locale);
         $widget->setRegion($region);
+        $widget->setSection($section);
+        $widget->setBlock($block);
         $widget->setIdentifier($widgetId);
 
         if ($widget instanceof AbstractController) {
@@ -79,7 +81,7 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
 
         $widgetView = $this->response->getView();
         if (!$widgetView && !$this->response->getBody() && $this->response->getStatusCode() == Response::STATUS_CODE_OK) {
-            $this->response->setRedirect($this->getUrl('cms.node.layout.region', array(
+            $this->response->setRedirect($this->getUrl('cms.node.content.region', array(
                 'locale' => $locale,
                 'site' => $site->getId(),
             	'revision' => $node->getRevision(),
@@ -94,8 +96,8 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
             return;
         }
 
-        $inheritedWidgets = $node->getInheritedWidgets($region);
-        if (isset($inheritedWidgets[$widgetId])) {
+        $inheritedWidgets = $node->getInheritedWidgets($region, $section);
+        if (isset($inheritedWidgets[$block][$widgetId])) {
             $this->addWarning('warning.widget.properties.inherited');
         }
 
@@ -109,6 +111,8 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
             'locale' => $locale,
             'locales' => $cms->getLocales(),
             'region' => $region,
+            'section' => $section,
+            'block' => $block,
             'widget' => $widget,
             'widgetId' => $widgetId,
             'widgetName' => $this->getTranslator()->translate('widget.' . $widget->getName()),

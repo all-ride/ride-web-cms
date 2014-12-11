@@ -55,13 +55,14 @@ class NodeController extends AbstractController {
                 } catch (AuthenticationException $exception) {
                     $user = null;
                 }
-                
+
                 if (!$node->isAllowed($user)) {
                     throw new UnauthorizedException();
                 }
 
                 $nodeView = $nodeDispatcher->getView();
                 $nodeView->setTemplateFacade($templateFacade);
+                $nodeView->setLayouts($cms->getLayouts());
 
                 $templateFacade->setThemeModel($cms->getThemeModel());
                 $templateFacade->setDefaultTheme($nodeView->getTemplate()->getTheme());

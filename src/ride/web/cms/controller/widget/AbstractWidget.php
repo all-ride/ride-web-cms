@@ -52,6 +52,18 @@ class AbstractWidget extends AbstractController implements Widget {
     protected $region;
 
     /**
+     * Name of the section for the widget request
+     * @var string
+     */
+    protected $section;
+
+    /**
+     * Name of the block for the widget request
+     * @var string
+     */
+    protected $block;
+
+    /**
      * Context of the node
      * @var array
      */
@@ -125,6 +137,24 @@ class AbstractWidget extends AbstractController implements Widget {
      */
     public function setRegion($region) {
         $this->region = $region;
+    }
+
+    /**
+     * Sets the section for the widget request
+     * @param string $region Name of the section
+     * @return null
+     */
+    public function setSection($section) {
+        $this->section = $section;
+    }
+
+    /**
+     * Sets the block for the widget request
+     * @param string $block Name of the block
+     * @return null
+     */
+    public function setBlock($block) {
+        $this->block = $block;
     }
 
     /**

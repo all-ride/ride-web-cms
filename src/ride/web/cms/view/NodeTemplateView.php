@@ -2,7 +2,6 @@
 
 namespace ride\web\cms\view;
 
-use ride\library\cms\layout\Layout;
 use ride\library\cms\node\Node;
 use ride\library\cms\theme\Theme;
 use ride\library\mvc\exception\MvcException;
@@ -22,9 +21,9 @@ class NodeTemplateView extends TemplateView {
      * template to render
      * @return null
      */
-    public function __construct(Node $node, Layout $layout, Theme $theme, $locale) {
+    public function __construct(Node $node, Theme $theme, $locale) {
         $template = new GenericThemedTemplate();
-        $template->setResource('cms/frontend/layout.' . $layout->getName());
+        $template->setResource('cms/frontend/index');
         $template->setResourceId($node->getId());
         $template->setTheme($theme->getName());
         $template->set('app', array(
@@ -71,6 +70,26 @@ class NodeTemplateView extends TemplateView {
     }
 
     /**
+     * Sets the available layouts to this view
+     * @param array $layouts Array with the layout name as key and the layout
+     * instance as value
+     * @return null
+     */
+    public function setLayouts(array $layouts) {
+        $this->template->set('layouts', $layouts);
+    }
+
+    /**
+     * Sets the regions of the node to this view
+     * @param array $regions Array with the name of the region as key and as
+     * value an array with the section name as key and the layout name as value
+     * @return null
+     */
+    public function setRegions(array $regions) {
+        $this->template->set('regions', $regions);
+    }
+
+    /**
      * Set the dispatched views of the node to this view
      * @param array $dispatchedViews Array with region name as key and a widget
      * array as value. The widget array has the widget instance id as key and
@@ -78,7 +97,7 @@ class NodeTemplateView extends TemplateView {
      * @return null
      */
     public function setDispatchedViews(array $dispatchedViews) {
-        $this->template->set('regions', $dispatchedViews);
+        $this->template->set('widgets', $dispatchedViews);
     }
 
     /**
@@ -96,43 +115,49 @@ class NodeTemplateView extends TemplateView {
         // render the widget templates in the regions
         $app = $this->template->get('app');
 
-        $regions = $this->template->get('regions');
-        foreach ($regions as $region => $widgets) {
-            foreach ($widgets as $widgetId => $widgetView) {
-                if (!$widgetView) {
-                    continue;
+        $regions = $this->template->get('widgets');
+        foreach ($regions as $region => $sections) {
+            foreach ($sections as $section => $blocks) {
+                foreach ($blocks as $block => $widgets) {
+                    foreach ($widgets as $widgetId => $widgetView) {
+                        if (!$widgetView) {
+                            continue;
+                        }
+
+                        if ($widgetView instanceof HtmlView) {
+                            $this->mergeResources($widgetView);
+                        }
+
+                        if ($widgetView instanceof TemplateView) {
+                            // merge main app template variable
+                            $template = $widgetView->getTemplate();
+                            $template->setResourceId($widgetId);
+                            $template->setTheme($this->template->getTheme());
+
+                            $widgetApp = $template->get('app');
+                            $widgetApp['cms']['site'] = $app['cms']['site'];
+                            $widgetApp['cms']['node'] = $app['cms']['node'];
+                            $widgetApp['cms']['context'] = $app['cms']['context'];
+                            $widgetApp['cms']['region'] = $region;
+                            $widgetApp['cms']['section'] = $section;
+                            $widgetApp['cms']['block'] = $block;
+                            $widgetApp['cms']['widget'] = $widgetId;
+                            $widgetApp['cms']['properties'] = $app['cms']['node']->getWidgetProperties($widgetId);
+
+                            $app['cms'] = $widgetApp['cms'];
+
+                            $template->set('app', $app);
+
+                            $widgetView->setTemplateFacade($this->templateFacade);
+                        }
+
+                        // render widget
+                        $regions[$region][$section][$block][$widgetId] = $widgetView->render(true);
+                    }
                 }
-
-                if ($widgetView instanceof HtmlView) {
-                    $this->mergeResources($widgetView);
-                }
-
-                if ($widgetView instanceof TemplateView) {
-                    // merge main app template variable
-                    $template = $widgetView->getTemplate();
-                    $template->setResourceId($widgetId);
-                    $template->setTheme($this->template->getTheme());
-
-                    $widgetApp = $template->get('app');
-                    $widgetApp['cms']['site'] = $app['cms']['site'];
-                    $widgetApp['cms']['node'] = $app['cms']['node'];
-                    $widgetApp['cms']['context'] = $app['cms']['context'];
-                    $widgetApp['cms']['region'] = $region;
-                    $widgetApp['cms']['properties'] = $app['cms']['node']->getWidgetProperties($widgetId);
-                    $widgetApp['cms']['widget'] = $widgetId;
-
-                    $app['cms'] = $widgetApp['cms'];
-
-                    $template->set('app', $app);
-
-                    $widgetView->setTemplateFacade($this->templateFacade);
-                }
-
-                // render widget
-                $regions[$region][$widgetId] = $widgetView->render(true);
             }
         }
-        $this->template->set('regions', $regions);
+        $this->template->set('widgets', $regions);
 
         return parent::render($willReturnValue);
     }

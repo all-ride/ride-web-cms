@@ -77,23 +77,6 @@ abstract class AbstractNodeTypeController extends AbstractController {
     }
 
     /**
-     * Gets the available layout options
-     * @param \ride\library\i18n\translator\Translator $translator
-     * @param array $layouts
-     * @return array Array with the layout machine name as key and the
-     * translation as value
-     */
-    protected function getLayoutOptions(ImageUrlGenerator $imageUrlGenerator, Translator $translator, array $layouts) {
-        $options = array();
-
-        foreach ($layouts as $layout => $null) {
-            $options[$layout] = '<img src="' . $imageUrlGenerator->generateUrl('img/cms/layout/' . $layout . '.png') . '" alt="' . $layout . '" title="' . $translator->translate('layout.' . $layout) . '" />';
-        }
-
-        return $options;
-    }
-
-    /**
      * Gets the form value for the available locales options
      * @param \ride\library\cms\node\Node $node
      * @return array

@@ -27,7 +27,6 @@ class PageController extends AbstractNodeTypeController {
         $translator = $this->getTranslator();
         $locales = $cms->getLocales();
         $themes = $cms->getThemes();
-        $layouts = $cms->getLayouts();
 
         $referer = $this->request->getQueryParameter('referer');
         if (!$referer) {
@@ -45,7 +44,6 @@ class PageController extends AbstractNodeTypeController {
             'name-menu' => $node->get('name.' . $locale . '.menu', null, false),
             'name-breadcrumb' => $node->get('name.' . $locale . '.breadcrumb', null, false),
             'route' => $node->getRoute($locale, false),
-            'layout' => $node->getLayout($locale),
             'theme' => $this->getThemeValueFromNode($node),
             'availableLocales' => $this->getLocalesValueFromNode($node),
         );
@@ -95,14 +93,6 @@ class PageController extends AbstractNodeTypeController {
             'description' => $translator->translate('label.theme.description'),
             'options' => $this->getThemeOptions($node, $translator, $themes),
         ));
-        $form->addRow('layout', 'option', array(
-            'label' => $translator->translate('label.layout'),
-            'description' => $translator->translate('label.layout.description'),
-            'options' => $this->getLayoutOptions($imageUrlGenerator, $translator, $layouts),
-            'validators' => array(
-                'required' => array(),
-            )
-        ));
 
         if ($site->isLocalizationMethodCopy()) {
             $form->addRow('availableLocales', 'select', array(
@@ -129,7 +119,6 @@ class PageController extends AbstractNodeTypeController {
                 $node->setName($locale, $data['name-menu'], 'menu');
                 $node->setName($locale, $data['name-breadcrumb'], 'breadcrumb');
                 $node->setRoute($locale, $data['route']);
-                $node->setLayout($locale, $data['layout']);
                 $node->setTheme($this->getOptionValueFromForm($data['theme']));
 
                 if ($site->isLocalizationMethodCopy()) {
@@ -161,10 +150,6 @@ class PageController extends AbstractNodeTypeController {
             } catch (ValidationException $validationException) {
                 $this->setValidationException($validationException, $form);
             }
-        }
-
-        if (!$layouts) {
-            $this->addWarning('warning.layouts.none');
         }
 
         // show view

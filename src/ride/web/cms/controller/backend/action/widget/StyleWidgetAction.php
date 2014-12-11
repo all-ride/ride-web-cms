@@ -24,7 +24,7 @@ class StyleWidgetAction extends AbstractWidgetAction {
      * Route of this action
      * @var string
      */
-    const ROUTE = 'cms.widget.style';
+    const ROUTE = 'cms.node.content.widget.style';
 
     /**
      * Checks if this action is available for the widget
@@ -101,7 +101,7 @@ class StyleWidgetAction extends AbstractWidgetAction {
                 ));
 
                 $this->response->setRedirect($this->getUrl(
-                    'cms.node.layout',
+                    'cms.node.content.region',
                     array(
                         'locale' => $locale,
                         'site' => $site->getId(),

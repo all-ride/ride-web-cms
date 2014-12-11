@@ -274,7 +274,7 @@
                             "name": "nodeAction",
                             "type": "dependency",
                             "properties": {
-                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\LayoutNodeAction"
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction"
                             }
                         }
                     ]

@@ -141,15 +141,22 @@ class GenericNodeDispatcher implements NodeDispatcher {
      * @return null
      */
     public function loadWidgets(WidgetModel $widgetModel, array $regions) {
-        $this->regions = $regions;
+        $this->regions = array();
+        $this->widgets = array();
 
-        foreach ($this->regions as $regionName => $region) {
-            $this->regions[$regionName] = $this->node->getWidgets($regionName);
+        foreach ($regions as $region => $null) {
+            $this->widgets[$region] = array();
 
-            foreach ($this->regions[$regionName] as $widgetId => $widget) {
-                $widget = clone $widgetModel->getWidget($widget);
+            $this->regions[$region] = $this->node->getSections($region);
+            foreach ($this->regions[$region] as $section => $layout) {
+                $this->widgets[$region][$section] = $this->node->getWidgets($region, $section);
+                foreach ($this->widgets[$region][$section] as $block => $widgets) {
+                    foreach ($widgets as $widgetId => $widget) {
+                        $widget = clone $widgetModel->getWidget($widget);
 
-                $this->regions[$regionName][$widgetId] = $widget;
+                        $this->widgets[$region][$section][$block][$widgetId] = $widget;
+                    }
+                }
             }
         }
     }
@@ -221,124 +228,130 @@ class GenericNodeDispatcher implements NodeDispatcher {
             $isCacheable = false;
         }
 
-        $result = array();
-        foreach ($this->regions as $regionName => $widgets) {
-            $result[$regionName] = array();
+        $dispatchedViews = array();
+        foreach ($this->widgets as $this->region => $sections) {
+            $dispatchedViews[$this->region] = array();
 
-            $this->region = $regionName;
+            foreach ($sections as $this->section => $blocks) {
+                $dispatchedViews[$this->region][$this->section] = array();
 
-            foreach ($widgets as $widgetId => $widget) {
-                if ($this->log) {
-                    $this->log->logDebug('Rendering widget ' . $widget->getName() . '#' . $widgetId . ' for region ' . $regionName, null, ApplicationListener::LOG_SOURCE);
-                }
+                foreach ($blocks as $this->block => $widgets) {
+                    $dispatchedViews[$this->region][$this->section][$this->block] = array();
 
-                $widgetProperties = $this->node->getWidgetProperties($widgetId);
-                if (!$widgetProperties->isPublished()) {
-                    continue;
-                }
-
-                if ($isCacheable) {
-                    $cacheKey = 'node.widget.view.' . $this->node->getId() . '.' . $regionName . '.' . $widgetId . '.' . $this->locale . $parameters;
-                    if ($user) {
-                        $cacheKey .= '-authenticated';
-                    }
-                }
-
-                if ($isCacheable && !$isNoCache && !$widgetProperties->isCacheDisabled()) {
-                    $cachedItem = $cache->get($cacheKey);
-                    if ($cachedItem->isValid()) {
-                        $cacheView = $cachedItem->getValue();
-
-                        if ($cacheView->areRoutesMatched()) {
-                            $widgetMatchedRouteArguments = true;
+                    foreach ($widgets as $widgetId => $widget) {
+                        if ($this->log) {
+                            $this->log->logDebug('Rendering widget ' . $widget->getName() . '#' . $widgetId . ' for region ' . $this->region, null, ApplicationListener::LOG_SOURCE);
                         }
 
-                        $cacheContext = $cacheView->getContext();
-                        if ($cacheContext) {
-                            foreach ($cacheContext as $key => $value) {
-                                if ($value !== null) {
-                                    $context[$key] = $value;
-                                } elseif (isset($context[$key])) {
-                                    unset($context[$key]);
+                        $widgetProperties = $this->node->getWidgetProperties($widgetId);
+                        if (!$widgetProperties->isPublished()) {
+                            continue;
+                        }
+
+                        if ($isCacheable) {
+                            $cacheKey = 'node.widget.view.' . $this->node->getId() . '.' . $this->region . '.' . $this->section . '.' . $this->block . '.' . $widgetId . '.' . $this->locale . $parameters;
+                            if ($user) {
+                                $cacheKey .= '-authenticated';
+                            }
+                        }
+
+                        if ($isCacheable && !$isNoCache && !$widgetProperties->isCacheDisabled()) {
+                            $cachedItem = $cache->get($cacheKey);
+                            if ($cachedItem->isValid()) {
+                                $cacheView = $cachedItem->getValue();
+
+                                if ($cacheView->areRoutesMatched()) {
+                                    $widgetMatchedRouteArguments = true;
+                                }
+
+                                $cacheContext = $cacheView->getContext();
+                                if ($cacheContext) {
+                                    foreach ($cacheContext as $key => $value) {
+                                        if ($value !== null) {
+                                            $context[$key] = $value;
+                                        } elseif (isset($context[$key])) {
+                                            unset($context[$key]);
+                                        }
+                                    }
+                                }
+
+                                if ($cacheView->isContent()) {
+                                    $dispatchedViews = $cacheView->getView();
+
+                                    break 4;
+                                } elseif ($cacheView->isRegion()) {
+                                    $dispatchedViews[$this->region] = $cacheView->getView();
+
+                                    break 3;
+                                } else {
+                                    $dispatchedViews[$this->region][$this->section][$this->block][$widgetId] = $cacheView->getView();
+
+                                    continue;
                                 }
                             }
                         }
 
-                        if ($cacheView->isContent()) {
-                            $result = $cacheView->getView();
+                        $widget->setProperties($widgetProperties);
+                        $widget->setContext($context);
 
-                            break 2;
-                        } elseif ($cacheView->isRegion()) {
-                            $result[$regionName] = array($widgetId => $cacheView->getView());
-
-                            break;
-                        } else {
-                            $result[$regionName][$widgetId] = $cacheView->getView();
-
-                            continue;
+                        $widgetMatchedRouteArguments = $this->dispatchWidget($request, $response, $widgetId, $widget);
+                        if ($widgetMatchedRouteArguments) {
+                            $routeArgumentsMatched = true;
                         }
+
+                        $statusCode = $response->getStatusCode();
+                        if ($statusCode != Response::STATUS_CODE_OK && $statusCode != Response::STATUS_CODE_BAD_REQUEST && $statusCode != Response::STATUS_CODE_UNPROCESSABLE_ENTITY) {
+                            return;
+                        }
+
+                        $view = $response->getView();
+                        $response->setView(null);
+
+                        $isContent = $widget->isContent();
+                        $isRegion = $widget->isRegion();
+                        if ($isCacheable && !$containsUserContent && $widget->containsUserContent()) {
+                            $containsUserContent = true;
+                        }
+
+                        $oldContext = $context;
+                        $context = $widget->getContext();
+
+                        if ($isCacheable && !$widgetProperties->isCacheDisabled()) {
+                            $widgetContext = $this->getContextDifference($context, $oldContext);
+                            $cacheTtl = $widgetProperties->getCacheTtl();
+
+                            $cachedItem = $cache->create($cacheKey);
+                            $cachedItem->setValue(new WidgetCacheData($view, $widgetContext, $isContent, $isRegion, $widgetMatchedRouteArguments));
+                            $cachedItem->setTtl($cacheTtl);
+
+                            if ($nodeCacheTtl !== false && $cacheTtl) {
+                                if ($nodeCacheTtl == 0) {
+                                    $nodeCacheTtl = $cacheTtl;
+                                } else {
+                                    $nodeCacheTtl = min($nodeCacheTtl, $cacheTtl);
+                                }
+                            }
+
+                            $cache->set($cachedItem);
+                        } else {
+                            $nodeCacheTtl = false;
+                        }
+
+                        if ($isContent) {
+                            $dispatchedViews = $view;
+
+                            break 4;
+                        }
+
+                        if ($isRegion) {
+                            $dispatchedViews[$this->region] = $view;
+
+                            break 3;
+                        }
+
+                        $dispatchedViews[$this->region][$this->section][$this->block][$widgetId] = $view;
                     }
                 }
-
-                $widget->setProperties($widgetProperties);
-                $widget->setContext($context);
-
-                $widgetMatchedRouteArguments = $this->dispatchWidget($request, $response, $widgetId, $widget);
-                if ($widgetMatchedRouteArguments) {
-                    $routeArgumentsMatched = true;
-                }
-
-                $statusCode = $response->getStatusCode();
-                if ($statusCode != Response::STATUS_CODE_OK && $statusCode != Response::STATUS_CODE_BAD_REQUEST && $statusCode != Response::STATUS_CODE_UNPROCESSABLE_ENTITY) {
-                    return;
-                }
-
-                $view = $response->getView();
-                $response->setView(null);
-
-                $isContent = $widget->isContent();
-                $isRegion = $widget->isRegion();
-                if ($isCacheable && !$containsUserContent && $widget->containsUserContent()) {
-                    $containsUserContent = true;
-                }
-
-                $oldContext = $context;
-                $context = $widget->getContext();
-
-                if ($isCacheable && !$widgetProperties->isCacheDisabled()) {
-                    $widgetContext = $this->getContextDifference($context, $oldContext);
-                    $cacheTtl = $widgetProperties->getCacheTtl();
-
-                    $cachedItem = $cache->create($cacheKey);
-                    $cachedItem->setValue(new WidgetCacheData($view, $widgetContext, $isContent, $isRegion, $widgetMatchedRouteArguments));
-                    $cachedItem->setTtl($cacheTtl);
-
-                    if ($nodeCacheTtl !== false && $cacheTtl) {
-                        if ($nodeCacheTtl == 0) {
-                            $nodeCacheTtl = $cacheTtl;
-                        } else {
-                            $nodeCacheTtl = min($nodeCacheTtl, $cacheTtl);
-                        }
-                    }
-
-                    $cache->set($cachedItem);
-                } else {
-                    $nodeCacheTtl = false;
-                }
-
-                if ($isContent) {
-                    $result = $view;
-
-                    break 2;
-                }
-
-                if ($isRegion) {
-                    $result[$regionName] = array($widgetId => $view);
-
-                    break;
-                }
-
-                $result[$regionName][$widgetId] = $view;
             }
         }
 
@@ -347,7 +360,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
             $response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
             $response->setView(null);
 
-            $result = null;
+            $dispatchedViews = null;
         }
 
         if ($this->eventManager && $isCacheable && $nodeCacheTtl !== false) {
@@ -363,13 +376,14 @@ class GenericNodeDispatcher implements NodeDispatcher {
             }
         }
 
-        if (is_array($result)) {
+        if (is_array($dispatchedViews)) {
             $this->view->setContext($context);
-            $this->view->setDispatchedViews($result);
+            $this->view->setDispatchedViews($dispatchedViews);
+            $this->view->setRegions($this->regions);
 
             $response->setView($this->view);
         } else {
-            $response->setView($result);
+            $response->setView($dispatchedViews);
         }
     }
 
@@ -418,6 +432,8 @@ class GenericNodeDispatcher implements NodeDispatcher {
         $widget->setIdentifier($widgetId);
         $widget->setLocale($this->locale);
         $widget->setRegion($this->region);
+        $widget->setSection($this->section);
+        $widget->setBlock($this->block);
 
         $route = $request->getRoute();
         $route->setIsDynamic(false);
