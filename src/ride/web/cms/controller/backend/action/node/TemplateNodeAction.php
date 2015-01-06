@@ -73,12 +73,6 @@ class TemplateNodeAction extends AbstractNodeAction {
             'index' => 'cms/frontend/index',
         );
 
-        if ($node->getType() == 'page') {
-            $layout = $node->getLayout($locale);
-
-            $templates[$layout] = 'cms/frontend/layout.' . $layout;
-        }
-
         if ($node->getId() == $site->getId()) {
             $id = null;
         } else {
