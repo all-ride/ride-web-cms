@@ -51,9 +51,9 @@ class PreviewNodeAction extends AbstractNodeAction {
         }
 
         $nodeType = $this->cms->getNodeType($node);
-        
+
         $isAvailable = $nodeType->getFrontendCallback() ? true : false;
-        
+
         return $isAvailable && !$node->getRootNode()->isAutoPublish();
     }
 
@@ -130,6 +130,7 @@ class PreviewNodeAction extends AbstractNodeAction {
         }
 
         $nodeView = $nodeDispatcher->getView();
+        $nodeView->setLayouts($this->cms->getLayouts());
         $nodeView->setTemplateFacade($templateFacade);
 
         $templateFacade->setThemeModel($this->cms->getThemeModel());
