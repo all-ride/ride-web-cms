@@ -34,6 +34,18 @@ class WidgetCacheData {
     private $isRegion;
 
     /**
+     * Flag to see if the view is the section
+     * @var boolean
+     */
+    private $isSection;
+
+    /**
+     * Flag to see if the view is the block
+     * @var boolean
+     */
+    private $isBlock;
+
+    /**
      * Flag to see if this widget matched the route arguments
      * @var boolean
      */
@@ -49,11 +61,13 @@ class WidgetCacheData {
      * route arguments
      * @return null
      */
-    public function __construct(View $view = null, array $context = array(), $isContent = false, $isRegion = false, $routesMatched = false) {
+    public function __construct(View $view = null, array $context = array(), $isContent = false, $isRegion = false, $isSection = false, $isBlock = false, $routesMatched = false) {
         $this->view = $view;
         $this->context = $context;
         $this->isContent = $isContent;
         $this->isRegion = $isRegion;
+        $this->isSection = $isSection;
+        $this->isBlock = $isBlock;
         $this->routesMatched = $routesMatched;
     }
 
@@ -87,6 +101,22 @@ class WidgetCacheData {
      */
     public function isRegion() {
         return $this->isRegion;
+    }
+
+    /**
+     * Gets whether this view is the section
+     * @return boolean
+     */
+    public function isSection() {
+        return $this->isSection;
+    }
+
+    /**
+     * Gets whether this view is the block
+     * @return boolean
+     */
+    public function isBlock() {
+        return $this->isBlock;
     }
 
     /**
