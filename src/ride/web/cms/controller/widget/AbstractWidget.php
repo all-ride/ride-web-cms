@@ -83,6 +83,20 @@ class AbstractWidget extends AbstractController implements Widget {
     private $isRegion = false;
 
     /**
+     * Flag to set whether this is the only widget to be displayed in the
+     * containing section
+     * @var boolean
+     */
+    private $isSection = false;
+
+    /**
+     * Flag to set whether this is the only widget to be displayed in the
+     * containing block
+     * @var boolean
+     */
+    private $isBlock = false;
+
+    /**
      * Flag to set whether this widget displays user specific content
      * @var boolean
      */
@@ -396,6 +410,40 @@ class AbstractWidget extends AbstractController implements Widget {
      */
     public function isRegion() {
         return $this->isRegion;
+    }
+
+    /**
+     * Sets if this is the only widget to be displayed in the containing section
+     * @param boolean $isSection True to only display this widget in the section
+     * @return null
+     */
+    protected function setIsSection($isSection) {
+        $this->isSection = $isSection;
+    }
+
+    /**
+     * Gets whether this is the only widget to be displayed in the containing section
+     * @return boolean True to only display this widget in the section
+     */
+    public function isSection() {
+        return $this->isSection;
+    }
+
+    /**
+     * Sets if this is the only widget to be displayed in the containing block
+     * @param boolean $isBlock True to only display this widget in the block
+     * @return null
+     */
+    protected function setIsBlock($isBlock) {
+        $this->isBlock = $isBlock;
+    }
+
+    /**
+     * Gets whether this is the only widget to be displayed in the containing block
+     * @return boolean True to only display this widget in the block
+     */
+    public function isBlock() {
+        return $this->isBlock;
     }
 
     /**

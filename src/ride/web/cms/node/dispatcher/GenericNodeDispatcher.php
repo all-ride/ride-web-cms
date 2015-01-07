@@ -280,9 +280,17 @@ class GenericNodeDispatcher implements NodeDispatcher {
 
                                     break 4;
                                 } elseif ($cacheView->isRegion()) {
-                                    $dispatchedViews[$this->region] = $cacheView->getView();
+                                    $dispatchedViews[$this->region] = array($this->section => array($this->block => array($widgetId => $cacheView->getView())));
 
                                     break 3;
+                                } elseif ($cacheView->isSection()) {
+                                    $dispatchedViews[$this->region][$this->section] = array($this->block => array($widgetId => $cacheView->getView()));
+
+                                    break 2;
+                                } elseif ($cacheView->isBlock()) {
+                                    $dispatchedViews[$this->region][$this->section][$this->block] = array($widgetId => $cacheView->getView());
+
+                                    break;
                                 } else {
                                     $dispatchedViews[$this->region][$this->section][$this->block][$widgetId] = $cacheView->getView();
 
@@ -309,6 +317,8 @@ class GenericNodeDispatcher implements NodeDispatcher {
 
                         $isContent = $widget->isContent();
                         $isRegion = $widget->isRegion();
+                        $isSection = $widget->isSection();
+                        $isBlock = $widget->isBlock();
                         if ($isCacheable && !$containsUserContent && $widget->containsUserContent()) {
                             $containsUserContent = true;
                         }
@@ -321,7 +331,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
                             $cacheTtl = $widgetProperties->getCacheTtl();
 
                             $cachedItem = $cache->create($cacheKey);
-                            $cachedItem->setValue(new WidgetCacheData($view, $widgetContext, $isContent, $isRegion, $widgetMatchedRouteArguments));
+                            $cachedItem->setValue(new WidgetCacheData($view, $widgetContext, $isContent, $isRegion, $isSection, $isBlock, $widgetMatchedRouteArguments));
                             $cachedItem->setTtl($cacheTtl);
 
                             if ($nodeCacheTtl !== false && $cacheTtl) {
@@ -341,12 +351,18 @@ class GenericNodeDispatcher implements NodeDispatcher {
                             $dispatchedViews = $view;
 
                             break 4;
-                        }
-
-                        if ($isRegion) {
-                            $dispatchedViews[$this->region] = $view;
+                        } elseif ($isRegion) {
+                            $dispatchedViews[$this->region] = array($this->section => array($this->block => array($widgetId => $view)));
 
                             break 3;
+                        } elseif ($isSection) {
+                            $dispatchedViews[$this->region][$this->section] = array($this->block => array($widgetId => $view));
+
+                            break 2;
+                        } elseif ($isBlock) {
+                            $dispatchedViews[$this->region][$this->section][$this->block] = array($widgetId => $view);
+
+                            break;
                         }
 
                         $dispatchedViews[$this->region][$this->section][$this->block][$widgetId] = $view;
