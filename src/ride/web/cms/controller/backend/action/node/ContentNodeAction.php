@@ -105,7 +105,6 @@ class ContentNodeAction extends AbstractNodeAction {
         $inheritedRegionWidgets = array();
 
         $sections = $node->getSections($region);
-
         if (!$sections) {
             $section = $node->addSection($region, $this->defaultLayout);
 
@@ -524,6 +523,10 @@ class ContentNodeAction extends AbstractNodeAction {
             $inheritedWidgets[$block] = array();
 
             foreach ($blockWidgets as $widgetId => $widget) {
+                if (!$widget || !isset($availableWidgets[$widget])) {
+                    continue;
+                }
+
                 $widget = clone $availableWidgets[$widget];
                 $widget->setIdentifier($widgetId);
                 $widget->setProperties($node->getWidgetProperties($widgetId));
