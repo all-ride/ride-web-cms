@@ -14,11 +14,13 @@ use ride\library\security\SecurityManager;
 
 use ride\web\base\menu\MenuItem;
 use ride\web\base\menu\Menu;
-use ride\web\cms\node\tree\NodeTreeGenerator;
 use ride\web\mvc\view\JsonView;
 use ride\web\mvc\view\TemplateView;
 use ride\web\WebApplication;
 
+/**
+ * Event listener for the CMS application
+ */
 class ApplicationListener {
 
     /**
@@ -33,7 +35,14 @@ class ApplicationListener {
      */
     const LOG_SOURCE = 'cms';
 
-    public function prepareTemplateView(Event $event, Cms $cms, NodeTreeGenerator $nodeTreeGenerator, SecurityManager $securityManager) {
+    /**
+     * Hook to prepare the CMS template views
+     * @param \ride\library\event\Event $event Triggered event
+     * @param \ride\web\cms\Cms $cms Instance of the CMS facade
+     * @param \ride\library\security\SecurityManager $securityManager
+     * @return null
+     */
+    public function prepareTemplateView(Event $event, Cms $cms, SecurityManager $securityManager) {
         $web = $event->getArgument('web');
         $response = $web->getResponse();
         if (!$response) {
@@ -63,8 +72,6 @@ class ApplicationListener {
             $site = $node;
         }
 
-        $siteTreeNode = $nodeTreeGenerator->getTree($node, $locale);
-
         $parameters = array(
             'site' => $site->getRootNodeId(),
             'revision' => $site->getRevision(),
@@ -80,11 +87,78 @@ class ApplicationListener {
             }
         }
 
+        $breadcrumbs = $this->getBreadcrumbs($web, $cms, $node, $locale);
+        $collapsedNodes = $this->getCollapsedNodes($cms, $node);
+
         $template->set('site', $site);
-        $template->set('siteTreeNode', $siteTreeNode);
         $template->set('nodeCreateActions', $nodeCreateActions);
+        $template->set('collapsedNodes', json_encode($collapsedNodes));
+        $template->set('breadcrumbs', $breadcrumbs);
     }
 
+    /**
+     * Gets the breadcrumbs to the current locale
+     * @param \ride\web\WebApplication $web
+     * @param \ride\web\cms\Cms $cms
+     * @param \ride\library\cms\node\Node $node
+     * @param string $locale
+     * @return array Array with the URL to the node as key and the name of the
+     * node as value
+     */
+    protected function getBreadcrumbs(WebApplication $web, Cms $cms, Node $node, $locale) {
+        $breadcrumbs = array();
+
+        do {
+            $url = $web->getUrl('cms.node.default', array(
+                'site' => $node->getRootNodeId(),
+                'revision' => $node->getRevision(),
+                'locale' => $locale,
+                'node' => $node->getId(),
+            ));
+
+            $breadcrumbs[$url] = $node->getName($locale);
+
+            $node = $node->getParentNode();
+        } while ($node);
+
+        return array_reverse($breadcrumbs, true);
+    }
+
+    /**
+     * Gets the collapsed nodes for the provided node
+     * @param \ride\web\cms\Cms $cms
+     * @param \ride\library\cms\node\Node $node
+     * @return array Array with the collapsed node id as key and true as value
+     */
+    protected function getCollapsedNodes(Cms $cms, Node $node) {
+        $site = $node->getRootNodeId();
+        $revision = '[' . $node->getRevision() . ']';
+        $nodes = array();
+
+        $collapsedNodes = $cms->getCollapsedNodes();
+        foreach ($collapsedNodes as $node => $flag) {
+            if (strpos($node, $site) !== 0 || strpos($node, $revision) === false) {
+                continue;
+            }
+
+            $node = str_replace($revision, '', $node);
+            $tokens = explode(Node::PATH_SEPARATOR, $node);
+            $nodes[array_pop($tokens)] = true;;
+        }
+
+        return $nodes;
+    }
+
+    /**
+     * Action to add the CMS menus to the taskbar
+     * @param \ride\library\event\Event $event Triggered event
+     * @param \ride\web\cms\Cms $cms Instance of the CMS facade
+     * @param \ride\library\i18n\I18N $i18n
+     * @param \ride\web\WebApplication $web
+     * @param \ride\library\security\SecurityManager $securityManager
+     * @param \ride\library\event\EventManager $eventManager
+     * @return null
+     */
     public function prepareTaskbar(Event $event, Cms $cms, I18n $i18n, WebApplication $web, SecurityManager $securityManager, EventManager $eventManager) {
         $locale = null;
         $request = $web->getRequest();

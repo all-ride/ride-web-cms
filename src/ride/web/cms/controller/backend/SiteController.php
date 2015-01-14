@@ -6,6 +6,7 @@ use ride\library\cms\exception\CmsException;
 use ride\library\cms\node\SiteNode;
 use ride\library\validation\exception\ValidationException;
 
+use ride\web\cms\node\tree\NodeTreeGenerator;
 use ride\web\cms\Cms;
 
 /**
@@ -268,6 +269,39 @@ class SiteController extends AbstractNodeTypeController {
             'node' => $site,
             'locale' => $locale,
             'locales' => $cms->getLocales(),
+        ));
+    }
+
+    /**
+     * Action to render the site tree
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @param string $site Id of the site
+     * @param string $revision Name of the revision to work with
+     * @param string $locale Code of the locale
+     * @return null
+     */
+    public function treeAction(Cms $cms, NodeTreeGenerator $nodeTreeGenerator, $site, $revision, $locale) {
+        if (!$cms->resolveNode($site, $revision)) {
+            return;
+        }
+
+        // initialize response header values
+        $eTag = md5('site-' . $site->getId() . '-' . $revision . '-' . $locale . '-' . $site->getDateModified());
+        $this->response->setETag($eTag);
+
+        if ($this->response->isNotModified($this->request)) {
+            // content is not modified, stop processing
+            $this->response->setNotModified();
+
+            return;
+        }
+
+        $siteTreeNode = $nodeTreeGenerator->getTree($site, $locale);
+
+        $this->setTemplateView('cms/backend/site.tree', array(
+            'site' => $site,
+            'siteTreeNode' => $siteTreeNode,
+            'locale' => $locale,
         ));
     }
 
