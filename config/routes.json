@@ -69,6 +69,12 @@
             "methods": "post"
         },
         {
+            "path": "/sites/%site%/%revision%/%locale%/tree",
+            "controller": "ride\\web\\cms\\controller\\backend\\SiteController",
+            "action": "treeAction",
+            "id": "cms.site.tree"
+        },
+        {
             "path": "/sites/%site%/%revision%/%locale%/order",
             "controller": "ride\\web\\cms\\controller\\backend\\SiteController",
             "action": "orderAction",

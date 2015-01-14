@@ -46,7 +46,6 @@ class GenericNodeTreeGenerator implements NodeTreeGenerator {
         $this->locale = $locale;
         $this->node = $node;
         $this->nodeId = $node->getId();
-        $this->collapsedNodes = $this->cms->getCollapsedNodes();
         $this->referer = '?referer=' . urlencode($this->web->getRequest()->getUrl());
 
         if ($this->nodeId) {
@@ -86,15 +85,6 @@ class GenericNodeTreeGenerator implements NodeTreeGenerator {
         $url = $this->web->getUrl('cms.node.default', $urlVars) . $this->referer;
 
         $treeNode = new TreeNode($node, $this->locale, $url);
-
-        // checks if this node is selected
-        if ($this->nodeId == $nodeId) {
-            $treeNode->setIsSelected(true);
-        }
-
-        if (isset($this->collapsedNodes[$node->getPath() . '[' . $nodeRevision . ']'])) {
-            $treeNode->setIsCollapsed(true);
-        }
 
         // add icon state classes
         $nodeType = $this->cms->getNodeType($node);
