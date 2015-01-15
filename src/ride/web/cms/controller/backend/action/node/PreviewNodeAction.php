@@ -2,8 +2,12 @@
 
 namespace ride\web\cms\controller\backend\action\node;
 
+use ride\library\cms\exception\CmsException;
+use ride\library\cms\node\type\RedirectNodeType;
 use ride\library\cms\node\Node;
 use ride\library\http\Response;
+use ride\library\security\exception\AuthenticationException;
+use ride\library\security\exception\UnauthorizedException;
 use ride\library\template\TemplateFacade;
 
 use ride\web\cms\node\dispatcher\NodeDispatcherFactory;
@@ -129,6 +133,44 @@ class PreviewNodeAction extends AbstractNodeAction {
             return;
         }
 
+        try {
+            $user = $this->getUser();
+        } catch (AuthenticationException $exception) {
+            $user = null;
+        }
+
+        if (!$node->isAllowed($user)) {
+            throw new UnauthorizedException();
+        }
+
+        $this->request->setBaseScript($routeUrl);
+
+        if ($node->getType() == RedirectNodeType::NAME) {
+            $url = $node->getRedirectUrl($locale);
+            if ($url) {
+                $this->response->setRedirect($url);
+
+                return;
+            }
+
+            $node = $node->getRedirectNode($locale);
+            if (!$node) {
+                throw new CmsException('No redirect properties set to this node for locale "' . $locale . '".');
+            }
+
+            $revision = $site->getRevision();
+            $site = $site->getId();
+            if (!$this->cms->resolveNode($site, $revision, $node)) {
+                return;
+            }
+
+            $redirectUrl = $this->request->getBaseScript() . $node->getRoute($locale);
+
+            $this->response->setRedirect($redirectUrl);
+
+            return;
+        }
+
         $nodeView = $nodeDispatcher->getView();
         $nodeView->setLayouts($this->cms->getLayouts());
         $nodeView->setTemplateFacade($templateFacade);
@@ -136,7 +178,6 @@ class PreviewNodeAction extends AbstractNodeAction {
         $templateFacade->setThemeModel($this->cms->getThemeModel());
         $templateFacade->setDefaultTheme($nodeView->getTemplate()->getTheme());
 
-        $this->request->setBaseScript($routeUrl);
         $textParser = $this->dependencyInjector->get('ride\\library\\cms\\content\\text\\TextParser', 'chain');
         $textParser->setBaseUrl($this->request->getBaseUrl());
         $textParser->setSiteUrl($routeUrl);
