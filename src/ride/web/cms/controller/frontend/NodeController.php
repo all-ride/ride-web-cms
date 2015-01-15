@@ -64,6 +64,10 @@ class NodeController extends AbstractController {
                 $nodeView->setTemplateFacade($templateFacade);
                 $nodeView->setLayouts($cms->getLayouts());
 
+                $textParser = $this->dependencyInjector->get('ride\\library\\cms\\content\\text\\TextParser', 'chain');
+                $textParser->setBaseUrl($this->request->getBaseUrl());
+                $textParser->setSiteUrl($this->request->getBaseScript());
+
                 $templateFacade->setThemeModel($cms->getThemeModel());
                 $templateFacade->setDefaultTheme($nodeView->getTemplate()->getTheme());
 

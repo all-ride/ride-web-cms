@@ -137,6 +137,9 @@ class PreviewNodeAction extends AbstractNodeAction {
         $templateFacade->setDefaultTheme($nodeView->getTemplate()->getTheme());
 
         $this->request->setBaseScript($routeUrl);
+        $textParser = $this->dependencyInjector->get('ride\\library\\cms\\content\\text\\TextParser', 'chain');
+        $textParser->setBaseUrl($this->request->getBaseUrl());
+        $textParser->setSiteUrl($routeUrl);
 
         $nodeDispatcher->dispatch($this->request, $this->response, $this->getUser(), $cache);
     }
