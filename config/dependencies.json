@@ -548,6 +548,11 @@
             "id": "node"
         },
         {
+            "interfaces": "ride\\library\\cms\\content\\text\\variable\\VariableParser",
+            "class": "ride\\library\\cms\\content\\text\\variable\\ContentVariableParser",
+            "id": "content"
+        },
+        {
             "interfaces": "ride\\library\\cms\\content\\text\\TextParser",
             "class": "ride\\library\\cms\\content\\text\\UrlTextParser",
             "id": "url"
@@ -566,6 +571,19 @@
                             "properties": {
                                 "interface": "ride\\library\\cms\\content\\text\\variable\\VariableParser",
                                 "id": "node"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addVariableParser",
+                    "arguments": [
+                        {
+                            "name": "variableParser",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\cms\\content\\text\\variable\\VariableParser",
+                                "id": "content"
                             }
                         }
                     ]
