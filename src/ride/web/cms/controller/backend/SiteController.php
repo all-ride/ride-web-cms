@@ -3,6 +3,7 @@
 namespace ride\web\cms\controller\backend;
 
 use ride\library\cms\exception\CmsException;
+use ride\library\cms\node\Node;
 use ride\library\cms\node\SiteNode;
 use ride\library\validation\exception\ValidationException;
 
@@ -25,8 +26,41 @@ class SiteController extends AbstractNodeTypeController {
             $locale = $this->getLocale();
         }
 
+        $defaultRevision = $cms->getDefaultRevision();
+        $draftRevision = $cms->getDraftRevision();
+
+        $sites = $cms->getSites();
+        if ($sites) {
+            foreach ($sites as $siteId => $site) {
+                $availableLocales = $site->getAvailableLocales();
+                if ($availableLocales == Node::LOCALES_ALL || isset($availableLocales[$locale])) {
+                    $siteLocale = $locale;
+                } else {
+                    $siteLocale = reset($availableLocales);
+                }
+
+                if ($site->hasRevision($draftRevision)) {
+                    $revision = $draftRevision;
+                } elseif ($site->hasRevision($defaultRevision)) {
+                    $revision = $defaultRevision;
+                } else {
+                    $revision = $site->getRevision();
+                }
+
+                $sites[$siteId] = array(
+                    'name' => $site->getName($locale),
+                    'url' => $this->getUrl('cms.site.detail.locale', array(
+                        'site' => $site->getId(),
+                        'revision' => $revision,
+                        'locale' => $siteLocale,
+                    )),
+                    'data' => $site,
+                );
+            }
+        }
+
         $this->setTemplateView('cms/backend/site', array(
-            'sites' => $sites = $cms->getSites(),
+            'sites' => $sites,
             'locale' => $locale,
         ));
     }
