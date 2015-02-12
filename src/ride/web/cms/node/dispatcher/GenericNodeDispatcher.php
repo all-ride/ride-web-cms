@@ -152,11 +152,28 @@ class GenericNodeDispatcher implements NodeDispatcher {
                 $this->widgets[$region][$section] = $this->node->getWidgets($region, $section);
                 foreach ($this->widgets[$region][$section] as $block => $widgets) {
                     foreach ($widgets as $widgetId => $widget) {
-                        $widget = clone $widgetModel->getWidget($widget);
+                        $widget = $widgetModel->getWidget($widget);
+                        if ($widget) {
+                            $this->widgets[$region][$section][$block][$widgetId] = clone $widget;
+                        } else {
+                            unset($this->widgets[$region][$section][$block][$widgetId]);
+                        }
+                    }
 
-                        $this->widgets[$region][$section][$block][$widgetId] = $widget;
+                    if (!$this->widgets[$region][$section][$block]) {
+                        unset($this->widgets[$region][$section][$block]);
                     }
                 }
+
+                if (!$this->widgets[$region][$section]) {
+                    unset($this->widgets[$region][$section]);
+                    unset($this->regions[$region][$section]);
+                }
+            }
+
+            if (!$this->widgets[$region]) {
+                unset($this->widgets[$region]);
+                unset($this->regions[$region]);
             }
         }
     }

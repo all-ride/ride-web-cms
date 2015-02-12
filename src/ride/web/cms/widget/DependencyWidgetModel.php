@@ -31,6 +31,10 @@ class DependencyWidgetModel implements WidgetModel {
      * @return \ride\library\cms\widget\Widget
      */
     public function getWidget($widget) {
+        if (!$widget) {
+            return null;
+        }
+
         return $this->dependencyInjector->get('ride\\library\\cms\\widget\\Widget', $widget);
     }
 
