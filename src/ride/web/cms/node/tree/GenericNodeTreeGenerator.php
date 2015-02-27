@@ -40,13 +40,14 @@ class GenericNodeTreeGenerator implements NodeTreeGenerator {
      * Gets a site tree for the provided node
      * @param \ride\library\cms\node\Node $node Selected node of the tree
      * @param string $locale Locale for the tree
+     * @param string $referer URL of the referer
      * @return TreeNode Tree Node for the site of the provided node
      */
-    public function getTree(Node $node, $locale) {
+    public function getTree(Node $node, $locale, $referer = null) {
         $this->locale = $locale;
         $this->node = $node;
         $this->nodeId = $node->getId();
-        $this->referer = '?referer=' . urlencode($this->web->getRequest()->getUrl());
+        $this->referer = '?referer=' . urlencode($referer);
 
         if ($this->nodeId) {
             $this->rootNodeId = $node->getRootNodeId();

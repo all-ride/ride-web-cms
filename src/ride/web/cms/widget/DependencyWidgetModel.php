@@ -3,6 +3,7 @@
 namespace ride\web\cms\widget;
 
 use ride\library\cms\widget\WidgetModel;
+use ride\library\dependency\exception\DependencyNotFoundException;
 use ride\library\dependency\DependencyInjector;
 
 /**
@@ -35,7 +36,13 @@ class DependencyWidgetModel implements WidgetModel {
             return null;
         }
 
-        return $this->dependencyInjector->get('ride\\library\\cms\\widget\\Widget', $widget);
+        try {
+            $widget = $this->dependencyInjector->get('ride\\library\\cms\\widget\\Widget', $widget);
+        } catch (DependencyNotFoundException $exception) {
+            $widget = null;
+        }
+
+        return $widget;
     }
 
     /**

@@ -330,11 +330,17 @@ class SiteController extends AbstractNodeTypeController {
             return;
         }
 
-        $siteTreeNode = $nodeTreeGenerator->getTree($site, $locale);
+        $referer = $this->request->getQueryParameter('referer');
+        if (!$referer) {
+            $referer = $this->getUrl('cms.site');
+        }
+
+        $siteTreeNode = $nodeTreeGenerator->getTree($site, $locale, $referer);
 
         $this->setTemplateView('cms/backend/site.tree', array(
             'site' => $site,
             'siteTreeNode' => $siteTreeNode,
+            'referer' => $referer,
             'locale' => $locale,
         ));
     }
