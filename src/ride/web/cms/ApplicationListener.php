@@ -176,15 +176,6 @@ class ApplicationListener {
         $applicationMenu = $taskbar->getApplicationsMenu();
         $referer = '?referer=' . urlencode($request->getUrl());
 
-        // content menu
-        $contentMenu = new Menu();
-        $contentMenu->setId('content');
-        $contentMenu->setTranslation('label.content');
-
-        $eventManager->triggerEvent(self::EVENT_MENU_CONTENT, array('menu' => $contentMenu, 'locale' => $locale));
-
-        $applicationMenu->addMenu($contentMenu);
-
         // site menu
         $menu = new Menu();
         $menu->setTranslation('label.sites');
@@ -266,21 +257,6 @@ class ApplicationListener {
         $menu->addMenuItem($menuItem);
 
         $applicationMenu->addMenu($menu);
-    }
-
-    /**
-     * Orders the items in the content menu
-     * @param \ride\library\event\Event $event
-     * @return null
-     */
-    public function processTaskbarMenu(Event $event) {
-        $taskbar = $event->getArgument('taskbar');
-        $applicationsMenu = $taskbar->getApplicationsMenu();
-
-        $contentMenu = $applicationsMenu->getItem('content');
-        if ($contentMenu) {
-            $contentMenu->orderItems();
-        }
     }
 
     /**

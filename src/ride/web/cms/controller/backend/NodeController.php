@@ -73,13 +73,6 @@ class NodeController extends AbstractController {
         }
 
         $referer = $this->request->getQueryParameter('referer');
-        if (!$referer) {
-            $referer = $this->getUrl('cms.site.detail.locale', array(
-                'site' => $site->getId(),
-                'revision' => $site->getRevision(),
-                'locale' => $locale,
-            ));
-        }
 
         if ($this->request->isPost()) {
             $clone = $cms->cloneNode($node);
@@ -131,13 +124,6 @@ class NodeController extends AbstractController {
 
         $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');
-        if (!$referer) {
-            $referer = $this->getUrl('cms.site.detail.locale', array(
-                'locale' => $locale,
-                'site' => $site->getId(),
-                'revision' => $site->getRevision(),
-            ));
-        }
 
         $form = $this->createFormBuilder();
         $form->addRow('recursive', 'option', array(

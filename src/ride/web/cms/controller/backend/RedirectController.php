@@ -27,13 +27,6 @@ class RedirectController extends AbstractNodeTypeController {
         $locales = $cms->getLocales();
 
         $referer = $this->request->getQueryParameter('referer');
-        if (!$referer) {
-            $referer = $this->getUrl('cms.site.detail.locale', array(
-                'site' => $site->getId(),
-                'revision' => $site->getRevision(),
-                'locale' => $locale,
-            ));
-        }
 
         // get available nodes
         $nodeList = $cms->getNodeList($site, $locale, true, false);

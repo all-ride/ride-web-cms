@@ -123,9 +123,6 @@ class SiteController extends AbstractNodeTypeController {
         $themes = $cms->getThemes();
 
         $referer = $this->request->getQueryParameter('referer');
-        if (!$referer) {
-            $referer = $this->getUrl('cms.site');
-        }
 
         $data = array(
             'name' => $site->getName($locale),
@@ -269,9 +266,6 @@ class SiteController extends AbstractNodeTypeController {
 
         $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');
-        if (!$referer) {
-            $referer = $this->getUrl('cms.site');
-        }
 
         $form = $this->createFormBuilder();
         $form->addRow('recursive', 'option', array(
@@ -331,11 +325,8 @@ class SiteController extends AbstractNodeTypeController {
         }
 
         $referer = $this->request->getQueryParameter('referer');
-        if (!$referer) {
-            $referer = $this->getUrl('cms.site');
-        }
 
-        $siteTreeNode = $nodeTreeGenerator->getTree($site, $locale, $referer);
+        $siteTreeNode = $nodeTreeGenerator->getTree($site, $locale);
 
         $this->setTemplateView('cms/backend/site.tree', array(
             'site' => $site,
@@ -378,6 +369,53 @@ class SiteController extends AbstractNodeTypeController {
         unset($order[$siteId]);
 
         $cms->orderNodes($site, $order, $locale);
+    }
+
+    /**
+     * Action to clone a node
+     * @param \ride\web\cms\Cms $cms
+     * @param string $locale
+     * @param string $site
+     * @param string $revision
+     * @return null
+     */
+    public function cloneAction(Cms $cms, $locale, $site, $revision) {
+        if (!$cms->resolveNode($site, $revision)) {
+            return;
+        }
+
+        $referer = $this->request->getQueryParameter('referer');
+
+        if ($this->request->isPost()) {
+            $clone = $cms->cloneNode($site);
+
+            $this->addSuccess('success.node.cloned', array(
+                'node' => $site->getName($locale),
+            ));
+
+            $url = $this->getUrl('cms.site.edit', array(
+                'site' => $site->getId(),
+                'revision' => $site->getRevision(),
+                'locale' => $locale,
+            ));
+
+            if ($referer) {
+                $url .= '?referer=' . urlencode($referer);
+            }
+
+            $this->response->setRedirect($url);
+
+            return;
+        }
+
+        $this->setTemplateView('cms/backend/confirm.form', array(
+            'type' => 'clone',
+            'referer' => $referer,
+            'site' => $site,
+            'node' => $site,
+            'locale' => $locale,
+            'locales' => $cms->getLocales(),
+        ));
     }
 
     /**
@@ -429,13 +467,6 @@ class SiteController extends AbstractNodeTypeController {
 
         $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');
-        if (!$referer) {
-            $referer = $this->getUrl('cms.site.detail', array(
-                'site' => $site->getId(),
-                'revision' => $revision,
-                'locale' => $locale,
-            ));
-        }
 
         $trashNodeOptions = array();
 

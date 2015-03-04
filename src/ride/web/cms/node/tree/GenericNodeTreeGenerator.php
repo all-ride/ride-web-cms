@@ -40,14 +40,12 @@ class GenericNodeTreeGenerator implements NodeTreeGenerator {
      * Gets a site tree for the provided node
      * @param \ride\library\cms\node\Node $node Selected node of the tree
      * @param string $locale Locale for the tree
-     * @param string $referer URL of the referer
      * @return TreeNode Tree Node for the site of the provided node
      */
-    public function getTree(Node $node, $locale, $referer = null) {
+    public function getTree(Node $node, $locale) {
         $this->locale = $locale;
         $this->node = $node;
         $this->nodeId = $node->getId();
-        $this->referer = '?referer=' . urlencode($referer);
 
         if ($this->nodeId) {
             $this->rootNodeId = $node->getRootNodeId();
@@ -83,7 +81,7 @@ class GenericNodeTreeGenerator implements NodeTreeGenerator {
             'node' => $nodeId,
             'locale' => $this->locale,
         );
-        $url = $this->web->getUrl('cms.node.default', $urlVars) . $this->referer;
+        $url = $this->web->getUrl('cms.node.default', $urlVars);
 
         $treeNode = new TreeNode($node, $this->locale, $url);
 
@@ -105,7 +103,7 @@ class GenericNodeTreeGenerator implements NodeTreeGenerator {
                 continue;
             }
 
-            $actionUrl = $this->web->getUrl($action->getRoute(), $urlVars) . $this->referer;
+            $actionUrl = $this->web->getUrl($action->getRoute(), $urlVars);
             if (!$this->securityManager->isUrlAllowed($actionUrl)) {
                 continue;
             }
@@ -113,17 +111,17 @@ class GenericNodeTreeGenerator implements NodeTreeGenerator {
             $actions[$actionName] = $actionUrl;
         }
 
-        $actionUrl = $this->web->getUrl($nodeType->getRouteEdit(), $urlVars) . $this->referer;
+        $actionUrl = $this->web->getUrl($nodeType->getRouteEdit(), $urlVars);
         if ($this->securityManager->isUrlAllowed($actionUrl)) {
             $actions['edit'] = $actionUrl;
         }
 
-        $actionUrl = $this->web->getUrl($nodeType->getRouteClone(), $urlVars) . $this->referer;
+        $actionUrl = $this->web->getUrl($nodeType->getRouteClone(), $urlVars);
         if ($this->securityManager->isUrlAllowed($actionUrl)) {
             $actions['clone'] = $actionUrl;
         }
 
-        $actionUrl = $this->web->getUrl($nodeType->getRouteDelete(), $urlVars) . $this->referer;
+        $actionUrl = $this->web->getUrl($nodeType->getRouteDelete(), $urlVars);
         if ($this->securityManager->isUrlAllowed($actionUrl)) {
             $actions['delete'] = $actionUrl;
         }
