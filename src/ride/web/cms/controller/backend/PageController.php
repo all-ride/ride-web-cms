@@ -29,13 +29,6 @@ class PageController extends AbstractNodeTypeController {
         $themes = $cms->getThemes();
 
         $referer = $this->request->getQueryParameter('referer');
-        if (!$referer) {
-            $referer = $this->getUrl('cms.site.detail.locale', array(
-                'site' => $site->getId(),
-            	'revision' => $site->getRevision(),
-                'locale' => $locale,
-            ));
-        }
 
         // gather data
         $data = array(
