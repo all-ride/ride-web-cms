@@ -387,25 +387,31 @@ class SiteController extends AbstractNodeTypeController {
         $referer = $this->request->getQueryParameter('referer');
 
         if ($this->request->isPost()) {
-            $clone = $cms->cloneNode($site);
+            try {
+                $clone = $cms->cloneNode($site);
 
-            $this->addSuccess('success.node.cloned', array(
-                'node' => $site->getName($locale),
-            ));
+                $this->addSuccess('success.node.cloned', array(
+                    'node' => $site->getName($locale),
+                ));
 
-            $url = $this->getUrl('cms.site.edit', array(
-                'site' => $site->getId(),
-                'revision' => $site->getRevision(),
-                'locale' => $locale,
-            ));
+                $url = $this->getUrl('cms.site.edit', array(
+                    'site' => $site->getId(),
+                    'revision' => $site->getRevision(),
+                    'locale' => $locale,
+                ));
 
-            if ($referer) {
-                $url .= '?referer=' . urlencode($referer);
+                if ($referer) {
+                    $url .= '?referer=' . urlencode($referer);
+                }
+
+                $this->response->setRedirect($url);
+
+                return;
+            } catch (ValidationException $exception) {
+                $this->setValidationException($exception);
+
+                throw $exception;
             }
-
-            $this->response->setRedirect($url);
-
-            return;
         }
 
         $this->setTemplateView('cms/backend/confirm.form', array(

@@ -22,6 +22,12 @@ class AbstractWidget extends AbstractController implements Widget {
     const ICON =  'img/cms/widget.png';
 
     /**
+     * Name of the title property
+     * @var string
+     */
+    const PROPERTY_TITLE = 'title';
+
+    /**
      * Name of the template property
      * @var string
      */
