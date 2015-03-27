@@ -91,11 +91,7 @@ class CmsRouteContainerIO implements RouteContainerIO {
                         continue;
                     }
 
-                    $path = $node->getRoute($locale, false);
-                    if (!$path) {
-                        continue;
-                    }
-
+                    $path = $node->getRoute($locale);
                     $route = new Route($path, $callback, 'cms.front.' . $siteId . '.' . $nodeId . '.' . $locale);
                     $route->setIsDynamic(true);
                     $route->setPredefinedArguments(array(
