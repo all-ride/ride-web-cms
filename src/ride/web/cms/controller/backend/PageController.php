@@ -93,9 +93,6 @@ class PageController extends AbstractNodeTypeController {
         $form->addRow('image', 'image', array(
             'label' => $translator->translate('label.image'),
             'description' => $translator->translate('label.image.node.description'),
-            'filters' => array(
-                'trim' => array(),
-            ),
         ));
         $form->addRow('theme', 'select', array(
             'label' => $translator->translate('label.theme'),
