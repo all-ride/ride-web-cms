@@ -94,7 +94,7 @@ class ContentNodeAction extends AbstractNodeAction {
         }
 
         $regions = $theme->getRegions();
-        $availableWidgets = $cms->getWidgets();
+        $availableWidgets = $this->getWidgets($cms);
 
         $cms->setLastAction(self::NAME);
         $cms->setLastRegion($region);
@@ -150,6 +150,30 @@ class ContentNodeAction extends AbstractNodeAction {
             'actions' => $widgetActionManager->getWidgetActions(),
             'baseAction' => $baseAction,
         ));
+    }
+
+    /**
+     * Gets the available widgets ordered alphabetically
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @return array
+     */
+    protected function getWidgets(Cms $cms) {
+        $translator = $this->getTranslator();
+        $orderedWidgets = array();
+
+        $availableWidgets = $cms->getWidgets();
+        foreach ($availableWidgets as $index => $widget) {
+            $orderedWidgets[$translator->translate('widget.' . $widget->getName())] = $index;
+        }
+
+        ksort($orderedWidgets);
+
+        foreach ($orderedWidgets as $index => $widgetIndex) {
+            unset($orderedWidgets[$index]);
+            $orderedWidgets[$widgetIndex] = $availableWidgets[$widgetIndex];
+        }
+
+        return $orderedWidgets;
     }
 
     /**

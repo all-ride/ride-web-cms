@@ -36,6 +36,8 @@ class PageController extends AbstractNodeTypeController {
             'name-title' => $node->get('name.' . $locale . '.title', null, false),
             'name-menu' => $node->get('name.' . $locale . '.menu', null, false),
             'name-breadcrumb' => $node->get('name.' . $locale . '.breadcrumb', null, false),
+            'description' => $node->getDescription($locale),
+            'image' => $node->getImage($locale),
             'route' => $node->getRoute($locale, false),
             'theme' => $this->getThemeValueFromNode($node),
             'availableLocales' => $this->getLocalesValueFromNode($node),
@@ -81,6 +83,20 @@ class PageController extends AbstractNodeTypeController {
                 'trim' => array(),
             ),
         ));
+        $form->addRow('description', 'text', array(
+            'label' => $translator->translate('label.description'),
+            'description' => $translator->translate('label.description.node.description'),
+            'filters' => array(
+                'trim' => array(),
+            ),
+        ));
+        $form->addRow('image', 'image', array(
+            'label' => $translator->translate('label.image'),
+            'description' => $translator->translate('label.image.node.description'),
+            'filters' => array(
+                'trim' => array(),
+            ),
+        ));
         $form->addRow('theme', 'select', array(
             'label' => $translator->translate('label.theme'),
             'description' => $translator->translate('label.theme.description'),
@@ -111,6 +127,8 @@ class PageController extends AbstractNodeTypeController {
                 $node->setName($locale, $data['name-title'], 'title');
                 $node->setName($locale, $data['name-menu'], 'menu');
                 $node->setName($locale, $data['name-breadcrumb'], 'breadcrumb');
+                $node->setDescription($locale, $data['description']);
+                $node->setImage($locale, $data['image']);
                 $node->setRoute($locale, $data['route']);
                 $node->setTheme($this->getOptionValueFromForm($data['theme']));
 
