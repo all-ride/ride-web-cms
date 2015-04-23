@@ -15,5 +15,11 @@
             "method": "handleHttpError",
             "weight": 25
         }
+    ],
+    "cms.node.action.post": [
+        {
+            "interface": "ride\\web\\cms\\ApplicationListener",
+            "method": "handleCache"
+        }
     ]
 }

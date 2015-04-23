@@ -1,4 +1,5 @@
 {
     "cms.directory.node": "%application%/data/cms",
-    "system.cache.cms": "%application%/data/cache/cms-nodes.php"
+    "system.cache.cms.node": "%application%/data/cache/cms-nodes.php",
+    "system.cache.cms.pool": "%application%/data/cache/cms"
 }
