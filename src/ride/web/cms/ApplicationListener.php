@@ -2,6 +2,7 @@
 
 namespace ride\web\cms;
 
+use ride\library\cache\pool\CachePool;
 use ride\library\cms\node\Node;
 use ride\library\event\EventManager;
 use ride\library\event\Event;
@@ -34,6 +35,18 @@ class ApplicationListener {
      * @var string
      */
     const LOG_SOURCE = 'cms';
+
+    /**
+     * Instance of the CMS cache
+     * @var \ride\library\cache\pool\CachePool
+     */
+    private $cache = null;
+
+    /**
+     * Flag to see if a cache clear listener is registered
+     * @var boolean
+     */
+    private $isCacheClearRegistered = false;
 
     /**
      * Hook to prepare the CMS template views
@@ -337,6 +350,47 @@ class ApplicationListener {
         $dispatcher->dispatch($request, $response);
 
         $response->setStatusCode($statusCode);
+    }
+
+    /**
+     * Sets the cache pool of the cms
+     * @param \ride\library\cache\pool\CachePool $cache
+     * @return null
+     */
+    public function setCache(CachePool $cache) {
+        $this->cache = $cache;
+    }
+
+    /**
+     * Handles a node save or remove action
+     * @param \ride\library\event\Event $event Save or remove event
+     * @param \ride\library\event\EventManager $eventManager Instance of the
+     * event manager
+     * @return null
+     */
+    public function handleCache(Event $event, EventManager $eventManager) {
+        if (!$this->cache || $this->isCacheClearRegistered) {
+            return;
+        }
+
+        if (!$this->isCacheClearRegistered) {
+            // register event to commit when the controller has finished processing
+            // the request
+            $eventManager->addEventListener('app.response.post', array($this, 'clearCache'));
+
+            $this->isCacheClearRegistered = true;
+        }
+    }
+
+    /**
+     * Performs a cache clear for the cms
+     * @param \ride\library\event\Event $event Pre response event
+     * @return null
+     */
+    public function clearCache(Event $event) {
+        $this->cache->flush();
+
+        $this->isCacheClearRegistered = false;
     }
 
 }

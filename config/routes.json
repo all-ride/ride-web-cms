@@ -233,6 +233,12 @@
             "id": "cms.node.content.widget.properties"
         },
         {
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/widget/%widget%/cache",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\widget\\CacheWidgetAction",
+            "action": "indexAction",
+            "id": "cms.node.content.widget.cache"
+        },
+        {
             "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/widget/%widget%/style",
             "controller": "ride\\web\\cms\\controller\\backend\\action\\widget\\StyleWidgetAction",
             "action": "indexAction",

@@ -41,7 +41,7 @@ class AbstractWidget extends AbstractController implements Widget {
 
     /**
      * Properties of this widget
-     * @var \ride\library\cms\widget\WidgetProperties
+     * @var \ride\library\cms\widget\NodeWidgetProperties
      */
     protected $properties;
 
@@ -382,6 +382,14 @@ class AbstractWidget extends AbstractController implements Widget {
      */
     public function getContentMapper($type) {
         return $this->getContentFacade()->getContentMapper($type);
+    }
+
+    /**
+     * Gets whether this widget caches when auto cache is enabled
+     * @return boolean
+     */
+    public function isAutoCache() {
+        return false;
     }
 
     /**

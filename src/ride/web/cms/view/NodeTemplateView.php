@@ -2,6 +2,7 @@
 
 namespace ride\web\cms\view;
 
+use ride\library\cache\pool\CachePool;
 use ride\library\cms\node\Node;
 use ride\library\cms\theme\Theme;
 use ride\library\mvc\exception\MvcException;
@@ -36,6 +37,9 @@ class NodeTemplateView extends TemplateView {
         ));
 
         parent::__construct($template);
+
+        $this->cache = null;
+        $this->cachedViews = null;
     }
 
     /**
@@ -92,13 +96,27 @@ class NodeTemplateView extends TemplateView {
 
     /**
      * Set the dispatched views of the node to this view
-     * @param array $dispatchedViews Array with region name as key and a widget
-     * array as value. The widget array has the widget instance id as key and
-     * the View of the widget as value.
+     * @param array $dispatchedViews Array with region name as key and a section
+     * array as value. A section array has the row id as key and a block array
+     * as value. A block array has the block id as key and a widget array as
+     * value. A widget array has the widget instance id as key and the View of
+     * the widget as value.
      * @return null
      */
     public function setDispatchedViews(array $dispatchedViews) {
         $this->template->set('widgets', $dispatchedViews);
+    }
+
+    /**
+     * Sets the cached widget views to this view
+     * @param \ride\library\cache\pool\CachePool $cache
+     * @param array $cachedViews Array with the structure of dispatchedViews but
+     * with a CacheItem for the view as value instead of the view
+     * @return null
+     */
+    public function setCachedViews(CachePool $cache, array $cachedViews) {
+        $this->cache = $cache;
+        $this->cachedViews = $cachedViews;
     }
 
     /**
@@ -125,11 +143,29 @@ class NodeTemplateView extends TemplateView {
                             continue;
                         }
 
-                        $regions[$this->region][$this->section][$this->block][$widgetId] = $this->renderWidget($widgetId, $widgetView, $app);
+                        // render the widget
+                        $renderedWidget = $this->renderWidget($widgetId, $widgetView, $app);
+
+                        $regions[$this->region][$this->section][$this->block][$widgetId] = $renderedWidget;
+
+                        if ($this->cache && isset($this->cachedViews[$this->region][$this->section][$this->block][$widgetId])) {
+                            // cache the rendered view
+                            if ($widgetView instanceof HtmlView) {
+                                $widgetCacheView = new WidgetCacheView($renderedWidget);
+                            }
+                            $widgetCacheView->mergeResources($widgetView);
+
+                            $cachedItem = $this->cachedViews[$this->region][$this->section][$this->block][$widgetId];
+                            $cachedData = $cachedItem->getValue();
+                            $cachedData->setView($widgetCacheView);
+
+                            $this->cache->set($cachedItem);
+                        }
                     }
                 }
             }
         }
+
         $this->template->set('widgets', $regions);
 
         return parent::render($willReturnValue);

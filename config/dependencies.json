@@ -15,6 +15,52 @@
                                 "interface": "ride\\library\\cms\\node\\io\\NodeIO",
                                 "id": "%cms.node.io.default|ini%"
                             }
+                        },
+                        {
+                            "name": "cache",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\cache\\pool\\CachePool",
+                                "id": "cms"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "ride\\library\\system\\file\\File",
+            "id": "cache.cms.pool",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "system.cache.cms.pool"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "interfaces": "ride\\library\\cache\\pool\\CachePool",
+            "class": "ride\\library\\cache\\pool\\DirectoryCachePool",
+            "id": "cms",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "directory",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\system\\file\\File",
+                                "id": "cache.cms.pool"
+                            }
                         }
                     ]
                 }
@@ -40,7 +86,7 @@
         },
         {
             "class": "ride\\library\\system\\file\\File",
-            "id": "cache.cms",
+            "id": "cache.cms.node",
             "calls": [
                 {
                     "method": "__construct",
@@ -49,7 +95,7 @@
                             "name": "path",
                             "type": "parameter",
                             "properties": {
-                                "key": "system.cache.cms"
+                                "key": "system.cache.cms.node"
                             }
                         }
                     ]
@@ -101,7 +147,7 @@
                             "type": "dependency",
                             "properties": {
                                 "interface": "ride\\library\\system\\file\\File",
-                                "id": "cache.cms"
+                                "id": "cache.cms.node"
                             }
                         },
                         {
@@ -448,6 +494,18 @@
                             }
                         }
                     ]
+                },
+                {
+                    "method": "addWidgetAction",
+                    "arguments": [
+                        {
+                            "name": "widgetAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\widget\\CacheWidgetAction"
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -617,6 +675,24 @@
                             "properties": {
                                 "interface": "ride\\library\\cms\\content\\text\\TextParser",
                                 "id": "url"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "ride\\web\\cms\\ApplicationListener",
+            "calls": [
+                {
+                    "method": "setCache",
+                    "arguments": [
+                        {
+                            "name": "cache",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\cache\\pool\\CachePool",
+                                "id": "cms"
                             }
                         }
                     ]

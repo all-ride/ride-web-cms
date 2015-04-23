@@ -2,7 +2,10 @@
 
 namespace ride\web\cms\controller\frontend;
 
+use ride\application\cache\control\CmsCacheControl;
+
 use ride\library\cms\exception\NodeNotFoundException;
+use ride\library\dependency\exception\DependencyNotFoundException;
 use ride\library\http\Response;
 use ride\library\security\exception\AuthenticationException;
 use ride\library\security\exception\UnauthorizedException;
@@ -20,8 +23,12 @@ class NodeController extends AbstractController {
      * Dispatches the frontend of a node
      * @return null
 	 */
-	public function indexAction(Cms $cms, NodeDispatcherFactory $nodeDispatcherFactory, TemplateFacade $templateFacade, $node, $locale = null) {
+	public function indexAction(Cms $cms, CmsCacheControl $cacheControl, NodeDispatcherFactory $nodeDispatcherFactory, TemplateFacade $templateFacade, $node, $locale = null) {
         $cache = null;
+        if ($cacheControl->isEnabled()) {
+            $cache = $this->dependencyInjector->get('ride\\library\\cache\\pool\\CachePool', 'cms');
+        }
+
         $i18n = $this->getI18n();
         $siteLocale = null;
 

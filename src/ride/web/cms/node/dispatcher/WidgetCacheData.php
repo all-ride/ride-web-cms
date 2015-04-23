@@ -53,7 +53,6 @@ class WidgetCacheData {
 
     /**
      * Constructs a new data container
-     * @param \ride\library\mvc\view\View $view View to cache
      * @param array $context Context variables of the widget
      * @param boolean $isContent Flag to see if this view is the page
      * @param boolean $isRegion Flag to see if this view is the region
@@ -61,14 +60,22 @@ class WidgetCacheData {
      * route arguments
      * @return null
      */
-    public function __construct(View $view = null, array $context = array(), $isContent = false, $isRegion = false, $isSection = false, $isBlock = false, $routesMatched = false) {
-        $this->view = $view;
+    public function __construct(array $context = array(), $isContent = false, $isRegion = false, $isSection = false, $isBlock = false, $routesMatched = false) {
         $this->context = $context;
         $this->isContent = $isContent;
         $this->isRegion = $isRegion;
         $this->isSection = $isSection;
         $this->isBlock = $isBlock;
         $this->routesMatched = $routesMatched;
+    }
+
+    /**
+     * Sets the view to cache
+     * @param \ride\library\mvc\view\View $view View to cache
+     * @return null
+     */
+    public function setView(View $view) {
+        $this->view = $view;
     }
 
     /**

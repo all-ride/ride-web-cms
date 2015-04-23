@@ -2,6 +2,7 @@
 
 namespace ride\application\cache\control;
 
+use ride\library\cache\pool\CachePool;
 use ride\library\cms\node\io\NodeIO;
 use ride\library\cms\node\io\CacheNodeIO;
 use ride\library\config\Config;
@@ -35,9 +36,10 @@ class CmsCacheControl extends AbstractCacheControl {
      * @param \ride\library\config\Config $config
      * @return null
      */
-    public function __construct(NodeIO $io, Config $config) {
+    public function __construct(NodeIO $io, Config $config, CachePool $cache) {
         $this->io = $io;
         $this->config = $config;
+        $this->cache = $cache;
     }
 
     /**
@@ -91,6 +93,8 @@ class CmsCacheControl extends AbstractCacheControl {
      * @return null
      */
     public function clear() {
+        $this->cache->flush();
+
         if (!$this->isEnabled()) {
             return;
         }
