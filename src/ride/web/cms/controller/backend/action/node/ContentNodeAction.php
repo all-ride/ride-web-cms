@@ -275,7 +275,82 @@ class ContentNodeAction extends AbstractNodeAction {
     }
 
     /**
-     * Action to dispatch to the properties of a widget
+     * Action to dispatch to the properties of a section
+     * @param \ride\web\cms\Cms $cms
+     * @param string $locale
+     * @param string $site
+     * @param string $revision
+     * @param string $node
+     * @param string $region
+     * @param string $widget
+     * @return null
+     */
+    public function sectionPropertiesAction(Cms $cms, $locale, $site, $revision, $node, $region, $section) {
+        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
+            return;
+        }
+
+        $translator = $this->getTranslator();
+
+        $data = array(
+            'title' => $node->getSectionTitle($region, $section, $locale),
+            'isFullWidth' => $node->isSectionFullWidth($region, $section),
+        );
+
+        $form = $this->createFormBuilder($data);
+        $form->addRow('title', 'string', array(
+            'label' => $translator->translate('label.title'),
+        ));
+        $form->addRow('isFullWidth', 'option', array(
+            'label' => $translator->translate('label.section.width.full'),
+            'description' => $translator->translate('label.section.width.full.description'),
+        ));
+
+        $form = $form->build();
+        if ($form->isSubmitted()) {
+            try {
+                $form->validate();
+
+                $data = $form->getData();
+
+                $node->setSectionTitle($region, $section, $locale, $data['title']);
+                $node->setIsSectionFullWidth($region, $section, $data['isFullWidth']);
+
+                $cms->saveNode($node, 'Updated properties for section ' . $section . ' in region ' . $region . ' of node ' . $node->getName());
+
+                $this->response->setRedirect($this->getUrl(
+                    'cms.node.content.region',
+                    array(
+                        'locale' => $locale,
+                        'site' => $site->getId(),
+                        'revision' => $node->getRevision(),
+                        'node' => $node->getId(),
+                        'region' => $region,
+                    )
+                ));
+
+                return;
+            } catch (ValidationException $validationException) {
+                $this->setValidationException($validationException, $form);
+            }
+        }
+
+        $referer = $this->request->getQueryParameter('referer');
+
+        $this->setTemplateView('cms/backend/section.properties', array(
+            'site' => $site,
+            'node' => $node,
+            'referer' => $referer,
+            'locale' => $locale,
+            'locales' => $cms->getLocales(),
+            'region' => $region,
+            'section' => $section,
+            'form' => $form->getView(),
+        ));
+    }
+
+    /**
+     * Action to dispatch to the style of a section
      * @param \ride\web\cms\Cms $cms
      * @param string $locale
      * @param string $site

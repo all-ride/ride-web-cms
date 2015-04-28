@@ -201,6 +201,12 @@
             "methods": "POST"
         },
         {
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/sections/%section%/properties",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
+            "action": "sectionPropertiesAction",
+            "id": "cms.node.content.section.properties"
+        },
+        {
             "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/sections/%section%/style",
             "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
             "action": "sectionStyleAction",
