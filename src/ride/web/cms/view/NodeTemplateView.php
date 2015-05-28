@@ -146,8 +146,6 @@ class NodeTemplateView extends TemplateView {
                         // render the widget
                         $renderedWidget = $this->renderWidget($widgetId, $widgetView, $app);
 
-                        $regions[$this->region][$this->section][$this->block][$widgetId] = $renderedWidget;
-
                         if ($this->cache && isset($this->cachedViews[$this->region][$this->section][$this->block][$widgetId])) {
                             // cache the rendered view
                             if ($widgetView instanceof HtmlView) {
@@ -161,8 +159,30 @@ class NodeTemplateView extends TemplateView {
 
                             $this->cache->set($cachedItem);
                         }
+
+                        if (trim($renderedWidget) == '') {
+                            // omit empty widgets
+                            unset($regions[$this->region][$this->section][$this->block][$widgetId]);
+                        } else {
+                            $regions[$this->region][$this->section][$this->block][$widgetId] = $renderedWidget;
+                        }
+                    }
+
+                    // omit empty blocks
+                    if (!$regions[$this->region][$this->section][$this->block]) {
+                        unset($regions[$this->region][$this->section][$this->block]);
                     }
                 }
+
+                // omit empty sections
+                if (!$regions[$this->region][$this->section]) {
+                    unset($regions[$this->region][$this->section]);
+                }
+            }
+
+            // omit empty regions
+            if (!$regions[$this->region]) {
+                unset($regions[$this->region]);
             }
         }
 
