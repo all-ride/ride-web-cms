@@ -11,6 +11,7 @@ use ride\library\http\Response;
 use ride\library\i18n\I18n;
 use ride\library\mvc\message\Message;
 use ride\library\mvc\Request;
+use ride\library\security\exception\UnauthorizedException;
 use ride\library\security\SecurityManager;
 
 use ride\web\base\menu\MenuItem;
@@ -327,11 +328,6 @@ class ApplicationListener {
         if ($locales != Node::LOCALES_ALL && !isset($locales[$locale])) {
             $locale = array_pop($locales);
             $i18n->setCurrentLocale($locale);
-
-            $message = $i18n->getTranslator()->translate('error.unauthorized');
-
-            $response->getMessageContainer()->removeAll();
-            $response->addMessage(new Message($message, Message::TYPE_ERROR));
         }
 
         // dispatch the error page
@@ -347,14 +343,26 @@ class ApplicationListener {
         $request = $web->createRequest($route->getPath());
         $request->setRoute($route);
 
+        $response->getMessageContainer()->removeAll();
         $response->setView(null);
         $response->setStatusCode(Response::STATUS_CODE_OK);
         $response->removeHeader(Header::HEADER_CONTENT_TYPE);
         $response->clearRedirect();
 
-        $dispatcher = $web->getDispatcher();
-        $dispatcher->dispatch($request, $response);
+        try {
+            $dispatcher = $web->getDispatcher();
+            $dispatcher->dispatch($request, $response);
+        } catch (UnauthorizedException $exception) {
+            if ($statusCode === Response::STATUS_CODE_FORBIDDEN) {
+                $response->setRedirect($request->getBaseUrl());
 
+                return;
+            } else {
+                throw $exception;
+            }
+        }
+
+        $response->addMessage(new Message($i18n->getTranslator()->translate('error.unauthorized'), Message::TYPE_ERROR));
         $response->setStatusCode($statusCode);
     }
 
