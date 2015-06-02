@@ -148,10 +148,10 @@ class NodeTemplateView extends TemplateView {
 
                         if ($this->cache && isset($this->cachedViews[$this->region][$this->section][$this->block][$widgetId])) {
                             // cache the rendered view
+                            $widgetCacheView = new WidgetCacheView($renderedWidget);
                             if ($widgetView instanceof HtmlView) {
-                                $widgetCacheView = new WidgetCacheView($renderedWidget);
+                                $widgetCacheView->mergeResources($widgetView);
                             }
-                            $widgetCacheView->mergeResources($widgetView);
 
                             $cachedItem = $this->cachedViews[$this->region][$this->section][$this->block][$widgetId];
                             $cachedData = $cachedItem->getValue();
