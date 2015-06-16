@@ -289,6 +289,7 @@ class ApplicationListener {
 
         $statusCode = $response->getStatusCode();
         if (($statusCode != Response::STATUS_CODE_FORBIDDEN && $statusCode != Response::STATUS_CODE_NOT_FOUND) || ($request->isXmlHttpRequest() && $response->getView() instanceof JsonView)) {
+            // js request or not a forbidden or not a not found status
             return;
         }
 
@@ -320,6 +321,7 @@ class ApplicationListener {
         // get the error node
         $node = $site->get('error.' . $statusCode);
         if (!$node) {
+            // no node setup for this error
             return;
         }
 
@@ -340,8 +342,12 @@ class ApplicationListener {
             $route->setArguments();
         }
 
-        $request = $web->createRequest($route->getPath());
-        $request->setRoute($route);
+        $loginRequest = $web->createRequest($route->getPath());
+        $loginRequest->setRoute($route);
+        $loginRequest->getHeaders()->setHeader(Header::HEADER_REFERER, $request->getUrl());
+        if ($request->hasSession()) {
+            $loginRequest->setSession($request->getSession());
+        }
 
         $response->getMessageContainer()->removeAll();
         $response->setView(null);
@@ -351,7 +357,7 @@ class ApplicationListener {
 
         try {
             $dispatcher = $web->getDispatcher();
-            $dispatcher->dispatch($request, $response);
+            $dispatcher->dispatch($loginRequest, $response);
         } catch (UnauthorizedException $exception) {
             if ($statusCode === Response::STATUS_CODE_FORBIDDEN) {
                 $response->setRedirect($request->getBaseUrl());
@@ -362,8 +368,15 @@ class ApplicationListener {
             }
         }
 
-        $response->addMessage(new Message($i18n->getTranslator()->translate('error.unauthorized'), Message::TYPE_ERROR));
         $response->setStatusCode($statusCode);
+
+        if ($loginRequest->hasSession()) {
+            $request->setSession($loginRequest->getSession());
+        }
+
+        if ($statusCode === Response::STATUS_CODE_FORBIDDEN) {
+            $response->addMessage(new Message($i18n->getTranslator()->translate('error.unauthorized'), Message::TYPE_ERROR));
+        }
     }
 
     /**
