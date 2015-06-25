@@ -239,6 +239,12 @@
             "id": "cms.node.content.widget.properties"
         },
         {
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/widget/%widget%/visibility",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\widget\\VisibilityWidgetAction",
+            "action": "indexAction",
+            "id": "cms.node.content.widget.visibility"
+        },
+        {
             "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/content/%region%/widget/%widget%/cache",
             "controller": "ride\\web\\cms\\controller\\backend\\action\\widget\\CacheWidgetAction",
             "action": "indexAction",
