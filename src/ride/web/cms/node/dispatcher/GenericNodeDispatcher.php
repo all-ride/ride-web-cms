@@ -263,6 +263,16 @@ class GenericNodeDispatcher implements NodeDispatcher {
 
                         $widgetProperties = $this->node->getWidgetProperties($widgetId);
                         if (!$widgetProperties->isPublished()) {
+                            if ($this->log) {
+                                $this->log->logDebug('Widget ' . $widget->getName() . '#' . $widgetId . ' is not published', null, ApplicationListener::LOG_SOURCE);
+                            }
+
+                            continue;
+                        } elseif (!$widgetProperties->isAllowed($user)) {
+                            if ($this->log) {
+                                $this->log->logDebug('Widget ' . $widget->getName() . '#' . $widgetId . ' is not allowed', null, ApplicationListener::LOG_SOURCE);
+                            }
+
                             continue;
                         }
 

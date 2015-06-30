@@ -478,6 +478,18 @@
                             "name": "widgetAction",
                             "type": "dependency",
                             "properties": {
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\widget\\VisibilityWidgetAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addWidgetAction",
+                    "arguments": [
+                        {
+                            "name": "widgetAction",
+                            "type": "dependency",
+                            "properties": {
                                 "interface": "ride\\web\\cms\\controller\\backend\\action\\widget\\StyleWidgetAction"
                             }
                         }
