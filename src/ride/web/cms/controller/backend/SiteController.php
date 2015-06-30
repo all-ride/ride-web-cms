@@ -59,14 +59,13 @@ class SiteController extends AbstractNodeTypeController {
             }
 
             // When only 1 site is available, redirect to the site instead of
-            //showing a dropdown with a single option.
+            // showing a dropdown with a single option.
             if (count($sites) == 1) {
                 $site = array_shift($sites);
                 $this->response->setRedirect($site['url']);
 
                 return;
             }
-
         }
 
         $this->setTemplateView('cms/backend/site', array(
