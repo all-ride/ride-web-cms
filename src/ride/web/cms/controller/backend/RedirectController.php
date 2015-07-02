@@ -76,7 +76,7 @@ class RedirectController extends AbstractNodeTypeController {
             'description' => $translator->translate('label.redirect.node.description'),
             'options' => $nodeList,
         ));
-        $form->addRow('redirect-url', 'website', array(
+        $form->addRow('redirect-url', 'string', array(
             'label' => $translator->translate('label.redirect.url'),
             'description' => $translator->translate('label.redirect.url.description'),
             'filters' => array(
