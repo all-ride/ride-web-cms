@@ -37,6 +37,8 @@ class RedirectController extends AbstractController {
         }
 
         $url = $node->getRedirectUrl($locale);
+        $url = $node->resolveUrl($locale, $this->request->getBaseScript(), $url);
+
         if ($url) {
             $this->response->setRedirect($url);
 
