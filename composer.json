@@ -2,7 +2,7 @@
     "name": "ride/web-cms",
     "description": "CMS application of the Ride framework",
     "license": "MIT",
-    "version": "0.23.4",
+    "version": "0.23.5",
     "authors": [
         {
             "name": "Joris Vandeweerd",
