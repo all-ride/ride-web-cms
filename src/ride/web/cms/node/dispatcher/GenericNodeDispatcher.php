@@ -277,7 +277,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
                         }
 
                         if ($isCacheable) {
-                            $cacheKey = 'node.widget.view.' . $this->node->getId() . '.' . $this->node->getRevision() . '.' . $this->region . '.' . $this->section . '.' . $this->block . '.' . $widgetId . '.' . $this->locale . $parameters;
+                            $cacheKey = 'node.widget.view.' . $this->node->getId() . '.' . md5($this->node->getRevision() . '.' . $this->region . '.' . $this->section . '.' . $this->block . '.' . $widgetId . '.' . $this->locale . $parameters);
                             if ($user) {
                                 $cacheKey .= '-authenticated';
                             }
