@@ -40,6 +40,7 @@ class NodeTemplateView extends TemplateView {
 
         $this->cache = null;
         $this->cachedViews = null;
+        $this->contentView = null;
     }
 
     /**
@@ -120,6 +121,19 @@ class NodeTemplateView extends TemplateView {
     }
 
     /**
+     * Sets the view representing the content
+     * @param \ride\library\mvc\view\View $view
+     * @return null
+     */
+    public function setContentView(View $view, $widgetId, $block, $section, $region) {
+        $this->contentView = $view;
+        $this->contentViewId = $widgetId;
+        $this->contentViewBlock = $block;
+        $this->contentViewSection = $section;
+        $this->contentViewRegion = $region;
+    }
+
+    /**
      * Renders the output for this view
      * @param boolean $willReturnValue True to return the rendered view, false
      * to send it straight to the client
@@ -131,9 +145,18 @@ class NodeTemplateView extends TemplateView {
             throw new MvcException("Could not render template view: template facade not set, invoke setTemplateFacade() first");
         }
 
-        // render the widget templates in the regions
         $app = $this->template->get('app');
 
+        // single content view
+        if ($this->contentView) {
+            $this->block = $this->contentViewBlock;
+            $this->section = $this->contentViewSection;
+            $this->region = $this->contentViewRegion;
+
+            return $this->renderWidget($this->contentViewId, $this->contentView, $app, $willReturnValue);
+        }
+
+        // render the widget templates in the regions
         $regions = $this->template->get('widgets');
         foreach ($regions as $this->region => $sections) {
             foreach ($sections as $this->section => $blocks) {
@@ -196,9 +219,11 @@ class NodeTemplateView extends TemplateView {
      * @param string $widgetId Id of the widget
      * @param \ride\library\mvc\view\View $widgetView
      * @param array $app Common variables of the main template
+     * @param boolean $willReturnValue True to return the rendered view, false
+     * to send it straight to the client
      * @return string
      */
-    protected function renderWidget($widgetId, View $widgetView, array $app) {
+    protected function renderWidget($widgetId, View $widgetView, array $app, $willReturnValue = true) {
         if ($widgetView instanceof HtmlView) {
             $this->mergeResources($widgetView);
         }
@@ -226,7 +251,7 @@ class NodeTemplateView extends TemplateView {
             $widgetView->setTemplateFacade($this->templateFacade);
         }
 
-        return $widgetView->render(true);
+        return $widgetView->render($willReturnValue);
     }
 
 }

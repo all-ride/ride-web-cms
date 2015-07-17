@@ -81,6 +81,11 @@ class NodeController extends AbstractController {
                 $nodeDispatcher->dispatch($this->request, $this->response, $user, $cache);
 
                 if ($this->response->getStatusCode() != Response::STATUS_CODE_NOT_FOUND) {
+                    $headers = $node->getHeader($locale);
+                    foreach ($headers as $name => $value) {
+                        $this->response->setHeader($name, $value);
+                    }
+
                     return;
                 }
             }
