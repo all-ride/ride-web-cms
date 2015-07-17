@@ -308,7 +308,8 @@ class GenericNodeDispatcher implements NodeDispatcher {
                                 }
 
                                 if ($cacheView->isContent()) {
-                                    $dispatchedViews = $cacheView->getView();
+                                    $dispatchedViews = null;
+                                    $this->view->setContentView($view, $widgetId, $this->block, $this->section, $this->region);
 
                                     break 4;
                                 } elseif ($cacheView->isRegion()) {
@@ -385,7 +386,8 @@ class GenericNodeDispatcher implements NodeDispatcher {
                         }
 
                         if ($isContent) {
-                            $dispatchedViews = $view;
+                            $dispatchedViews = null;
+                            $this->view->setContentView($view, $widgetId, $this->block, $this->section, $this->region);
 
                             break 4;
                         } elseif ($isRegion) {
@@ -441,19 +443,17 @@ class GenericNodeDispatcher implements NodeDispatcher {
             // }
         }
 
+        $this->view->setContext($context);
         if (is_array($dispatchedViews)) {
-            $this->view->setContext($context);
             $this->view->setDispatchedViews($dispatchedViews);
             $this->view->setRegions($this->regions);
 
             if ($cachedViews) {
                 $this->view->setCachedViews($cache, $cachedViews);
             }
-
-            $response->setView($this->view);
-        } else {
-            $response->setView($dispatchedViews);
         }
+
+        $response->setView($this->view);
     }
 
     /**
