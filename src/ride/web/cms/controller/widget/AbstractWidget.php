@@ -320,6 +320,14 @@ class AbstractWidget extends AbstractController implements Widget {
     }
 
     /**
+     * Gets the properties of this widget instance
+     * @return \ride\library\widget\WidgetProperties
+     */
+    public function getProperties($properties) {
+        return $this->properties;
+    }
+
+    /**
      * Gets the callback for the properties action
      * @return null|callback Null if the widget does not implement a properties
      * action, a callback for the action otherwise

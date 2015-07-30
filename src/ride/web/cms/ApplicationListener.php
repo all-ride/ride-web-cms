@@ -281,7 +281,12 @@ class ApplicationListener {
         $request = $web->getRequest();
         $response = $web->getResponse();
 
-        $routeId = $request->getRoute()->getId();
+        $route = $request->getRoute();
+        if (!$route) {
+            return;
+        }
+
+        $routeId = $route->getId();
         if ($routeId && substr($routeId, 0, 10) !== 'cms.front.') {
             // don't act on non cms pages
             return;
