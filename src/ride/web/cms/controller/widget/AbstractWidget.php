@@ -323,7 +323,7 @@ class AbstractWidget extends AbstractController implements Widget {
      * Gets the properties of this widget instance
      * @return \ride\library\widget\WidgetProperties
      */
-    public function getProperties($properties) {
+    public function getProperties() {
         return $this->properties;
     }
 
