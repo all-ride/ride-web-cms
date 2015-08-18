@@ -227,6 +227,11 @@ class GenericNodeDispatcher implements NodeDispatcher {
         $routeArgumentsMatched = false;
 
         // check for cache
+        $cacheKey = null;
+        $cacheItem = null;
+        $cachedViews = array();
+        $dispatchedViews = array();
+
         if ($cache) {
             $method = $request->getMethod();
 
@@ -240,13 +245,23 @@ class GenericNodeDispatcher implements NodeDispatcher {
                 $containsUserContent = false;
 
                 $nodeCacheTtl = 0;
+
+                $cacheKey = 'node.view.' . $this->node->getId() . '.' . $this->node->getRevision() . '.' . $this->locale . '.' . substr(md5($parameters), 0, 10);
+                if ($user) {
+                    $cacheKey .= '.authenticated';
+                }
+
+                $cacheItem = $cache->get($cacheKey);
+                if ($cacheItem->isValid()) {
+                    $cachedViews = $cacheItem->getValue();
+                } else {
+                    $cachedViews = array();
+                }
             }
         } else {
             $isCacheable = false;
         }
 
-        $dispatchedViews = array();
-        $cachedViews = array();
         foreach ($this->widgets as $this->region => $sections) {
             $dispatchedViews[$this->region] = array();
 
@@ -277,20 +292,17 @@ class GenericNodeDispatcher implements NodeDispatcher {
                         }
 
                         if ($isCacheable) {
-                            $cacheKey = 'node.widget.view.' . $this->node->getId() . '.' . md5($this->node->getRevision() . '.' . $this->region . '.' . $this->section . '.' . $this->block . '.' . $widgetId . '.' . $this->locale . $parameters);
-                            if ($user) {
-                                $cacheKey .= '-authenticated';
-                            }
+                            $widgetCacheKey = $this->region . '.' . $this->section . '.' . $this->block . '.' . $widgetId . '.';
                         }
 
-                        if ($isCacheable && !$isNoCache && ($widgetProperties->isCacheEnabled() || ($widgetProperties->isAutoCache() && $widget->isAutoCache()))) {
-                            $cachedItem = $cache->get($cacheKey);
-                            if ($cachedItem->isValid()) {
+                        $isWidgetCache = $widgetProperties->isCacheEnabled() || ($widgetProperties->isAutoCache() && $widget->isAutoCache());
+                        if ($isCacheable && !$isNoCache && $isWidgetCache) {
+                            if (isset($cachedViews[$this->region][$this->section][$this->block][$widgetId])) {
                                 if ($this->log) {
-                                    $this->log->logDebug('Retrieved widget ' . $widget->getName() . '#' . $widgetId . ' for cache', null, ApplicationListener::LOG_SOURCE);
+                                    $this->log->logDebug('Retrieved widget ' . $widget->getName() . '#' . $widgetId . ' from cache', null, ApplicationListener::LOG_SOURCE);
                                 }
 
-                                $cacheView = $cachedItem->getValue();
+                                $cacheView = $cachedViews[$this->region][$this->section][$this->block][$widgetId];
 
                                 if ($cacheView->areRoutesMatched()) {
                                     $widgetMatchedRouteArguments = true;
@@ -359,25 +371,22 @@ class GenericNodeDispatcher implements NodeDispatcher {
                         $oldContext = $context;
                         $context = $widget->getContext();
 
-                        if ($isCacheable && !$widgetProperties->isCacheDisabled()) {
+                        if ($isCacheable && $isWidgetCache) {
                             $widgetContext = $this->getContextDifference($context, $oldContext);
                             if (!$widgetContext) {
-                                $cacheTtl = $widgetProperties->getCacheTtl();
-
-                                $cachedItem = $cache->create($cacheKey);
-                                $cachedItem->setValue(new WidgetCacheData($widgetContext, $isContent, $isRegion, $isSection, $isBlock, $widgetMatchedRouteArguments));
-                                $cachedItem->setTtl($cacheTtl);
-
                                 // calculate node cache time based on the least widget cache time
-                                // if ($nodeCacheTtl !== false && $cacheTtl) {
-                                    // if ($nodeCacheTtl == 0) {
-                                        // $nodeCacheTtl = $cacheTtl;
-                                    // } else {
-                                        // $nodeCacheTtl = min($nodeCacheTtl, $cacheTtl);
-                                    // }
-                                // }
+                                $cacheTtl = $widgetProperties->getCacheTtl();
+                                if ($nodeCacheTtl !== false && $cacheTtl) {
+                                    if ($nodeCacheTtl == 0) {
+                                        $nodeCacheTtl = $cacheTtl;
+                                    } else {
+                                        $nodeCacheTtl = min($nodeCacheTtl, $cacheTtl);
+                                    }
+                                }
 
-                                $cachedViews[$this->region][$this->section][$this->block] = array($widgetId => $cachedItem);
+                                $widgetCachedView = new WidgetCacheData($widgetContext, $isContent, $isRegion, $isSection, $isBlock, $widgetMatchedRouteArguments);
+
+                                $cachedViews[$this->region][$this->section][$this->block][$widgetId] = $widgetCachedView;
                             } else {
                                 $nodeCacheTtl = false;
                             }
@@ -430,10 +439,10 @@ class GenericNodeDispatcher implements NodeDispatcher {
             $dispatchedViews = null;
         }
 
-        if ($this->eventManager && $isCacheable && $nodeCacheTtl !== false) {
-            if ($user && $containsUserContent) {
-                $isCacheable = false;
-            }
+        // if ($this->eventManager && $isCacheable && $nodeCacheTtl !== false) {
+            // if ($user && $containsUserContent) {
+                // $isCacheable = false;
+            // }
 
             // if ($isCacheable) {
                 // $this->cache = $cache;
@@ -441,7 +450,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
 
                 // $this->eventManager->addEventListener(WebApplication::EVENT_POST_RESPONSE, array($this, 'cacheResponse'));
             // }
-        }
+        // }
 
         $this->view->setContext($context);
         if (is_array($dispatchedViews)) {
@@ -449,7 +458,10 @@ class GenericNodeDispatcher implements NodeDispatcher {
             $this->view->setRegions($this->regions);
 
             if ($cachedViews) {
-                $this->view->setCachedViews($cache, $cachedViews);
+                $cacheItem->setValue($cachedViews);
+                $cacheItem->setTtl($nodeCacheTtl);
+
+                $this->view->setCachedViews($cache, $cacheItem);
             }
         }
 

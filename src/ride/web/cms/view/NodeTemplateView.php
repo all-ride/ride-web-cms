@@ -3,6 +3,7 @@
 namespace ride\web\cms\view;
 
 use ride\library\cache\pool\CachePool;
+use ride\library\cache\CacheItem;
 use ride\library\cms\node\Node;
 use ride\library\cms\theme\Theme;
 use ride\library\mvc\exception\MvcException;
@@ -39,6 +40,7 @@ class NodeTemplateView extends TemplateView {
         parent::__construct($template);
 
         $this->cache = null;
+        $this->cacheItem = null;
         $this->cachedViews = null;
         $this->contentView = null;
     }
@@ -110,14 +112,18 @@ class NodeTemplateView extends TemplateView {
 
     /**
      * Sets the cached widget views to this view
-     * @param \ride\library\cache\pool\CachePool $cache
-     * @param array $cachedViews Array with the structure of dispatchedViews but
-     * with a CacheItem for the view as value instead of the view
+     * @param \ride\library\cache\pool\CachePool $cache Instance of the CMS
+     * cache to store updates of the views
+     * @param \ride\library\cache\CacheItem $cacheItem Cache item containing the
+     * cached views. This is an array with the structure of dispatchedViews but
+     * always with a WidgetCacheView as value
      * @return null
+     * @see WidgetCacheView
      */
-    public function setCachedViews(CachePool $cache, array $cachedViews) {
+    public function setCachedViews(CachePool $cache, CacheItem $cacheItem) {
         $this->cache = $cache;
-        $this->cachedViews = $cachedViews;
+        $this->cacheItem = $cacheItem;
+        $this->cachedViews = $cacheItem->getValue();
     }
 
     /**
@@ -176,11 +182,7 @@ class NodeTemplateView extends TemplateView {
                                 $widgetCacheView->mergeResources($widgetView);
                             }
 
-                            $cachedItem = $this->cachedViews[$this->region][$this->section][$this->block][$widgetId];
-                            $cachedData = $cachedItem->getValue();
-                            $cachedData->setView($widgetCacheView);
-
-                            $this->cache->set($cachedItem);
+                            $this->cachedViews[$this->region][$this->section][$this->block][$widgetId]->setView($widgetCacheView);
                         }
 
                         if (trim($renderedWidget) == '') {
@@ -207,6 +209,11 @@ class NodeTemplateView extends TemplateView {
             if (!$regions[$this->region]) {
                 unset($regions[$this->region]);
             }
+        }
+
+        if ($this->cache) {
+            $this->cacheItem->setValue($this->cachedViews);
+            $this->cache->set($this->cacheItem);
         }
 
         $this->template->set('widgets', $regions);
