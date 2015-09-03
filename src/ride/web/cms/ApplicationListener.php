@@ -14,6 +14,7 @@ use ride\library\mvc\Request;
 use ride\library\security\exception\UnauthorizedException;
 use ride\library\security\SecurityManager;
 
+use ride\web\base\controller\AbstractController;
 use ride\web\base\menu\MenuItem;
 use ride\web\base\menu\Menu;
 use ride\web\mvc\view\JsonView;
@@ -184,6 +185,11 @@ class ApplicationListener {
 
         if ($route) {
             $locale = $route->getArgument('locale');
+        }
+
+        if (!$locale && $request->hasSession()) {
+            $session = $request->getSession();
+            $locale = $session->get(AbstractController::SESSION_LOCALE_CONTENT);
         }
 
         if (!$locale) {

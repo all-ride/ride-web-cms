@@ -23,6 +23,8 @@ class RedirectController extends AbstractNodeTypeController {
             $node = $cms->createNode('redirect', $site);
         }
 
+        $this->setContentLocale($locale);
+
         $translator = $this->getTranslator();
         $locales = $cms->getLocales();
 

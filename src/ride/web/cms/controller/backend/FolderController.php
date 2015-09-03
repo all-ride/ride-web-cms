@@ -23,6 +23,8 @@ class FolderController extends AbstractNodeTypeController {
             $node = $cms->createNode('folder', $site);
         }
 
+        $this->setContentLocale($locale);
+
         $translator = $this->getTranslator();
         $locales = $cms->getLocales();
         $themes = $cms->getThemes();
