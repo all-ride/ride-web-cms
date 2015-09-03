@@ -24,6 +24,8 @@ class PageController extends AbstractNodeTypeController {
             $node = $cms->createNode('page', $site);
         }
 
+        $this->setContentLocale($locale);
+
         $translator = $this->getTranslator();
         $locales = $cms->getLocales();
         $themes = $cms->getThemes();

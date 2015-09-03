@@ -74,6 +74,9 @@ class PreviewNodeAction extends AbstractNodeAction {
             return;
         }
 
+        $this->setContentLocale($locale);
+        $cms->setLastAction(self::NAME);
+
         $url = $this->getUrl('cms.site.preview', array(
             'site' => $site->getId(),
             'revision' => $revision,

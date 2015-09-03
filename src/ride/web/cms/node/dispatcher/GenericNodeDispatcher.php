@@ -457,7 +457,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
             $this->view->setDispatchedViews($dispatchedViews);
             $this->view->setRegions($this->regions);
 
-            if ($cachedViews) {
+            if ($nodeCacheTtl !== false && $cachedViews) {
                 $cacheItem->setValue($cachedViews);
                 $cacheItem->setTtl($nodeCacheTtl);
 

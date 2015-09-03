@@ -23,7 +23,9 @@ class SiteController extends AbstractNodeTypeController {
      */
     public function indexAction(Cms $cms, $locale = null) {
         if (!$locale) {
-            $locale = $this->getLocale();
+            $locale = $this->getContentLocale();
+        } else {
+            $this->setContentLocale($locale);
         }
 
         $defaultRevision = $cms->getDefaultRevision();
@@ -88,13 +90,17 @@ class SiteController extends AbstractNodeTypeController {
                 $revision = $cms->getDraftRevision();
             }
 
+            $locale = $this->getContentLocale();
+
             $this->response->setRedirect($this->getUrl('cms.site.detail.locale', array(
                 "site" => $site,
                 "revision" => $revision,
-                "locale" => $this->getLocale(),
+                "locale" => $locale,
             )));
 
             return;
+        } else {
+            $this->setContentLocale($locale);
         }
 
         if (!$cms->resolveNode($site, $revision)) {
@@ -126,6 +132,8 @@ class SiteController extends AbstractNodeTypeController {
         } else {
             $site = $cms->createNode('site');
         }
+
+        $this->setContentLocale($locale);
 
         $translator = $this->getTranslator();
         $locales = $cms->getLocales();
@@ -273,6 +281,8 @@ class SiteController extends AbstractNodeTypeController {
             return;
         }
 
+        $this->setContentLocale($locale);
+
         $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');
 
@@ -393,6 +403,8 @@ class SiteController extends AbstractNodeTypeController {
             return;
         }
 
+        $this->setContentLocale($locale);
+
         $referer = $this->request->getQueryParameter('referer');
 
         if ($this->request->isPost()) {
@@ -446,6 +458,8 @@ class SiteController extends AbstractNodeTypeController {
             return;
         }
 
+        $this->setContentLocale($locale);
+
         $publishRevision = $cms->getDefaultRevision();
 
         $cms->publishNode($site, $publishRevision, true);
@@ -479,6 +493,8 @@ class SiteController extends AbstractNodeTypeController {
         if (!$cms->resolveNode($site, $revision)) {
             return;
         }
+
+        $this->setContentLocale($locale);
 
         $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');

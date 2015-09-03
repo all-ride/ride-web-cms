@@ -43,6 +43,7 @@ class ErrorNodeAction extends AbstractNodeAction {
         }
 
         $cms->setLastAction(self::NAME);
+        $this->setContentLocale($locale);
 
         $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');

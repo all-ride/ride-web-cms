@@ -65,6 +65,7 @@ class TemplateNodeAction extends AbstractNodeAction {
             return;
         }
 
+        $this->setContentLocale($locale);
         $this->cms->setLastAction(self::NAME);
 
         $referer = $this->request->getQueryParameter('referer');

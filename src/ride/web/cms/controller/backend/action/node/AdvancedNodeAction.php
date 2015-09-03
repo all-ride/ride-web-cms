@@ -34,6 +34,7 @@ class AdvancedNodeAction extends AbstractNodeAction {
             return;
         }
 
+        $this->setContentLocale($locale);
         $cms->setLastAction(self::NAME);
 
         $referer = $this->request->getQueryParameter('referer');

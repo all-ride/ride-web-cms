@@ -49,6 +49,7 @@ class ContentNodeAction extends AbstractNodeAction {
             return;
         }
 
+        $this->setContentLocale($locale);
         $cms->setLastAction(self::NAME);
 
         $theme = $cms->getTheme($node->getTheme());

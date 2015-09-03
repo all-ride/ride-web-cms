@@ -72,6 +72,8 @@ class NodeController extends AbstractController {
             return;
         }
 
+        $this->setContentLocale($locale);
+
         $referer = $this->request->getQueryParameter('referer');
 
         if ($this->request->isPost()) {
@@ -121,6 +123,8 @@ class NodeController extends AbstractController {
         if (!$cms->resolveNode($site, $revision, $node)) {
             return;
         }
+
+        $this->setContentLocale($locale);
 
         $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');
