@@ -94,6 +94,10 @@ class ApplicationListener {
         $nodeCreateActions = array();
 
         $nodeTypes = $cms->getNodeTypes();
+        if (isset($nodeTypes['site'])) {
+            unset($nodeTypes['site']);
+        }
+
         foreach ($nodeTypes as $nodeTypeName => $nodeType) {
             $url = $web->getUrl($nodeType->getRouteAdd(), $parameters);
             if ($securityManager->isUrlAllowed($url)) {
