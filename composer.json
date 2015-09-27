@@ -10,7 +10,8 @@
         }
     ],
     "require": {
-        "ride/lib-cache": ">=0.1.1",
+        "ride/app": ">=0.7.0",
+        "ride/lib-cache": ">=0.3.0",
         "ride/lib-common": ">=0.4.0",
         "ride/lib-cms": ">=0.21.0",
         "ride/lib-dependency": ">=0.5.3",
@@ -26,7 +27,7 @@
         "ride/lib-template": ">=0.6.0",
         "ride/lib-validation": ">=0.2.0",
         "ride/lib-widget": ">=0.1.1",
-        "ride/web": ">=0.2.4",
+        "ride/web": ">=0.8.0",
         "ride/web-base": ">=0.9.4"
     },
     "autoload": {

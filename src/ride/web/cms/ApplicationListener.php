@@ -2,7 +2,7 @@
 
 namespace ride\web\cms;
 
-use ride\library\cache\pool\CachePool;
+use ride\library\cache\control\CacheControl;
 use ride\library\cms\node\Node;
 use ride\library\event\EventManager;
 use ride\library\event\Event;
@@ -39,10 +39,10 @@ class ApplicationListener {
     const LOG_SOURCE = 'cms';
 
     /**
-     * Instance of the CMS cache
-     * @var \ride\library\cache\pool\CachePool
+     * Cache controls to clear when the structure is updated
+     * @var array
      */
-    private $cache = null;
+    private $cacheControls = array();
 
     /**
      * Flag to see if a cache clear listener is registered
@@ -51,13 +51,29 @@ class ApplicationListener {
     private $isCacheClearRegistered = false;
 
     /**
-     * Hook to prepare the CMS template views
-     * @param \ride\library\event\Event $event Triggered event
+     * Sets the instance of the CMS
      * @param \ride\web\cms\Cms $cms Instance of the CMS facade
+     * @return null
+     */
+    public function setCms(Cms $cms) {
+        $this->cms = $cms;
+    }
+
+    /**
+     * Sets the instance of the security manager
      * @param \ride\library\security\SecurityManager $securityManager
      * @return null
      */
-    public function prepareTemplateView(Event $event, Cms $cms, SecurityManager $securityManager) {
+    public function setSecurityManager(SecurityManager $securityManager) {
+        $this->securityManager = $securityManager;
+    }
+
+    /**
+     * Hook to prepare the CMS template views
+     * @param \ride\library\event\Event $event Triggered event
+     * @return null
+     */
+    public function prepareTemplateView(Event $event) {
         $web = $event->getArgument('web');
         $response = $web->getResponse();
         if (!$response) {
@@ -94,20 +110,20 @@ class ApplicationListener {
         );
         $nodeCreateActions = array();
 
-        $nodeTypes = $cms->getNodeTypes();
+        $nodeTypes = $this->cms->getNodeTypes();
         if (isset($nodeTypes['site'])) {
             unset($nodeTypes['site']);
         }
 
         foreach ($nodeTypes as $nodeTypeName => $nodeType) {
             $url = $web->getUrl($nodeType->getRouteAdd(), $parameters);
-            if ($securityManager->isUrlAllowed($url)) {
+            if ($this->securityManager->isUrlAllowed($url)) {
                 $nodeCreateActions[$nodeTypeName] = $url;
             }
         }
 
-        $breadcrumbs = $this->getBreadcrumbs($web, $cms, $node, $locale);
-        $collapsedNodes = $this->getCollapsedNodes($cms, $node);
+        $breadcrumbs = $this->getBreadcrumbs($web, $node, $locale);
+        $collapsedNodes = $this->getCollapsedNodes($node);
 
         $template->set('site', $site);
         $template->set('nodeCreateActions', $nodeCreateActions);
@@ -118,13 +134,12 @@ class ApplicationListener {
     /**
      * Gets the breadcrumbs to the current locale
      * @param \ride\web\WebApplication $web
-     * @param \ride\web\cms\Cms $cms
      * @param \ride\library\cms\node\Node $node
      * @param string $locale
      * @return array Array with the URL to the node as key and the name of the
      * node as value
      */
-    protected function getBreadcrumbs(WebApplication $web, Cms $cms, Node $node, $locale) {
+    protected function getBreadcrumbs(WebApplication $web, Node $node, $locale) {
         $breadcrumbs = array();
 
         do {
@@ -145,16 +160,15 @@ class ApplicationListener {
 
     /**
      * Gets the collapsed nodes for the provided node
-     * @param \ride\web\cms\Cms $cms
      * @param \ride\library\cms\node\Node $node
      * @return array Array with the collapsed node id as key and true as value
      */
-    protected function getCollapsedNodes(Cms $cms, Node $node) {
+    protected function getCollapsedNodes(Node $node) {
         $site = $node->getRootNodeId();
         $revision = '[' . $node->getRevision() . ']';
         $nodes = array();
 
-        $collapsedNodes = $cms->getCollapsedNodes();
+        $collapsedNodes = $this->cms->getCollapsedNodes();
         foreach ($collapsedNodes as $node => $flag) {
             if (strpos($node, $site) !== 0 || strpos($node, $revision) === false) {
                 continue;
@@ -171,14 +185,12 @@ class ApplicationListener {
     /**
      * Action to add the CMS menus to the taskbar
      * @param \ride\library\event\Event $event Triggered event
-     * @param \ride\web\cms\Cms $cms Instance of the CMS facade
      * @param \ride\library\i18n\I18N $i18n
      * @param \ride\web\WebApplication $web
-     * @param \ride\library\security\SecurityManager $securityManager
      * @param \ride\library\event\EventManager $eventManager
      * @return null
      */
-    public function prepareTaskbar(Event $event, Cms $cms, I18n $i18n, WebApplication $web, SecurityManager $securityManager, EventManager $eventManager) {
+    public function prepareTaskbar(Event $event, I18n $i18n, WebApplication $web, EventManager $eventManager) {
         $locale = null;
         $request = $web->getRequest();
         $route = $request->getRoute();
@@ -204,10 +216,10 @@ class ApplicationListener {
         $menu = new Menu();
         $menu->setTranslation('label.sites');
 
-        $defaultRevision = $cms->getDefaultRevision();
-        $draftRevision = $cms->getDraftRevision();
+        $defaultRevision = $this->cms->getDefaultRevision();
+        $draftRevision = $this->cms->getDraftRevision();
 
-        $sites = $cms->getSites();
+        $sites = $this->cms->getSites();
         if ($sites) {
             foreach ($sites as $siteId => $site) {
                 $availableLocales = $site->getAvailableLocales();
@@ -241,7 +253,7 @@ class ApplicationListener {
             'locale' => $locale,
         )) . $referer;
 
-        if ($securityManager->isUrlAllowed($url)) {
+        if ($this->securityManager->isUrlAllowed($url)) {
             if ($menu->hasItems()) {
                 $menu->addSeparator();
             }
@@ -259,7 +271,7 @@ class ApplicationListener {
         $menu = new Menu();
         $menu->setTranslation('label.themes');
 
-        $themes = $cms->getThemes();
+        $themes = $this->cms->getThemes();
         if ($themes) {
             foreach ($themes as $theme) {
                 $menuItem = new MenuItem();
@@ -287,7 +299,8 @@ class ApplicationListener {
      * Sets a error view to the response if a status code above 399 is set
      * @return null
      */
-    public function handleHttpError(Event $event, Cms $cms, I18n $i18n, WebApplication $web) {
+    public function handleHttpError(Event $event, I18n $i18n) {
+        $web = $event->getArgument('web');
         $request = $web->getRequest();
         $response = $web->getResponse();
 
@@ -315,7 +328,7 @@ class ApplicationListener {
         $site = null;
         $defaultSite = null;
 
-        $sites = $cms->getSites();
+        $sites = $this->cms->getSites();
         foreach ($sites as $site) {
             if ($site->getBaseUrl($locale) == $baseUrl) {
                 break;
@@ -395,12 +408,12 @@ class ApplicationListener {
     }
 
     /**
-     * Sets the cache pool of the cms
-     * @param \ride\library\cache\pool\CachePool $cache
+     * Adds a cache control to clear when the CMS structure is updated
+     * @param \ride\library\cache\control\CacheControl $cacheControl
      * @return null
      */
-    public function setCache(CachePool $cache) {
-        $this->cache = $cache;
+    public function addCacheControl(CacheControl $cacheControl) {
+        $this->cacheControls[] = $cacheControl;
     }
 
     /**
@@ -411,7 +424,7 @@ class ApplicationListener {
      * @return null
      */
     public function handleCache(Event $event, EventManager $eventManager) {
-        if (!$this->cache || $this->isCacheClearRegistered) {
+        if (!$this->cacheControls || $this->isCacheClearRegistered) {
             return;
         }
 
@@ -430,7 +443,9 @@ class ApplicationListener {
      * @return null
      */
     public function clearCache(Event $event) {
-        $this->cache->flush();
+        foreach ($this->cacheControls as $cacheControl) {
+            $cacheControl->clear();
+        }
 
         $this->isCacheClearRegistered = false;
     }
