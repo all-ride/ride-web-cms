@@ -214,6 +214,7 @@ class ApplicationListener {
 
         // site menu
         $menu = new Menu();
+        $menu->setId('sites.menu');
         $menu->setTranslation('label.sites');
 
         $defaultRevision = $this->cms->getDefaultRevision();
@@ -269,6 +270,7 @@ class ApplicationListener {
 
         // theme menu
         $menu = new Menu();
+        $menu->setId('themes.menu');
         $menu->setTranslation('label.themes');
 
         $themes = $this->cms->getThemes();
