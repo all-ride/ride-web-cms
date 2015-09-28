@@ -5,6 +5,7 @@ namespace ride\web\cms\controller\backend\action\widget;
 use ride\library\cms\node\Node;
 use ride\library\cms\widget\Widget;
 use ride\library\i18n\translator\Translator;
+use ride\library\security\SecurityManager;
 use ride\library\validation\exception\ValidationException;
 
 use ride\web\cms\Cms;
@@ -29,6 +30,7 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
     /**
      * Action to dispatch to the properties of a widget
      * @param \ride\web\cms\Cms $cms
+     * @param \ride\library\security\SecurityManager $securityManager
      * @param string $locale
      * @param string $site
      * @param string $revision
@@ -37,7 +39,7 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
      * @param string $widget
      * @return null
      */
-    public function indexAction(Cms $cms, $locale, $site, $revision, $node, $region, $widget) {
+    public function indexAction(Cms $cms, SecurityManager $securityManager, $locale, $site, $revision, $node, $region, $widget) {
         if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
             return;
         }
@@ -60,12 +62,31 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
         $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');
 
+        $security = $widgetProperties->getWidgetProperty(Node::PROPERTY_SECURITY, Node::AUTHENTICATION_STATUS_EVERYBODY);
+        switch ($security) {
+            case 'inherit':
+            case Node::AUTHENTICATION_STATUS_EVERYBODY:
+            case Node::AUTHENTICATION_STATUS_ANONYMOUS:
+                $permissions = null;
+
+                break;
+            case Node::AUTHENTICATION_STATUS_AUTHENTICATED:
+            default:
+                $permissions = array_flip(explode(',', $security));
+                $security = Node::AUTHENTICATION_STATUS_AUTHENTICATED;
+
+                break;
+        }
+
         $data = array(
             'published' => $widgetProperties->getWidgetProperty(Node::PROPERTY_PUBLISH, true),
             'publishStart' => $widgetProperties->getWidgetProperty(Node::PROPERTY_PUBLISH_START, null),
             'publishStop' => $widgetProperties->getWidgetProperty(Node::PROPERTY_PUBLISH_STOP, null),
-            'security' => $widgetProperties->getWidgetProperty(Node::PROPERTY_SECURITY, Node::AUTHENTICATION_STATUS_EVERYBODY),
+            'security' => $security,
+            'permissions' => $permissions,
         );
+
+        $permissions = $securityManager->getSecurityModel()->getPermissions();
 
         $form = $this->createFormBuilder($data);
         $form->addRow('published', 'option', array(
@@ -106,6 +127,16 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
                 'required' => array(),
             ),
         ));
+        if ($permissions) {
+            $form->addRow('permissions', 'option', array(
+                'label' => $translator->translate('label.permissions.required'),
+                'attributes' => array(
+                    'class' => 'option-security option-security-authenticated',
+                ),
+                'multiple' => true,
+                'options' => $permissions,
+            ));
+        }
         $form = $form->build();
 
         if ($form->isSubmitted()) {
@@ -113,6 +144,10 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
                 $form->validate();
 
                 $data = $form->getData();
+
+                if ($data['security'] == Node::AUTHENTICATION_STATUS_AUTHENTICATED && $permissions && $data['permissions']) {
+                    $data['security'] = implode(',', $data['permissions']);
+                }
 
                 $widgetProperties->setWidgetProperty(Node::PROPERTY_PUBLISH, $data['published']);
                 $widgetProperties->setWidgetProperty(Node::PROPERTY_PUBLISH_START, $data['publishStart']);

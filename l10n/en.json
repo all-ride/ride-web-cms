@@ -113,6 +113,7 @@
     "label.page": "Page",
     "label.page.description": "Give this page a meaningful title",
     "label.parent": "Parent",
+    "label.permissions.required": "Required permissions",
     "label.property": "Property",
     "label.publish": "Publish",
     "label.publish.auto": "Auto-publish",

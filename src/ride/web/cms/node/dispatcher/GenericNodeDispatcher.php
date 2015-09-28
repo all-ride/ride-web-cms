@@ -13,7 +13,7 @@ use ride\library\mvc\Request;
 use ride\library\mvc\Response;
 use ride\library\router\RouteContainer;
 use ride\library\router\Router;
-use ride\library\security\model\User;
+use ride\library\security\SecurityManager;
 use ride\library\StringHelper;
 
 use ride\web\cms\view\NodeTemplateView;
@@ -182,13 +182,13 @@ class GenericNodeDispatcher implements NodeDispatcher {
      * Dispatches the node
      * @param \ride\library\mvc\Request $request
      * @param \ride\library\mvc\Response $response
-     * @param \ride\library\security\model\User $user
+     * @param \ride\library\security\SecurityManager $securityManager
      * @param \ride\library\cache\pool\CachePool $cache
      * @return array Array with the region name as key and a view array as
      * value. The view array has the widget id as key and the dispatched
      * widget view as value
      */
-    public function dispatch(Request $request, Response $response, User $user = null, CachePool $cache = null) {
+    public function dispatch(Request $request, Response $response, SecurityManager $securityManager, CachePool $cache = null) {
         $this->locale = $this->view->getLocale();
 
         // initialize context
@@ -247,7 +247,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
                 $nodeCacheTtl = 0;
 
                 $cacheKey = 'node.view.' . $this->node->getId() . '.' . $this->node->getRevision() . '.' . $this->locale . '.' . substr(md5($parameters), 0, 10);
-                if ($user) {
+                if ($securityManager->getUser()) {
                     $cacheKey .= '.authenticated';
                 }
 
@@ -283,7 +283,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
                             }
 
                             continue;
-                        } elseif (!$widgetProperties->isAllowed($user)) {
+                        } elseif (!$widgetProperties->isAllowed($securityManager)) {
                             if ($this->log) {
                                 $this->log->logDebug('Widget ' . $widget->getName() . '#' . $widgetId . ' is not allowed', null, ApplicationListener::LOG_SOURCE);
                             }

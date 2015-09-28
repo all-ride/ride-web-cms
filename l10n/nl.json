@@ -109,6 +109,7 @@
     "label.page": "Pagina",
     "label.page.description": "Geef de naam van de pagina.",
     "label.parent": "Ouder",
+    "label.permissions.required": "Vereiste toelatingen",
     "label.property": "Eigenschap",
     "label.publish": "Publiceren",
     "label.publish.auto": "Auto-publiceren",
