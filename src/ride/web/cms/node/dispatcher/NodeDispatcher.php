@@ -5,7 +5,7 @@ namespace ride\web\cms\node\dispatcher;
 use ride\library\cache\pool\CachePool;
 use ride\library\mvc\Request;
 use ride\library\mvc\Response;
-use ride\library\security\model\User;
+use ride\library\security\SecurityManager;
 
 /**
  * Dispatcher for the frontend of a node
@@ -28,12 +28,12 @@ interface NodeDispatcher {
      * Dispatches the node
      * @param \ride\library\mvc\Request $request
      * @param \ride\library\mvc\Response $response
-     * @param \ride\library\security\model\User $user
+     * @param \ride\library\security\SecurityManager $securityManager
      * @param \ride\library\cache\pool\CachePool $cache
      * @return array Array with the region name as key and a view array as
      * value. The view array has the widget id as key and the dispatched
      * widget view as value
      */
-    public function dispatch(Request $request, Response $response, User $user = null, CachePool $cache = null);
+    public function dispatch(Request $request, Response $response, SecurityManager $securityManager, CachePool $cache = null);
 
 }

@@ -89,19 +89,24 @@ class CmsCacheControl extends AbstractCacheControl {
     }
 
     /**
+     * Warms this cache
+     * @return null
+     */
+    public function warm() {
+        if ($this->isEnabled()) {
+            $this->io->warmCache();
+        }
+    }
+
+    /**
      * Clears this cache
      * @return null
      */
     public function clear() {
         $this->cache->flush();
 
-        if (!$this->isEnabled()) {
-            return;
-        }
-
-        $file = $this->io->getFile();
-        if ($file->exists()) {
-            $file->delete();
+        if ($this->isEnabled()) {
+            $this->io->clearCache();
         }
     }
 

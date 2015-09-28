@@ -4,6 +4,7 @@ namespace ride\web\cms\controller\backend\action\node;
 
 use ride\library\cms\node\Node;
 use ride\library\i18n\translator\Translator;
+use ride\library\security\SecurityManager;
 use ride\library\validation\exception\ValidationException;
 
 use ride\web\cms\Cms;
@@ -28,7 +29,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
     /**
      * Perform the advanced node action
      */
-    public function indexAction(Cms $cms, $locale, $site, $revision, $node) {
+    public function indexAction(Cms $cms, SecurityManager $securityManager, $locale, $site, $revision, $node) {
         if (!$cms->resolveNode($site, $revision, $node)) {
             return;
         }
@@ -39,12 +40,31 @@ class VisibilityNodeAction extends AbstractNodeAction {
         $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');
 
+        $security = $node->get(Node::PROPERTY_SECURITY, 'inherit', false);
+        switch ($security) {
+            case 'inherit':
+            case Node::AUTHENTICATION_STATUS_EVERYBODY:
+            case Node::AUTHENTICATION_STATUS_ANONYMOUS:
+                $permissions = null;
+
+                break;
+            case Node::AUTHENTICATION_STATUS_AUTHENTICATED:
+            default:
+                $permissions = array_flip(explode(',', $security));
+                $security = Node::AUTHENTICATION_STATUS_AUTHENTICATED;
+
+                break;
+        }
+
         $data = array(
             'published' => $node->get(Node::PROPERTY_PUBLISH, 'inherit', false),
             'publishStart' => $node->get(Node::PROPERTY_PUBLISH_START, null, false),
             'publishStop' => $node->get(Node::PROPERTY_PUBLISH_STOP, null, false),
-            'security' => $node->get(Node::PROPERTY_SECURITY, 'inherit', false),
+            'security' => $security,
+            'permissions' => $permissions,
         );
+
+        $permissions = $securityManager->getSecurityModel()->getPermissions();
 
         $nodeType = $cms->getNodeType($node);
 
@@ -99,12 +119,24 @@ class VisibilityNodeAction extends AbstractNodeAction {
         ));
         $form->addRow('security', 'option', array(
             'label' => $translator->translate('label.allow'),
+            'attributes' => array(
+                'data-toggle-dependant' => 'option-security',
+            ),
             'options' => $this->getSecurityOptions($node, $translator),
             'validators' => array(
                 'required' => array(),
             ),
         ));
-
+        if ($permissions) {
+            $form->addRow('permissions', 'option', array(
+                'label' => $translator->translate('label.permissions.required'),
+                'attributes' => array(
+                    'class' => 'option-security option-security-authenticated',
+                ),
+                'multiple' => true,
+                'options' => $permissions,
+            ));
+        }
         if ($isFrontendNode) {
             $form->addRow('hide', 'option', array(
                 'label' => $translator->translate('label.hide'),
@@ -117,18 +149,23 @@ class VisibilityNodeAction extends AbstractNodeAction {
                 'multiple' => true,
             ));
         }
-
         $form = $form->build();
+
         if ($form->isSubmitted()) {
             try {
                 $form->validate();
 
                 $data = $form->getData();
 
+                $security = $this->getSecurityValue($data['security']);
+                if ($security == Node::AUTHENTICATION_STATUS_AUTHENTICATED && $permissions && $data['permissions']) {
+                    $security = implode(',', $data['permissions']);
+                }
+
                 $node->set(Node::PROPERTY_PUBLISH, $this->getPublishedValue($data['published']));
                 $node->set(Node::PROPERTY_PUBLISH_START, $data['publishStart']);
                 $node->set(Node::PROPERTY_PUBLISH_STOP, $data['publishStop']);
-                $node->set(Node::PROPERTY_SECURITY, $this->getSecurityValue($data['security']));
+                $node->set(Node::PROPERTY_SECURITY, $security);
 
                 if ($isFrontendNode) {
                     if ($node->getLevel() === 0) {
@@ -182,7 +219,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
             }
         }
 
-        $this->setTemplateView('cms/backend/node.visibility', array(
+        $view = $this->setTemplateView('cms/backend/node.visibility', array(
             'site' => $site,
             'node' => $node,
             'form' => $form->getView(),
@@ -190,6 +227,8 @@ class VisibilityNodeAction extends AbstractNodeAction {
             'locale' => $locale,
             'locales' => $cms->getLocales(),
         ));
+
+        $form->processView($view);
     }
 
     /**

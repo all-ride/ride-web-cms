@@ -1,7 +1,7 @@
 {
     "dependencies": [
         {
-            "interfaces": "ride\\application\\cache\\control\\CacheControl",
+            "interfaces": ["ride\\library\\cache\\control\\CacheControl", "ride\\application\\cache\\control\\CmsCacheControl"],
             "class": "ride\\application\\cache\\control\\CmsCacheControl",
             "id": "cms",
             "calls": [
@@ -430,6 +430,26 @@
             ]
         },
         {
+            "interfaces": "ride\\web\\router\\io\\RouteContainerIO",
+            "extends": "chain",
+            "id": "chain",
+            "calls": [
+                {
+                    "method": "addRouteContainerIO",
+                    "arguments": [
+                        {
+                            "name": "routeContainerIO",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\web\\router\\io\\RouteContainerIO",
+                                "id": "cms"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "interfaces": "ride\\library\\cms\\layout\\LayoutModel",
             "class": "ride\\web\\cms\\layout\\DependencyLayoutModel",
             "id": "dependency"
@@ -697,18 +717,33 @@
             "class": "ride\\web\\cms\\ApplicationListener",
             "calls": [
                 {
-                    "method": "setCache",
+                    "method": "addCacheControl",
                     "arguments": [
                         {
-                            "name": "cache",
+                            "name": "cacheControl",
                             "type": "dependency",
                             "properties": {
-                                "interface": "ride\\library\\cache\\pool\\CachePool",
+                                "interface": "ride\\library\\cache\\control\\CacheControl",
                                 "id": "cms"
                             }
                         }
                     ]
-                }
+                },
+                {
+                    "method": "addCacheControl",
+                    "arguments": [
+                        {
+                            "name": "cacheControl",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\cache\\control\\CacheControl",
+                                "id": "router"
+                            }
+                        }
+                    ]
+                },
+                "setCms",
+                "setSecurityManager"
             ]
         }
     ]

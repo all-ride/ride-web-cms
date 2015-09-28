@@ -57,13 +57,8 @@ class NodeController extends AbstractController {
         if ($nodeDispatcher) {
             $node = $nodeDispatcher->getNode();
             if ($node->isPublished() && $node->isAvailableInLocale($locale)) {
-                try {
-                    $user = $this->getUser();
-                } catch (AuthenticationException $exception) {
-                    $user = null;
-                }
-
-                if (!$node->isAllowed($user)) {
+                $securityManager = $this->getSecurityManager();
+                if (!$node->isAllowed($securityManager)) {
                     throw new UnauthorizedException();
                 }
 
@@ -78,8 +73,7 @@ class NodeController extends AbstractController {
                 $templateFacade->setThemeModel($cms->getThemeModel());
                 $templateFacade->setDefaultTheme($nodeView->getTemplate()->getTheme());
 
-                $nodeDispatcher->dispatch($this->request, $this->response, $user, $cache);
-
+                $nodeDispatcher->dispatch($this->request, $this->response, $securityManager, $cache);
                 if ($this->response->getStatusCode() != Response::STATUS_CODE_NOT_FOUND) {
                     $headers = $node->getHeader($locale);
                     foreach ($headers as $name => $value) {

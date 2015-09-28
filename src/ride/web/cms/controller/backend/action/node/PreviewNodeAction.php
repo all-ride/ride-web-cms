@@ -6,7 +6,6 @@ use ride\library\cms\exception\CmsException;
 use ride\library\cms\node\type\RedirectNodeType;
 use ride\library\cms\node\Node;
 use ride\library\http\Response;
-use ride\library\security\exception\AuthenticationException;
 use ride\library\security\exception\UnauthorizedException;
 use ride\library\template\TemplateFacade;
 
@@ -136,13 +135,7 @@ class PreviewNodeAction extends AbstractNodeAction {
             return;
         }
 
-        try {
-            $user = $this->getUser();
-        } catch (AuthenticationException $exception) {
-            $user = null;
-        }
-
-        if (!$node->isAllowed($user)) {
+        if (!$node->isAllowed($this->getSecurityManager())) {
             throw new UnauthorizedException();
         }
 

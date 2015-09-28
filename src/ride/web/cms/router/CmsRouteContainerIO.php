@@ -4,6 +4,7 @@ namespace ride\web\cms\router;
 
 use ride\library\cms\expired\ExpiredRouteModel;
 use ride\library\cms\node\NodeModel;
+use ride\library\router\exception\RouterException;
 use ride\library\router\RouteContainer;
 use ride\library\router\Route;
 
@@ -13,12 +14,6 @@ use ride\web\router\io\RouteContainerIO;
  * Route container I/O Implementation for the Joppa routes
  */
 class CmsRouteContainerIO implements RouteContainerIO {
-
-    /**
-     * Parent implementation
-     * @var \ride\web\router\io\RouteContainerIO
-     */
-    private $io;
 
     /**
      * Instance of the node model
@@ -40,15 +35,12 @@ class CmsRouteContainerIO implements RouteContainerIO {
 
     /**
      * Constructs a new Joppa route container I/O
-     * @param \ride\web\router\io\RouteContainerIO $io Parent route container
-     * I/O implementation
      * @param \ride\library\cms\node\NodeModel $nodeModel
      * @param \ride\library\cms\expired\ExpiredRouteModel $expiredRouteModel
      * @param array $locales Array with the locale codes
      * @return null
      */
-    public function __construct(RouteContainerIO $io, NodeModel $nodeModel, ExpiredRouteModel $expiredRouteModel, array $locales) {
-        $this->io = $io;
+    public function __construct(NodeModel $nodeModel, ExpiredRouteModel $expiredRouteModel, array $locales) {
         $this->nodeModel = $nodeModel;
         $this->expiredRouteModel = $expiredRouteModel;
         $this->locales = $locales;
@@ -59,7 +51,7 @@ class CmsRouteContainerIO implements RouteContainerIO {
      * @return \ride\library\router\RouteContainer
      */
     public function getRouteContainer() {
-        $container = $this->io->getRouteContainer();
+        $container = new RouteContainer();
 
         $nodeTypeManager = $this->nodeModel->getNodeTypeManager();
         $nodeTypes = $nodeTypeManager->getNodeTypes();
@@ -139,29 +131,12 @@ class CmsRouteContainerIO implements RouteContainerIO {
 
     /**
      * Sets the route container to the data source
-     * @param zibo\library\router\RouteContainer;
+     * @param \ride\library\router\RouteContainer $routeContainer
      * @return null
+     * @throws \ride\library\router\exception\RouterException
      */
-    public function setRouteContainer(RouteContainer $container) {
-        $nodeTypeManager = $this->nodeModel->getNodeTypeManager();
-        $nodeTypes = $nodeTypeManager->getNodeTypes();
-
-        $nodes = $this->nodeModel->getNodes();
-        foreach ($nodes as $node) {
-            foreach ($this->locales as $locale) {
-                $nodeType = $nodeTypes[$node->getType()];
-                if (!$nodeType->getFrontendCallback()) {
-                    continue;
-                }
-
-                $path = $node->getRoute($locale, false);
-                if ($path) {
-                    $container->removeRouteByPath($path);
-                }
-            }
-        }
-
-        parent::setRouteContainer($container);
+    public function setRouteContainer(RouteContainer $routeContainer) {
+        throw new RouterException('Could not set route container: not supported by this route container IO');
     }
 
 }
