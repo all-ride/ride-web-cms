@@ -388,11 +388,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
                                 $widgetCachedView = new WidgetCacheData($widgetContext, $isContent, $isRegion, $isSection, $isBlock, $widgetMatchedRouteArguments);
 
                                 $cachedViews[$this->region][$this->section][$this->block][$widgetId] = $widgetCachedView;
-                            } else {
-                                $nodeCacheTtl = false;
                             }
-                        } else {
-                            $nodeCacheTtl = false;
                         }
 
                         if ($isContent) {
