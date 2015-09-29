@@ -231,6 +231,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
         $cacheItem = null;
         $cachedViews = array();
         $dispatchedViews = array();
+        $nodeCacheTtl = false;
 
         if ($cache) {
             $method = $request->getMethod();
