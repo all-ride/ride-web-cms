@@ -55,6 +55,12 @@
             "id": "cms.site.error"
         },
         {
+            "path": "/sites/%site%/%revision%/%locale%/analytics",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\AnalyticsNodeAction",
+            "action": "indexAction",
+            "id": "cms.site.analytics"
+        },
+        {
             "path": "/sites/%site%/%revision%/%locale%/preview",
             "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\PreviewNodeAction",
             "action": "previewAction",
