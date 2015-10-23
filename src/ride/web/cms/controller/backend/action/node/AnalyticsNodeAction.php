@@ -48,11 +48,25 @@ class AnalyticsNodeAction extends AbstractNodeAction {
             'filters' => array(
                 'trim' => array(),
             ),
+            'validators' => array(
+                'regex' => array(
+                    'regex' => '/^((GTM-[A-Z0-9]{6}))$/',
+                    'error.regex' => 'label.analytics.gtm_id.error',
+                    'required' => false,
+                ),
+            ),
         ));
         $form->addRow('ga_id', 'string', array(
             'label' => $translator->translate('label.analytics.ga_id'),
             'filters' => array(
                 'trim' => array(),
+            ),
+            'validators' => array(
+                'regex' => array(
+                    'regex' => '/^(UA-[0-9]+-[0-9][0-9]??)$/',
+                    'error.regex' => 'label.analytics.ga_id.error',
+                    'required' => false,
+                ),
             ),
         ));
 
@@ -67,7 +81,7 @@ class AnalyticsNodeAction extends AbstractNodeAction {
                     $site->set('analytics.' . $tag, $id);
                 }
 
-                $cms->saveNode($site, "Set error pages for " . $site->getName());
+                $cms->saveNode($site, "Set analytics for " . $site->getName());
 
                 $this->addSuccess('success.node.saved', array(
                     'node' => $site->getName($locale)
