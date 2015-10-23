@@ -24,7 +24,7 @@ class AnalyticsNodeAction extends AbstractNodeAction {
     const ROUTE = 'cms.site.analytics';
 
     /**
-     * Perform the meta node action
+     * Perform the analytics node action
      */
     public function indexAction(Cms $cms, $locale, $site, $node, $revision) {
         $node = $site;
