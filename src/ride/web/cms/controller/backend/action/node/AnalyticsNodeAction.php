@@ -26,39 +26,21 @@ class AnalyticsNodeAction extends AbstractNodeAction {
     /**
      * Perform the meta node action
      */
-    public function indexAction(Cms $cms,  $locale, $site, $revision, $node) {
-
-        if (!$cms->resolveNode($site, $revision, $node)) {
+    public function indexAction(Cms $cms, $locale, $site, $node, $revision) {
+        $node = $site;
+        if (!$cms->resolveNode($site, $revision, $node, null, true)) {
             return;
         }
 
         $this->setContentLocale($locale);
-        $cms->setLastAction(self::NAME);
 
         $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');
 
         $data = array(
-            'analytics' => array(),
+            'gtm_id' => $site->get('analytics.gtm_id'),
+            'ga_id' => $site->get('analytics.ga_id')
         );
-        
-        $meta = $node->getMeta($locale, null, false);
-        foreach ($meta as $property => $content) {
-            switch ($property) {
-                case 'gtm_id':
-                    $data['gtm_id'] = $content;
-
-                    break;
-                case 'ga_id':
-                    $data['ga_id'] = $content;
-
-                    break;
-                default:
-                    $data['analytics'][] = $property . '=' . $content;
-
-                    break;
-            }
-        }
 
         $form = $this->createFormBuilder($data);
         $form->addRow('gtm_id', 'string', array(
@@ -81,27 +63,14 @@ class AnalyticsNodeAction extends AbstractNodeAction {
 
                 $data = $form->getData();
 
-                $analytics = array();
-
-                if ($data['gtm_id']) {
-                    $analytics['gtm_id'] = $data['gtm_id'];
-                }
-                if ($data['ga_id']) {
-                    $analytics['ga_id'] = $data['ga_id'];
-                }
-                foreach ($data['analytics'] as $property) {
-                    list($property, $content) = explode('=', $property, 2);
-                    $analytics[$property] = $content;
-                }
-                foreach ($analytics as $tag => $id) {
-
+                foreach ($data as $tag => $id) {
                     $site->set('analytics.' . $tag, $id);
                 }
 
-//                $cms->saveNode($node, 'Set meta tags to ' . $node->getName());
+                $cms->saveNode($site, "Set error pages for " . $site->getName());
 
                 $this->addSuccess('success.node.saved', array(
-                    'node' => $node->getName($locale)
+                    'node' => $site->getName($locale)
                 ));
 
                 $url = $this->getUrl(self::ROUTE, array(
@@ -110,6 +79,10 @@ class AnalyticsNodeAction extends AbstractNodeAction {
                     'locale' => $locale,
                     'node' => $node->getId(),
                 ));
+                if ($referer) {
+                    $url .= '?referer=' . urlencode($referer);
+                }
+
                 $this->response->setRedirect($url);
 
                 return;
@@ -118,13 +91,13 @@ class AnalyticsNodeAction extends AbstractNodeAction {
             }
         }
 
-        $this->setTemplateView('cms/backend/node.analytics', array(
+        $this->setTemplateView('cms/backend/site.analytics', array(
             'site' => $site,
             'node' => $node,
             'form' => $form->getView(),
             'referer' => $referer,
             'locale' => $locale,
-            'locales' => $cms->getLocales()
+            'locales' => $cms->getLocales(),
         ));
     }
 
