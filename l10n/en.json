@@ -84,6 +84,7 @@
     "label.node.action.advanced": "Advanced",
     "label.node.action.advanced.intro": "Use this form to edit the node's configuration through key and value pairs. You can prefix a configuration key with a underscore to inherit the configuration value to a lower level.",
     "label.node.action.analytics": "Analytics",
+    "label.node.action.analytics.intro": "Enter a Google Tag Manager container id or a Google Analytics id here.",
     "label.node.action.clone": "Clone",
     "label.node.action.content": "Content",
     "label.node.action.delete": "Delete",

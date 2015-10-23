@@ -82,6 +82,7 @@
     "label.node.action.advanced": "Geavanceerd",
     "label.node.action.advanced.intro": "Gebruik dit formulier om de configuratie van de node te bewerken met sleutels en waardes. Je kan een sleutel prefixen met een underscore om deze waarde over te erven naar een lager niveau.",
     "label.node.action.analytics": "Analytics",
+    "label.node.action.analytics.intro": "Hier kan je een Google Tag Manager container of een Google Analytics id toevoegen.",
     "label.node.action.clone": "Klonen",
     "label.node.action.content": "Inhoud",
     "label.node.action.delete": "Verwijderen",
