@@ -2,6 +2,7 @@
 
 namespace ride\web\cms\controller\backend\action\node;
 
+use ride\library\cms\node\Node;
 use ride\library\validation\exception\ValidationException;
 
 use ride\web\cms\Cms;
@@ -22,6 +23,15 @@ class AnalyticsNodeAction extends AbstractNodeAction {
      * @var string
      */
     const ROUTE = 'cms.site.analytics';
+
+    /**
+     * Checks if this action is available for the node
+     * @param \ride\library\cms\node\Node $node
+     * @return boolean True if available
+     */
+    public function isAvailableForNode(Node $node) {
+        return !$node->hasParent();
+    }
 
     /**
      * Perform the analytics node action
