@@ -48,7 +48,9 @@ class TemplateNodeAction extends AbstractNodeAction {
      * @return boolean True if available
      */
     public function isAvailableForNode(Node $node) {
-        if (!$node->getParent()) {
+        if (!parent::isAvailableForNode($node)) {
+            return false;
+        } elseif (!$node->getParent()) {
             return true;
         }
 
