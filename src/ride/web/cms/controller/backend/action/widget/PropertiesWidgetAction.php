@@ -6,6 +6,7 @@ use ride\library\cms\node\Node;
 use ride\library\cms\widget\Widget;
 use ride\library\http\Response;
 use ride\library\reflection\Invoker;
+use ride\library\security\exception\UnauthorizedException;
 
 use ride\web\cms\Cms;
 use ride\web\mvc\controller\AbstractController;
@@ -49,6 +50,10 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
         $widgetId = $widget;
 
         $widget = $site->getWidget($widgetId);
+        if (!$this->getSecurityManager()->isPermissionGranted('cms.widget.' . $widget . '.' . self::NAME)) {
+            throw new UnauthorizedException();
+        }
+
         $widget = clone $cms->getWidget($widget);
         $widget->setRequest($this->request);
         $widget->setResponse($this->response);

@@ -45,6 +45,12 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
         }
 
         $widgetId = $widget;
+
+        $widget = $site->getWidget($widgetId);
+        if (!$this->getSecurityManager()->isPermissionGranted('cms.widget.' . $widget . '.' . self::NAME)) {
+            throw new UnauthorizedException();
+        }
+
         $widgetProperties = $node->getWidgetProperties($widgetId);
 
         $widget = $site->getWidget($widgetId);

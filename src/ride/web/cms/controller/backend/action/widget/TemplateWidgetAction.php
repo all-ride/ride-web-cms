@@ -60,6 +60,12 @@ class TemplateWidgetAction extends AbstractWidgetAction {
         $templateFacade->setThemeModel($cms->getThemeModel());
 
         $widgetId = $widget;
+
+        $widget = $site->getWidget($widgetId);
+        if (!$this->getSecurityManager()->isPermissionGranted('cms.widget.' . $widget . '.' . self::NAME)) {
+            throw new UnauthorizedException();
+        }
+
         $widget = $site->getWidget($widgetId);
         $widget = clone $cms->getWidget($widget);
         $widget->setRequest($this->request);
