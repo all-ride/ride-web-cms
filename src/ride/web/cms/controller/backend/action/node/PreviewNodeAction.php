@@ -74,7 +74,7 @@ class PreviewNodeAction extends AbstractNodeAction {
         }
 
         $this->setContentLocale($locale);
-        $cms->setLastAction(self::NAME);
+        $this->cms->setLastAction(self::NAME);
 
         $url = $this->getUrl('cms.site.preview', array(
             'site' => $site->getId(),
@@ -178,7 +178,7 @@ class PreviewNodeAction extends AbstractNodeAction {
         $textParser->setBaseUrl($this->request->getBaseUrl());
         $textParser->setSiteUrl($routeUrl);
 
-        $nodeDispatcher->dispatch($this->request, $this->response, $this->getUser(), $cache);
+        $nodeDispatcher->dispatch($this->request, $this->response, $this->getSecurityManager(), $cache);
     }
 
 }

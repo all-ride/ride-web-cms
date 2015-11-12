@@ -497,7 +497,7 @@ class SiteController extends AbstractNodeTypeController {
         $this->setContentLocale($locale);
 
         $translator = $this->getTranslator();
-        $referer = $this->request->getQueryParameter('referer');
+        $referer = $this->getReferer();
 
         $trashNodeOptions = array();
 

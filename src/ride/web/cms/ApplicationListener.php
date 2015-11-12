@@ -433,7 +433,7 @@ class ApplicationListener {
         if (!$this->isCacheClearRegistered) {
             // register event to commit when the controller has finished processing
             // the request
-            $eventManager->addEventListener('app.response.post', array($this, 'clearCache'));
+            $eventManager->addEventListener('app.response.pre', array($this, 'clearCache'));
 
             $this->isCacheClearRegistered = true;
         }

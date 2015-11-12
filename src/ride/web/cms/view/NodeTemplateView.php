@@ -164,50 +164,52 @@ class NodeTemplateView extends TemplateView {
 
         // render the widget templates in the regions
         $regions = $this->template->get('widgets');
-        foreach ($regions as $this->region => $sections) {
-            foreach ($sections as $this->section => $blocks) {
-                foreach ($blocks as $this->block => $widgets) {
-                    foreach ($widgets as $widgetId => $widgetView) {
-                        if (!$widgetView) {
-                            continue;
-                        }
-
-                        // render the widget
-                        $renderedWidget = $this->renderWidget($widgetId, $widgetView, $app);
-
-                        if ($this->cache && isset($this->cachedViews[$this->region][$this->section][$this->block][$widgetId])) {
-                            // cache the rendered view
-                            $widgetCacheView = new WidgetCacheView($renderedWidget);
-                            if ($widgetView instanceof HtmlView) {
-                                $widgetCacheView->mergeResources($widgetView);
+        if ($regions) {
+            foreach ($regions as $this->region => $sections) {
+                foreach ($sections as $this->section => $blocks) {
+                    foreach ($blocks as $this->block => $widgets) {
+                        foreach ($widgets as $widgetId => $widgetView) {
+                            if (!$widgetView) {
+                                continue;
                             }
 
-                            $this->cachedViews[$this->region][$this->section][$this->block][$widgetId]->setView($widgetCacheView);
+                            // render the widget
+                            $renderedWidget = $this->renderWidget($widgetId, $widgetView, $app);
+
+                            if ($this->cache && isset($this->cachedViews[$this->region][$this->section][$this->block][$widgetId])) {
+                                // cache the rendered view
+                                $widgetCacheView = new WidgetCacheView($renderedWidget);
+                                if ($widgetView instanceof HtmlView) {
+                                    $widgetCacheView->mergeResources($widgetView);
+                                }
+
+                                $this->cachedViews[$this->region][$this->section][$this->block][$widgetId]->setView($widgetCacheView);
+                            }
+
+                            if (trim($renderedWidget) == '') {
+                                // omit empty widgets
+                                unset($regions[$this->region][$this->section][$this->block][$widgetId]);
+                            } else {
+                                $regions[$this->region][$this->section][$this->block][$widgetId] = $renderedWidget;
+                            }
                         }
 
-                        if (trim($renderedWidget) == '') {
-                            // omit empty widgets
-                            unset($regions[$this->region][$this->section][$this->block][$widgetId]);
-                        } else {
-                            $regions[$this->region][$this->section][$this->block][$widgetId] = $renderedWidget;
+                        // omit empty blocks
+                        if (!$regions[$this->region][$this->section][$this->block]) {
+                            unset($regions[$this->region][$this->section][$this->block]);
                         }
                     }
 
-                    // omit empty blocks
-                    if (!$regions[$this->region][$this->section][$this->block]) {
-                        unset($regions[$this->region][$this->section][$this->block]);
+                    // omit empty sections
+                    if (!$regions[$this->region][$this->section]) {
+                        unset($regions[$this->region][$this->section]);
                     }
                 }
 
-                // omit empty sections
-                if (!$regions[$this->region][$this->section]) {
-                    unset($regions[$this->region][$this->section]);
+                // omit empty regions
+                if (!$regions[$this->region]) {
+                    unset($regions[$this->region]);
                 }
-            }
-
-            // omit empty regions
-            if (!$regions[$this->region]) {
-                unset($regions[$this->region]);
             }
         }
 
