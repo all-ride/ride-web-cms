@@ -37,7 +37,7 @@ class ReferenceController extends AbstractNodeTypeController {
         }
 
         $name = $node->getName($locale);
-        if ($name == $node->getNode()->getName($locale)) {
+        if ($node->getNode() && $node->getNode()->getName($locale) == $name) {
             $name = '';
         }
 
