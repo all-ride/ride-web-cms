@@ -36,9 +36,14 @@ class ReferenceController extends AbstractNodeTypeController {
             unset($nodeList[$node->getId()]);
         }
 
+        $name = $node->getName($locale);
+        if ($name == $node->getNode()->getName($locale)) {
+            $name = '';
+        }
+
         // gather data
         $data = array(
-            'name' => $node->getName($locale),
+            'name' => $name,
             'reference-node' => $node->getReferenceNode(),
         );
 
@@ -70,6 +75,9 @@ class ReferenceController extends AbstractNodeTypeController {
 
                 $node->setName($locale, $data['name']);
                 $node->setReferenceNode($data['reference-node']);
+                if (!$node->getNode()) {
+                    $node->setNode($cms->getNode($site->getId(), $revision, $data['reference-node']));
+                }
 
                 $cms->saveNode($node, (!$node->getId() ? 'Created new reference ' : 'Updated reference ') . $node->getName());
 
