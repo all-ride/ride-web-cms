@@ -3,6 +3,7 @@
 namespace ride\web\cms\router;
 
 use ride\library\cms\expired\ExpiredRouteModel;
+use ride\library\cms\node\type\ReferenceNodeType;
 use ride\library\cms\node\NodeModel;
 use ride\library\router\exception\RouterException;
 use ride\library\router\RouteContainer;
@@ -68,11 +69,12 @@ class CmsRouteContainerIO implements RouteContainerIO {
                 $baseUrl = $site->getBaseUrl($locale);
 
                 foreach ($nodes as $nodeId => $node) {
-                    if (!$node->getParent()) {
+                    $type = $node->getType();
+                    if (!$node->getParent() || $type === ReferenceNodeType::NAME) {
                         continue;
                     }
 
-                    $nodeType = $nodeTypes[$node->getType()];
+                    $nodeType = $nodeTypes[$type];
 
                     $callback = $nodeType->getFrontendCallback();
                     if (!$callback) {
@@ -84,6 +86,10 @@ class CmsRouteContainerIO implements RouteContainerIO {
                     }
 
                     $path = $node->getRoute($locale);
+                    if (!$path) {
+                        continue;
+                    }
+
                     $route = new Route($path, $callback, 'cms.front.' . $siteId . '.' . $nodeId . '.' . $locale);
                     $route->setIsDynamic(true);
                     $route->setPredefinedArguments(array(

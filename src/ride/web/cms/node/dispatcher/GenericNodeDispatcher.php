@@ -232,6 +232,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
         $cachedViews = array();
         $dispatchedViews = array();
         $nodeCacheTtl = false;
+        $containsUserContent = false;
 
         if ($cache) {
             $method = $request->getMethod();
@@ -242,8 +243,6 @@ class GenericNodeDispatcher implements NodeDispatcher {
             if ($isCacheable) {
                 $parameters = $this->routeArguments ? '-' . implode('-', $this->routeArguments) : '';
                 $parameters .= $request->getQueryParametersAsString();
-
-                $containsUserContent = false;
 
                 $nodeCacheTtl = 0;
 
@@ -365,7 +364,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
                         $isRegion = $widget->isRegion();
                         $isSection = $widget->isSection();
                         $isBlock = $widget->isBlock();
-                        if ($isCacheable && !$containsUserContent && $widget->containsUserContent()) {
+                        if (!$containsUserContent && $widget->containsUserContent()) {
                             $containsUserContent = true;
                         }
 
@@ -453,6 +452,12 @@ class GenericNodeDispatcher implements NodeDispatcher {
         if (is_array($dispatchedViews)) {
             $this->view->setDispatchedViews($dispatchedViews);
             $this->view->setRegions($this->regions);
+
+            if (!$containsUserContent) {
+                $response->setIsPublic();
+            } else {
+                $response->setIsPrivate();
+            }
 
             if ($nodeCacheTtl !== false && $cachedViews) {
                 $cacheItem->setValue($cachedViews);

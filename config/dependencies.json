@@ -270,6 +270,18 @@
                             }
                         }
                     ]
+                },
+                {
+                    "method": "addNodeType",
+                    "arguments": [
+                        {
+                            "name": "nodeType",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\web\\cms\\node\\type\\ReferenceNodeType"
+                            }
+                        }
+                    ]
                 }
             ]
         },

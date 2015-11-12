@@ -2,6 +2,7 @@
 
 namespace ride\web\cms\controller\backend\action\node;
 
+use ride\library\cms\node\type\ReferenceNodeType;
 use ride\library\cms\node\Node;
 
 use ride\web\base\controller\AbstractController;
@@ -33,7 +34,7 @@ abstract class AbstractNodeAction extends AbstractController implements NodeActi
      * @return boolean true if available
      */
     public function isAvailableForNode(Node $node) {
-        return true;
+        return $node->getType() !== ReferenceNodeType::NAME;
     }
 
 }

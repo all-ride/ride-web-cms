@@ -124,6 +124,18 @@
             "id": "cms.redirect.edit"
         },
         {
+            "path": "/sites/%site%/%revision%/%locale%/add/reference",
+            "controller": "ride\\web\\cms\\controller\\backend\\ReferenceController",
+            "action": "formAction",
+            "id": "cms.reference.add"
+        },
+        {
+            "path": "/sites/%site%/%revision%/%locale%/references/%node%/edit",
+            "controller": "ride\\web\\cms\\controller\\backend\\ReferenceController",
+            "action": "formAction",
+            "id": "cms.reference.edit"
+        },
+        {
             "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/advanced",
             "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\AdvancedNodeAction",
             "action": "indexAction",

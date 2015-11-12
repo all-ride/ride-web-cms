@@ -5,6 +5,7 @@ namespace ride\web\cms\controller\frontend;
 use ride\application\cache\control\CmsCacheControl;
 
 use ride\library\cms\exception\NodeNotFoundException;
+use ride\library\cms\node\Node;
 use ride\library\dependency\exception\DependencyNotFoundException;
 use ride\library\http\Response;
 use ride\library\security\exception\AuthenticationException;
@@ -75,10 +76,7 @@ class NodeController extends AbstractController {
 
                 $nodeDispatcher->dispatch($this->request, $this->response, $securityManager, $cache);
                 if ($this->response->getStatusCode() != Response::STATUS_CODE_NOT_FOUND) {
-                    $headers = $node->getHeader($locale);
-                    foreach ($headers as $name => $value) {
-                        $this->response->setHeader($name, $value);
-                    }
+                    $this->setHeaders($node, $locale);
 
                     return;
                 }
@@ -87,6 +85,32 @@ class NodeController extends AbstractController {
 
         // not found, try the public web controller
         return $this->chainWebRequest();
+    }
+
+    /**
+     * Sets the node headers to the response
+     * @param \ride\library\cms\node\Node $node
+     * @param string $locale
+     * @return null
+     */
+    protected function setHeaders(Node $node, $locale) {
+        $headers = $node->getHeader($locale);
+        foreach ($headers as $name => $value) {
+            switch ($name) {
+                case 'max-age':
+                    $this->response->setMaxAge((integer) $value);
+
+                    break;
+                case 's-maxage':
+                    $this->response->setSharedMaxAge((integer) $value);
+
+                    break;
+                default:
+                    $this->response->setHeader($name, $value);
+
+                    break;
+            }
+        }
     }
 
 }

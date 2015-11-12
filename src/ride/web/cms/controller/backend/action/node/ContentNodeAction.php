@@ -456,6 +456,8 @@ class ContentNodeAction extends AbstractNodeAction {
     public function widgetAddAction(Cms $cms, WidgetActionManager $widgetActionManager, $locale, $site, $revision, $node, $region, $section, $block, $widget) {
         if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
             return;
+        } elseif (!$this->getSecurityManager()->isPermissionGranted('cms.widget.' . $widget . '.manage')) {
+            throw new UnauthorizedException();
         }
 
         $widgetId = $site->createWidget($widget);
@@ -506,6 +508,11 @@ class ContentNodeAction extends AbstractNodeAction {
     public function widgetDeleteAction(Cms $cms, $locale, $site, $revision, $node, $region, $section, $block, $widget) {
         if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
             return;
+        }
+
+        $widgetClass = $site->getWidget($widget);
+        if (!$this->getSecurityManager()->isPermissionGranted('cms.widget.' . $widgetClass . '.manage')) {
+            throw new UnauthorizedException();
         }
 
         $node->deleteWidget($region, $section, $block, $widget);
