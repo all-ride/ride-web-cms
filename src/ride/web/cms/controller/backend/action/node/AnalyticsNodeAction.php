@@ -38,7 +38,7 @@ class AnalyticsNodeAction extends AbstractNodeAction {
      */
     public function indexAction(Cms $cms, $locale, $site, $node, $revision) {
         $node = $site;
-        if (!$cms->resolveNode($site, $revision, $node, null, true)) {
+        if (!$cms->resolveNode($site, $revision, $node)) {
             return;
         }
 
