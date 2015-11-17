@@ -285,6 +285,27 @@
                 }
             ]
         },
+
+        {
+            "interfaces": ["ride\\web\\cms\\controller\\backend\\action\\node\\NodeAction", "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction"],
+            "class": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
+            "id": "content",
+            "calls": [
+                {
+                    "method": "setDefaultLayout",
+                    "arguments": [
+                        {
+                            "name": "defaultLayout",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "cms.default.layout",
+                                "default": "25-25-25-25"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
         {
             "class": "ride\\web\\cms\\controller\\backend\\action\\node\\NodeActionManager",
             "id": "generic",
@@ -332,7 +353,8 @@
                             "name": "nodeAction",
                             "type": "dependency",
                             "properties": {
-                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction"
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\NodeAction",
+                                "id": "content"
                             }
                         }
                     ]

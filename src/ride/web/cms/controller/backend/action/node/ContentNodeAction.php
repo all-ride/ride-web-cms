@@ -36,6 +36,15 @@ class ContentNodeAction extends AbstractNodeAction {
     protected $defaultLayout = '100';
 
     /**
+     * Sets the default layout
+     * @param $defaultLayout Machine name of the default layout
+     * @return null
+     */
+    public function setDefaultLayout($defaultLayout) {
+        $this->defaultLayout = $defaultLayout;
+    }
+
+    /**
      * Detects the current region and redirects to the region page
      * @param \ride\web\cms\Cms $cms Facade to the CMS
      * @param string $locale Code of the locale
