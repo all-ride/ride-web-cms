@@ -7,6 +7,8 @@ use ride\library\cms\layout\LayoutModel;
 use ride\library\cms\node\Node;
 use ride\library\cms\node\NodeProperty;
 use ride\library\cms\theme\Theme;
+use ride\library\security\exception\UnauthorizedException;
+use ride\library\security\SecurityManager;
 
 use ride\web\cms\controller\backend\action\widget\WidgetActionManager;
 use ride\web\cms\Cms;
@@ -62,8 +64,9 @@ class ContentNodeAction extends AbstractNodeAction {
         $cms->setLastAction(self::NAME);
 
         $theme = $cms->getTheme($node->getTheme());
+        $securityManager = $this->getSecurityManager();
 
-        $form = $this->buildRegionForm($node, $theme);
+        $form = $this->buildRegionForm($securityManager, $node, $theme);
         if ($form->isSubmitted()) {
             $data = $form->getData();
 
@@ -72,9 +75,21 @@ class ContentNodeAction extends AbstractNodeAction {
             $region = $cms->getLastRegion();
         }
 
+        if ($region && !$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+            $region = null;
+        }
+
         if (!$region || ($region && !$theme->hasRegion($region))) {
-            $regions = $theme->getRegions();
-            $region = array_shift($regions);
+            $region = null;
+
+            $regions = $this->getRegions($securityManager, $theme);
+            if ($regions) {
+                $region = array_shift($regions);
+            }
+        }
+
+        if (!$region) {
+            throw new UnauthorizedException();
         }
 
         $this->response->setRedirect($this->getUrl('cms.node.content.region', array(
@@ -103,13 +118,18 @@ class ContentNodeAction extends AbstractNodeAction {
             return;
         }
 
+        $securityManager = $this->getSecurityManager();
+        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+            throw new UnauthorizedException();
+        }
+
         $regions = $theme->getRegions();
         $availableWidgets = $this->getWidgets($cms);
 
         $cms->setLastAction(self::NAME);
         $cms->setLastRegion($region);
 
-        $form = $this->buildRegionForm($node, $theme, $region);
+        $form = $this->buildRegionForm($securityManager, $node, $theme, $region);
 
         $regionWidgets = array();
         $inheritedRegionWidgets = array();
@@ -163,30 +183,6 @@ class ContentNodeAction extends AbstractNodeAction {
     }
 
     /**
-     * Gets the available widgets ordered alphabetically
-     * @param \ride\web\cms\Cms $cms Facade to the CMS
-     * @return array
-     */
-    protected function getWidgets(Cms $cms) {
-        $translator = $this->getTranslator();
-        $orderedWidgets = array();
-
-        $availableWidgets = $cms->getWidgets();
-        foreach ($availableWidgets as $index => $widget) {
-            $orderedWidgets[$translator->translate('widget.' . $widget->getName())] = $index;
-        }
-
-        ksort($orderedWidgets);
-
-        foreach ($orderedWidgets as $index => $widgetIndex) {
-            unset($orderedWidgets[$index]);
-            $orderedWidgets[$widgetIndex] = $availableWidgets[$widgetIndex];
-        }
-
-        return $orderedWidgets;
-    }
-
-    /**
      * Action to reorder the sections and widgets of a region
      * @param \ride\web\cms\Cms $cms Facade to the CMS
      * @param string $locale Code of the locale
@@ -200,6 +196,11 @@ class ContentNodeAction extends AbstractNodeAction {
         $theme = null;
         if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region, $theme)) {
             return;
+        }
+
+        $securityManager = $this->getSecurityManager();
+        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+            throw new UnauthorizedException();
         }
 
         $order = $this->request->getBodyParameter('order', array());
@@ -231,6 +232,11 @@ class ContentNodeAction extends AbstractNodeAction {
             return;
         }
 
+        $securityManager = $this->getSecurityManager();
+        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+            throw new UnauthorizedException();
+        }
+
         $this->setSectionView($cms, $widgetActionManager, $site, $node, $locale, $region, $section);
     }
 
@@ -249,6 +255,11 @@ class ContentNodeAction extends AbstractNodeAction {
         $theme = null;
         if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region, $theme)) {
             return;
+        }
+
+        $securityManager = $this->getSecurityManager();
+        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+            throw new UnauthorizedException();
         }
 
         $section = $node->addSection($region, $this->defaultLayout);
@@ -277,6 +288,11 @@ class ContentNodeAction extends AbstractNodeAction {
             return;
         }
 
+        $securityManager = $this->getSecurityManager();
+        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+            throw new UnauthorizedException();
+        }
+
         $node->setSectionLayout($region, $section, $layout);
 
         $cms->saveNode($node, 'Set layout of section ' . $section . ' from region ' . $region . ' on node ' . $node->getName() . ' to ' . $layout);
@@ -298,6 +314,11 @@ class ContentNodeAction extends AbstractNodeAction {
     public function sectionPropertiesAction(Cms $cms, $locale, $site, $revision, $node, $region, $section) {
         if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
             return;
+        }
+
+        $securityManager = $this->getSecurityManager();
+        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+            throw new UnauthorizedException();
         }
 
         $translator = $this->getTranslator();
@@ -375,6 +396,11 @@ class ContentNodeAction extends AbstractNodeAction {
             return;
         }
 
+        $securityManager = $this->getSecurityManager();
+        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+            throw new UnauthorizedException();
+        }
+
         $translator = $this->getTranslator();
 
         $data = array(
@@ -445,6 +471,11 @@ class ContentNodeAction extends AbstractNodeAction {
             return;
         }
 
+        $securityManager = $this->getSecurityManager();
+        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+            throw new UnauthorizedException();
+        }
+
         $section = $node->deleteSection($region, $section);
 
         $cms->saveNode($node, 'Deleted section ' . $section . ' from region ' . $region . ' on node ' . $node->getName());
@@ -465,7 +496,12 @@ class ContentNodeAction extends AbstractNodeAction {
     public function widgetAddAction(Cms $cms, WidgetActionManager $widgetActionManager, $locale, $site, $revision, $node, $region, $section, $block, $widget) {
         if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
             return;
-        } elseif (!$this->getSecurityManager()->isPermissionGranted('cms.widget.' . $widget . '.manage')) {
+        }
+
+        $securityManager = $this->getSecurityManager();
+        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+            throw new UnauthorizedException();
+        } elseif (!$securityManager->isPermissionGranted('cms.widget.' . $widget . '.manage')) {
             throw new UnauthorizedException();
         }
 
@@ -519,8 +555,13 @@ class ContentNodeAction extends AbstractNodeAction {
             return;
         }
 
+        $securityManager = $this->getSecurityManager();
+        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+            throw new UnauthorizedException();
+        }
+
         $widgetClass = $site->getWidget($widget);
-        if (!$this->getSecurityManager()->isPermissionGranted('cms.widget.' . $widgetClass . '.manage')) {
+        if (!$securityManager->isPermissionGranted('cms.widget.' . $widgetClass . '.manage')) {
             throw new UnauthorizedException();
         }
 
@@ -544,6 +585,11 @@ class ContentNodeAction extends AbstractNodeAction {
             return;
         }
 
+        $securityManager = $this->getSecurityManager();
+        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+            throw new UnauthorizedException();
+        }
+
         $widgetsValue = $this->request->getQueryParameter('widgets');
         $widgetsValue = rtrim(trim($widgetsValue), NodeProperty::LIST_SEPARATOR);
 
@@ -559,12 +605,8 @@ class ContentNodeAction extends AbstractNodeAction {
      * @param string $region
      * @return \ride\library\form\Form
      */
-    protected function buildRegionForm(Node $node, Theme $theme = null, $region = null) {
-        if ($theme) {
-            $regions = $theme->getRegions();
-        } else {
-            $regions = array();
-        }
+    protected function buildRegionForm(SecurityManager $securityManager, Node $node, Theme $theme = null, $region = null) {
+        $regions = $this->getRegions($securityManager, $theme);
 
         $form = $this->createFormBuilder(array('region' => $region));
         $form->setId('form-region-select');
@@ -660,6 +702,51 @@ class ContentNodeAction extends AbstractNodeAction {
                 }
             }
         }
+    }
+
+    /**
+     * Gets the available regions
+     * @param \ride\library\security\SecurityManager $securityManager
+     * @param \ride\library\cms\theme\Theme $theme
+     * @return array
+     */
+    protected function getRegions(SecurityManager $securityManager, Theme $theme = null) {
+        if (!$theme) {
+            return array();
+        }
+
+        $regions = $theme->getRegions();
+        foreach ($regions as $index => $region) {
+            if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+                unset($regions[$index]);
+            }
+        }
+
+        return $regions;
+    }
+
+    /**
+     * Gets the available widgets ordered alphabetically
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @return array
+     */
+    protected function getWidgets(Cms $cms) {
+        $translator = $this->getTranslator();
+        $orderedWidgets = array();
+
+        $availableWidgets = $cms->getWidgets();
+        foreach ($availableWidgets as $index => $widget) {
+            $orderedWidgets[$translator->translate('widget.' . $widget->getName())] = $index;
+        }
+
+        ksort($orderedWidgets);
+
+        foreach ($orderedWidgets as $index => $widgetIndex) {
+            unset($orderedWidgets[$index]);
+            $orderedWidgets[$widgetIndex] = $availableWidgets[$widgetIndex];
+        }
+
+        return $orderedWidgets;
     }
 
 }
