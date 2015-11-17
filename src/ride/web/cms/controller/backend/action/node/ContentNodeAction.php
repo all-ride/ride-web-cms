@@ -312,7 +312,7 @@ class ContentNodeAction extends AbstractNodeAction {
      * @return null
      */
     public function sectionPropertiesAction(Cms $cms, $locale, $site, $revision, $node, $region, $section) {
-        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
+        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region, $theme)) {
             return;
         }
 
@@ -392,7 +392,7 @@ class ContentNodeAction extends AbstractNodeAction {
      * @return null
      */
     public function sectionStyleAction(Cms $cms, $locale, $site, $revision, $node, $region, $section) {
-        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
+        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region, $theme)) {
             return;
         }
 
@@ -494,7 +494,7 @@ class ContentNodeAction extends AbstractNodeAction {
      * @return null
      */
     public function widgetAddAction(Cms $cms, WidgetActionManager $widgetActionManager, $locale, $site, $revision, $node, $region, $section, $block, $widget) {
-        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
+        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region, $theme)) {
             return;
         }
 
@@ -551,7 +551,7 @@ class ContentNodeAction extends AbstractNodeAction {
      * @return null
      */
     public function widgetDeleteAction(Cms $cms, $locale, $site, $revision, $node, $region, $section, $block, $widget) {
-        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
+        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region, $theme)) {
             return;
         }
 
@@ -581,7 +581,7 @@ class ContentNodeAction extends AbstractNodeAction {
      * @return null
      */
     public function widgetOrderAction(Cms $cms, $locale, $site, $revision, $node, $region, $section, $block) {
-        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region)) {
+        if (!$cms->resolveNode($site, $revision, $node) || !$cms->resolveRegion($node, $locale, $region, $theme)) {
             return;
         }
 
