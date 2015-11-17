@@ -26,7 +26,7 @@ class NodeTemplateView extends TemplateView {
      */
     public function __construct(Node $node, Theme $theme, $locale) {
         $template = new GenericThemedTemplate();
-        $template->setResource('cms/frontend/index');
+        $template->setResource($node->get('template', 'cms/frontend/index'));
         $template->setResourceId($node->getId());
         $template->setTheme($theme->getName());
         $template->set('app', array(
