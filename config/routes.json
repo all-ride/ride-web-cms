@@ -281,6 +281,12 @@
             "id": "cms.node.meta"
         },
         {
+            "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/analytics",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\AnalyticsNodeAction",
+            "action": "indexAction",
+            "id": "cms.site.analytics"
+        },
+        {
             "path": "/sites/%site%/%revision%/%locale%/nodes/%node%/preview",
             "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\PreviewNodeAction",
             "action": "indexAction",

@@ -378,6 +378,18 @@
                             "name": "nodeAction",
                             "type": "dependency",
                             "properties": {
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\AnalyticsNodeAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeAction",
+                    "arguments": [
+                        {
+                            "name": "nodeAction",
+                            "type": "dependency",
+                            "properties": {
                                 "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\VisibilityNodeAction"
                             }
                         }
