@@ -89,7 +89,7 @@ class MetaNodeAction extends AbstractNodeAction {
                 'trim' => array(),
             ),
             'attributes' => array(
-                'data-recommended-maxlength' => 60
+                'data-recommended-maxlength' => 55
             )
         ));
         $form->addRow('description', 'text', array(
@@ -98,7 +98,7 @@ class MetaNodeAction extends AbstractNodeAction {
                 'trim' => array(),
             ),
             'attributes' => array(
-                'data-recommended-maxlength' => 160
+                'data-recommended-maxlength' => 150
             ),
             'validator' => array(
                 'size' => array(
@@ -127,7 +127,7 @@ class MetaNodeAction extends AbstractNodeAction {
                 'trim' => array(),
             ),
             'attributes' => array(
-                'data-recommended-maxlength' => 225
+                'data-recommended-maxlength' => 200
             )
         ));
         $form->addRow('og-image', 'image', array(
