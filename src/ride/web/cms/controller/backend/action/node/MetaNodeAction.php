@@ -88,12 +88,23 @@ class MetaNodeAction extends AbstractNodeAction {
             'filters' => array(
                 'trim' => array(),
             ),
+            'attributes' => array(
+                'data-recommended-maxlength' => 60
+            )
         ));
         $form->addRow('description', 'text', array(
             'label' => $translator->translate('label.description'),
             'filters' => array(
                 'trim' => array(),
             ),
+            'attributes' => array(
+                'data-recommended-maxlength' => 160
+            ),
+            'validator' => array(
+                'size' => array(
+                    'maximum' => 90
+                )
+            )
         ));
         $form->addRow('keywords', 'string', array(
             'label' => $translator->translate('label.keywords'),
@@ -106,12 +117,18 @@ class MetaNodeAction extends AbstractNodeAction {
             'filters' => array(
                 'trim' => array(),
             ),
+            'attributes' => array(
+                'data-recommended-maxlength' => 60
+            )
         ));
         $form->addRow('og-description', 'text', array(
             'label' => $translator->translate('label.description'),
             'filters' => array(
                 'trim' => array(),
             ),
+            'attributes' => array(
+                'data-recommended-maxlength' => 225
+            )
         ));
         $form->addRow('og-image', 'image', array(
             'label' => $translator->translate('label.image'),
