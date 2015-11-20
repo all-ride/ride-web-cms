@@ -99,11 +99,6 @@ class MetaNodeAction extends AbstractNodeAction {
             ),
             'attributes' => array(
                 'data-recommended-maxlength' => 150
-            ),
-            'validator' => array(
-                'size' => array(
-                    'maximum' => 90
-                )
             )
         ));
         $form->addRow('keywords', 'string', array(
