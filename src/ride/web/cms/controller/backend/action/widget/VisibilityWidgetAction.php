@@ -94,6 +94,10 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
 
         $permissions = $securityManager->getSecurityModel()->getPermissions();
 
+        foreach ($permissions as $index => $permission) {
+            $permissions[$index] = $translator->translate('permission.' . $permission->getCode()) . ' (<small>' . $permission->getCode() . '</small>)';
+        }
+
         $form = $this->createFormBuilder($data);
         $form->addRow('published', 'option', array(
             'label' => $translator->translate('label.publish'),
