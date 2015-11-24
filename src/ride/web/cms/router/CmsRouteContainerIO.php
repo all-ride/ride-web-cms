@@ -7,7 +7,6 @@ use ride\library\cms\node\type\ReferenceNodeType;
 use ride\library\cms\node\NodeModel;
 use ride\library\router\exception\RouterException;
 use ride\library\router\RouteContainer;
-use ride\library\router\Route;
 
 use ride\web\router\io\RouteContainerIO;
 
@@ -15,6 +14,12 @@ use ride\web\router\io\RouteContainerIO;
  * Route container I/O Implementation for the Joppa routes
  */
 class CmsRouteContainerIO implements RouteContainerIO {
+
+    /**
+     * Source for the routes
+     * @var string
+     */
+    const SOURCE = 'cms';
 
     /**
      * Instance of the node model
@@ -52,7 +57,7 @@ class CmsRouteContainerIO implements RouteContainerIO {
      * @return \ride\library\router\RouteContainer
      */
     public function getRouteContainer() {
-        $container = new RouteContainer();
+        $container = new RouteContainer(self::SOURCE);
 
         $nodeTypeManager = $this->nodeModel->getNodeTypeManager();
         $nodeTypes = $nodeTypeManager->getNodeTypes();
@@ -90,7 +95,7 @@ class CmsRouteContainerIO implements RouteContainerIO {
                         continue;
                     }
 
-                    $route = new Route($path, $callback, 'cms.front.' . $siteId . '.' . $nodeId . '.' . $locale);
+                    $route = $container->createRoute($path, $callback, 'cms.front.' . $siteId . '.' . $nodeId . '.' . $locale);
                     $route->setIsDynamic(true);
                     $route->setPredefinedArguments(array(
                         'site' => $siteId,
@@ -102,7 +107,7 @@ class CmsRouteContainerIO implements RouteContainerIO {
                         $route->setBaseUrl($baseUrl);
                     }
 
-                    $container->addRoute($route);
+                    $container->setRoute($route);
 
                     $registeredPaths[$path] = true;
                 }
@@ -115,7 +120,7 @@ class CmsRouteContainerIO implements RouteContainerIO {
                     continue;
                 }
 
-                $route = new Route($path, $expiredCallback);
+                $route = $container->createRoute($path, $expiredCallback);
                 $route->setIsDynamic(true);
                 $route->setPredefinedArguments(array(
                     'site' => $siteId,
@@ -128,7 +133,7 @@ class CmsRouteContainerIO implements RouteContainerIO {
                     $route->setBaseUrl($baseUrl);
                 }
 
-                $container->addRoute($route);
+                $container->setRoute($route);
             }
         }
 

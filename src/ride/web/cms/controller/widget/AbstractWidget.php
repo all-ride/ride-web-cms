@@ -552,14 +552,16 @@ class AbstractWidget extends AbstractController implements Widget {
     }
 
     /**
-     * Gets the URL of the provided route
-     * @param string $routeId Id of the route
-     * @param array $arguments Path arguments for the route
-     * @return string
-     * @throws \ride\library\router\exception\RouterException If the route is
-     * not found
+     * Gets the URL for the provided route
+     * @param string $id Id of the route
+     * @param array $arguments Array with the argument name as key and the
+     * argument as value.
+     * @param array $queryParameters Array with the query parameter name as key
+     * and the parameter as value.
+     * @param string $querySeparator Separator between the query parameters
+     * @return string Generated URL
      */
-    public function getUrl($id, array $variables = array()) {
+    public function getUrl($id, array $arguments = null, array $queryParameters = null, $querySeparator = '&') {
         $routes = $this->getRoutes();
         if ($routes) {
             foreach ($routes as $route) {
@@ -569,13 +571,13 @@ class AbstractWidget extends AbstractController implements Widget {
 
                 $node = $this->properties->getNode();
                 $url = rtrim($this->request->getBaseScript() . $node->getRoute($this->locale), '/');
-                $url = $route->getUrl($url, $variables);
+                $url = $route->getUrl($url, $variables, $queryParameters, $querySeparator);
 
                 return $url;
             }
         }
 
-        return parent::getUrl($id, $variables);
+        return parent::getUrl($id, $variables, $queryParameters, $querySeparator);
     }
 
 }

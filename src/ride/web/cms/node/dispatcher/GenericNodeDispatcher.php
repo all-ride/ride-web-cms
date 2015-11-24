@@ -527,7 +527,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
         if ($widgetRoutes && $this->routeArguments) {
             $widgetRouteContainer = new RouteContainer();
             foreach ($widgetRoutes as $widgetRoute) {
-                $widgetRouteContainer->addRoute($widgetRoute);
+                $widgetRouteContainer->setRoute($widgetRoute);
             }
 
             $path = '/' . implode('/', $this->routeArguments);
