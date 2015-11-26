@@ -5,6 +5,7 @@ namespace ride\web\cms\router;
 use ride\library\cms\expired\ExpiredRouteModel;
 use ride\library\cms\node\type\ReferenceNodeType;
 use ride\library\cms\node\NodeModel;
+use ride\library\config\Config;
 use ride\library\router\exception\RouterException;
 use ride\library\router\RouteContainer;
 
@@ -43,12 +44,14 @@ class CmsRouteContainerIO implements RouteContainerIO {
      * Constructs a new Joppa route container I/O
      * @param \ride\library\cms\node\NodeModel $nodeModel
      * @param \ride\library\cms\expired\ExpiredRouteModel $expiredRouteModel
+     * @param \ride\library\cms\expired\ExpiredRouteModel $expiredRouteModel
      * @param array $locales Array with the locale codes
      * @return null
      */
-    public function __construct(NodeModel $nodeModel, ExpiredRouteModel $expiredRouteModel, array $locales) {
+    public function __construct(NodeModel $nodeModel, ExpiredRouteModel $expiredRouteModel, Config $config, array $locales) {
         $this->nodeModel = $nodeModel;
         $this->expiredRouteModel = $expiredRouteModel;
+        $this->config = $config;
         $this->locales = $locales;
     }
 
@@ -70,8 +73,19 @@ class CmsRouteContainerIO implements RouteContainerIO {
         foreach ($sites as $siteId => $site) {
             $nodes = $this->nodeModel->getNodes($siteId, $defaultRevision);
 
+            // look for an overriden base url of the site
+            $siteBaseUrl = $this->config->get('cms.url.' . $siteId);
+            if (!is_string($siteBaseUrl)) {
+                $siteBaseUrl = null;
+            }
+
             foreach ($this->locales as $locale) {
-                $baseUrl = $site->getBaseUrl($locale);
+                // look for an overriden localized base url of the site
+                $baseUrl = $this->config->get('cms.url.' . $siteId . '.' . $locale, $siteBaseUrl);
+                if (!$baseUrl) {
+                    // not overriden, check for the set base URL of the site
+                    $baseUrl = $site->getBaseUrl($locale);
+                }
 
                 foreach ($nodes as $nodeId => $node) {
                     $type = $node->getType();
