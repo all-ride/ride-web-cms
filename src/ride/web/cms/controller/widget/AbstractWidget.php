@@ -571,13 +571,13 @@ class AbstractWidget extends AbstractController implements Widget {
 
                 $node = $this->properties->getNode();
                 $url = rtrim($this->request->getBaseScript() . $node->getRoute($this->locale), '/');
-                $url = $route->getUrl($url, $variables, $queryParameters, $querySeparator);
+                $url = $route->getUrl($url, $arguments, $queryParameters, $querySeparator);
 
                 return $url;
             }
         }
 
-        return parent::getUrl($id, $variables, $queryParameters, $querySeparator);
+        return parent::getUrl($id, $arguments, $queryParameters, $querySeparator);
     }
 
 }
