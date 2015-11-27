@@ -226,10 +226,10 @@ class SiteController extends AbstractNodeTypeController {
                     }
                 }
                 $site->setLocalizationMethod($data['localizationMethod']);
-                $site->setBaseUrl($locale, $data['baseUrl']);
+                $site->setBaseUrl($locale, $data['baseUrl'] ? $data['baseUrl'] : null);
                 $site->setTheme($data['theme']);
                 $site->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
-                $site->setIsAutoPublish($data['autoPublish']);
+                $site->setIsAutoPublish($data['autoPublish'] ? 1 : 0);
 
                 $cms->saveNode($site, (!$site->getId() ? 'Created new site ' : 'Updated site ') . $site->getName());
 

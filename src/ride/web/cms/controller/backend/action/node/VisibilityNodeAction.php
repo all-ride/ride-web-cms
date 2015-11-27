@@ -163,8 +163,8 @@ class VisibilityNodeAction extends AbstractNodeAction {
                 }
 
                 $node->set(Node::PROPERTY_PUBLISH, $this->getPublishedValue($data['published']));
-                $node->set(Node::PROPERTY_PUBLISH_START, $data['publishStart']);
-                $node->set(Node::PROPERTY_PUBLISH_STOP, $data['publishStop']);
+                $node->set(Node::PROPERTY_PUBLISH_START, $data['publishStart'] ? $data['publishStart'] : null);
+                $node->set(Node::PROPERTY_PUBLISH_STOP, $data['publishStop'] ? $data['publishStop'] : null);
                 $node->set(Node::PROPERTY_SECURITY, $security);
 
                 if ($isFrontendNode) {

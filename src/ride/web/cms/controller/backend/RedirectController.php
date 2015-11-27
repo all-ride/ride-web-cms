@@ -114,7 +114,7 @@ class RedirectController extends AbstractNodeTypeController {
                 $data = $form->getData();
 
                 $node->setName($locale, $data['name']);
-                $node->setRoute($locale, $data['route']);
+                $node->setRoute($locale, $data['route'] ? $data['route'] : null);
                 if ($site->isLocalizationMethodCopy()) {
                     $node->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
                 } else {
@@ -126,7 +126,7 @@ class RedirectController extends AbstractNodeTypeController {
                     $node->setRedirectUrl($locale, null);
                 } else {
                     $node->setRedirectNode($locale, null);
-                    $node->setRedirectUrl($locale, $data['redirect-url']);
+                    $node->setRedirectUrl($locale, $data['redirect-url'] ? $data['redirect-url'] : null);
                 }
 
                 $cms->saveNode($node, (!$node->getId() ? 'Created new redirect ' : 'Updated redirect ') . $node->getName());

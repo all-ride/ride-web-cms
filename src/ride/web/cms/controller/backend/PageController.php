@@ -123,12 +123,12 @@ class PageController extends AbstractNodeTypeController {
                 $data = $form->getData();
 
                 $node->setName($locale, $data['name']);
-                $node->setName($locale, $data['name-title'], 'title');
-                $node->setName($locale, $data['name-menu'], 'menu');
-                $node->setName($locale, $data['name-breadcrumb'], 'breadcrumb');
-                $node->setDescription($locale, $data['description']);
-                $node->setImage($locale, $data['image']);
-                $node->setRoute($locale, $data['route']);
+                $node->setName($locale, $data['name-title'] ? $data['name-title'] : null, 'title');
+                $node->setName($locale, $data['name-menu'] ? $data['name-menu'] : null, 'menu');
+                $node->setName($locale, $data['name-breadcrumb'] ? $data['name-breadcrump'] : null, 'breadcrumb');
+                $node->setDescription($locale, $data['description'] ? $data['description'] : null);
+                $node->setImage($locale, $data['image'] ? $data['image'] : null);
+                $node->setRoute($locale, $data['route'] ? $data['route'] : null);
                 $node->setTheme($this->getOptionValueFromForm($data['theme']));
 
                 if ($site->isLocalizationMethodCopy()) {
