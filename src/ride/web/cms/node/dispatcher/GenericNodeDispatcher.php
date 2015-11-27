@@ -453,8 +453,8 @@ class GenericNodeDispatcher implements NodeDispatcher {
             $this->view->setDispatchedViews($dispatchedViews);
             $this->view->setRegions($this->regions);
 
-            if ($this->node->get('cache.disabled') == 1) {
-                $response->setIsNoCache();
+            if ($this->node->get('cache.target') == 'none') {
+                $response->setIsNoStore();
             } elseif (!$containsUserContent) {
                 $response->setIsPublic();
             } else {
