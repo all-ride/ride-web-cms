@@ -5,6 +5,7 @@ namespace ride\web\cms\controller\frontend;
 use ride\application\cache\control\CmsCacheControl;
 
 use ride\library\cms\exception\NodeNotFoundException;
+use ride\library\cms\node\type\SiteNodeType;
 use ride\library\cms\node\Node;
 use ride\library\dependency\exception\DependencyNotFoundException;
 use ride\library\http\Response;
@@ -24,7 +25,7 @@ class NodeController extends AbstractController {
      * Dispatches the frontend of a node
      * @return null
 	 */
-	public function indexAction(Cms $cms, CmsCacheControl $cacheControl, NodeDispatcherFactory $nodeDispatcherFactory, TemplateFacade $templateFacade, $node, $locale = null) {
+	public function indexAction(Cms $cms, CmsCacheControl $cacheControl, NodeDispatcherFactory $nodeDispatcherFactory, TemplateFacade $templateFacade, $site, $node, $locale = null) {
         $cache = null;
         if ($cacheControl->isEnabled()) {
             $cache = $this->dependencyInjector->get('ride\\library\\cache\\pool\\CachePool', 'cms');
@@ -34,7 +35,8 @@ class NodeController extends AbstractController {
         $siteLocale = null;
 
         try {
-            $site = $cms->getCurrentSite($this->request->getBaseUrl(), $siteLocale);
+            $site = $cms->getNode($site, $cms->getDefaultRevision(), $site, SiteNodeType::NAME);
+            // $site = $cms->getCurrentSite($this->request->getBaseUrl(), $siteLocale);
         } catch (NodeNotFoundException $exception) {
             // not found, try the public web controller
             return $this->chainWebRequest();
@@ -95,7 +97,12 @@ class NodeController extends AbstractController {
      */
     protected function setHeaders(Node $node, $locale) {
         $headers = $node->getHeader($locale);
+
         foreach ($headers as $name => $value) {
+            if ($value === '') {
+                continue;
+            }
+
             switch ($name) {
                 case 'max-age':
                     $this->response->setMaxAge((integer) $value);
