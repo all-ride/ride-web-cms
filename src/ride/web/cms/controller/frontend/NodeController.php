@@ -95,20 +95,23 @@ class NodeController extends AbstractController {
      */
     protected function setHeaders(Node $node, $locale) {
         $headers = $node->getHeader($locale);
+
         foreach ($headers as $name => $value) {
-            switch ($name) {
-                case 'max-age':
-                    $this->response->setMaxAge((integer) $value);
+            if($value != "") {
+                switch ($name) {
+                    case 'max-age':
+                        $this->response->setMaxAge((integer) $value);
 
-                    break;
-                case 's-maxage':
-                    $this->response->setSharedMaxAge((integer) $value);
+                        break;
+                    case 's-maxage':
+                        $this->response->setSharedMaxAge((integer) $value);
 
-                    break;
-                default:
-                    $this->response->setHeader($name, $value);
+                        break;
+                    default:
+                        $this->response->setHeader($name, $value);
 
-                    break;
+                        break;
+                }
             }
         }
     }
