@@ -88,7 +88,7 @@ class AnalyticsNodeAction extends AbstractNodeAction {
                 $data = $form->getData();
 
                 foreach ($data as $tag => $id) {
-                    $site->set('analytics.' . $tag, $id);
+                    $site->set('analytics.' . $tag, $id !== '' ? $id : null);
                 }
 
                 $cms->saveNode($site, "Set analytics for " . $site->getName());

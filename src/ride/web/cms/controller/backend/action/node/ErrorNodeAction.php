@@ -74,7 +74,7 @@ class ErrorNodeAction extends AbstractNodeAction {
                 foreach ($data as $statusCode => $errorNode) {
                     $statusCode = str_replace('node', '', $statusCode);
 
-                    $site->set('error.' . $statusCode, $errorNode);
+                    $site->set('error.' . $statusCode, $errorNode ? $errorNode : null);
                 }
 
                 $cms->saveNode($site, "Set error pages for " . $site->getName());

@@ -62,7 +62,14 @@ class GoNodeAction extends AbstractNodeAction {
             return;
         }
 
-        $url = $this->getUrl('cms.front.' . $site->getId() . '.' . $node->getId() . '.' . $locale);
+        if ($node->getType() === 'site') {
+            $url = $node->getBaseUrl($locale);
+            if (!$url) {
+                $url = $this->request->getBaseScript();
+            }
+        } else {
+            $url = $this->getUrl('cms.front.' . $site->getId() . '.' . $node->getId() . '.' . $locale);
+        }
 
         $this->response->setRedirect($url);
     }
