@@ -125,7 +125,7 @@ class PageController extends AbstractNodeTypeController {
                 $node->setName($locale, $data['name']);
                 $node->setName($locale, $data['name-title'] ? $data['name-title'] : null, 'title');
                 $node->setName($locale, $data['name-menu'] ? $data['name-menu'] : null, 'menu');
-                $node->setName($locale, $data['name-breadcrumb'] ? $data['name-breadcrump'] : null, 'breadcrumb');
+                $node->setName($locale, $data['name-breadcrumb'] ? $data['name-breadcrumb'] : null, 'breadcrumb');
                 $node->setDescription($locale, $data['description'] ? $data['description'] : null);
                 $node->setImage($locale, $data['image'] ? $data['image'] : null);
                 $node->setRoute($locale, $data['route'] ? $data['route'] : null);
