@@ -1,6 +1,14 @@
 {
     "dependencies": [
         {
+            "interfaces": ["ride\\library\\form\\row\\Row"],
+            "class": "ride\\web\\cms\\form\\row\\NodeRow",
+            "id": "node",
+            "calls": [
+                "setCms"
+            ]
+        },
+        {
             "interfaces": ["ride\\library\\cache\\control\\CacheControl", "ride\\application\\cache\\control\\CmsCacheControl"],
             "class": "ride\\application\\cache\\control\\CmsCacheControl",
             "id": "cms",
@@ -299,7 +307,7 @@
                             "type": "parameter",
                             "properties": {
                                 "key": "cms.default.layout",
-                                "default": "25-25-25-25"
+                                "default": "100"
                             }
                         }
                     ]
