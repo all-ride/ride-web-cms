@@ -27,7 +27,6 @@ class PageController extends AbstractNodeTypeController {
         $this->setContentLocale($locale);
 
         $translator = $this->getTranslator();
-        $locales = $cms->getLocales();
         $themes = $cms->getThemes();
 
         $referer = $this->request->getQueryParameter('referer');
@@ -41,8 +40,7 @@ class PageController extends AbstractNodeTypeController {
             'description' => $node->getDescription($locale),
             'image' => $node->getImage($locale),
             'route' => $node->getRoute($locale, false),
-            'theme' => $this->getThemeValueFromNode($node),
-            'availableLocales' => $this->getLocalesValueFromNode($node),
+            'theme' => $cms->getThemeValueFromNode($node),
         );
 
         // build form
@@ -102,18 +100,6 @@ class PageController extends AbstractNodeTypeController {
             'options' => $this->getThemeOptions($node, $translator, $themes),
         ));
 
-        if ($site->isLocalizationMethodCopy()) {
-            $form->addRow('availableLocales', 'select', array(
-                'label' => $translator->translate('label.locales'),
-                'description' => $translator->translate('label.locales.available.description'),
-                'options' => $this->getLocalesOptions($node, $translator, $locales),
-                'multiple' => true,
-                'validators' => array(
-                    'required' => array(),
-                )
-            ));
-        }
-
         // process form
         $form = $form->build();
         if ($form->isSubmitted()) {
@@ -130,12 +116,6 @@ class PageController extends AbstractNodeTypeController {
                 $node->setImage($locale, $data['image'] ? $data['image'] : null);
                 $node->setRoute($locale, $data['route'] ? $data['route'] : null);
                 $node->setTheme($this->getOptionValueFromForm($data['theme']));
-
-                if ($site->isLocalizationMethodCopy()) {
-                    $node->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
-                } else {
-                    $node->setAvailableLocales($locale);
-                }
 
                 $cms->saveNode($node, (!$node->getId() ? 'Created new page ' : 'Updated page ') . $node->getName());
 
@@ -169,7 +149,7 @@ class PageController extends AbstractNodeTypeController {
             'referer' => $referer,
             'form' => $form->getView(),
             'locale' => $locale,
-            'locales' => $locales,
+            'locales' => $cms->getLocales(),
         ));
     }
 

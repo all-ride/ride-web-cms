@@ -135,8 +135,8 @@ class SiteController extends AbstractNodeTypeController {
 
         $this->setContentLocale($locale);
 
-        $translator = $this->getTranslator();
         $locales = $cms->getLocales();
+        $translator = $this->getTranslator();
         $themes = $cms->getThemes();
 
         $referer = $this->request->getQueryParameter('referer');
@@ -146,7 +146,6 @@ class SiteController extends AbstractNodeTypeController {
             'localizationMethod' => $site->getLocalizationMethod(),
             'baseUrl' => $site->getBaseUrl($locale),
             'theme' => $site->getTheme(),
-            'availableLocales' => $this->getLocalesValueFromNode($site),
             'autoPublish' => $site->isAutoPublish(),
         );
 
@@ -183,15 +182,6 @@ class SiteController extends AbstractNodeTypeController {
             'label' => $translator->translate('label.publish.auto'),
             'description' => $translator->translate('label.publish.auto.description'),
         ));
-        $form->addRow('availableLocales', 'select', array(
-            'label' => $translator->translate('label.locales'),
-            'description' => $translator->translate('label.locales.available.description'),
-            'options' => $this->getLocalesOptions($site, $translator, $locales),
-            'multiple' => true,
-            'validators' => array(
-                'required' => array(),
-            )
-        ));
         $form->addRow('localizationMethod', 'select', array(
             'label' => $translator->translate('label.method.localization'),
             'description' => $translator->translate('label.method.localization.description'),
@@ -216,7 +206,6 @@ class SiteController extends AbstractNodeTypeController {
 
                 $site->setName($locale, $data['name']);
                 if (!$site->getId()) {
-                    $locales = $cms->getLocales();
                     foreach ($locales as $l) {
                         if ($l == $locale) {
                             continue;
@@ -228,7 +217,6 @@ class SiteController extends AbstractNodeTypeController {
                 $site->setLocalizationMethod($data['localizationMethod']);
                 $site->setBaseUrl($locale, $data['baseUrl'] ? $data['baseUrl'] : null);
                 $site->setTheme($data['theme']);
-                $site->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
                 $site->setIsAutoPublish($data['autoPublish'] ? 1 : 0);
 
                 $cms->saveNode($site, (!$site->getId() ? 'Created new site ' : 'Updated site ') . $site->getName());

@@ -4,10 +4,12 @@ namespace ride\web\cms;
 
 use ride\library\cms\layout\LayoutModel;
 use ride\library\cms\node\NodeModel;
+use ride\library\cms\node\NodeProperty;
 use ride\library\cms\node\Node;
 use ride\library\cms\theme\ThemeModel;
 use ride\library\cms\widget\WidgetModel;
 use ride\library\cms\Cms as LibraryCms;
+use ride\library\i18n\translator\Translator;
 use ride\library\i18n\I18n;
 use ride\library\mvc\Request;
 use ride\library\mvc\Response;
@@ -17,6 +19,12 @@ use ride\library\security\SecurityManager;
  * Facade for the CMS
  */
 class Cms extends LibraryCms {
+
+    /**
+     * Value for the inherited value
+     * @var string
+     */
+    const OPTION_INHERITED = 'inherited';
 
     /**
      * Name of the session variable which holds the nodes which are collapsed
@@ -220,6 +228,113 @@ class Cms extends LibraryCms {
     public function setLastRegion($region) {
         $session = $this->request->getSession();
         $session->set(self::SESSION_LAST_REGION, $region);
+    }
+
+    /**
+     * Processes the inherited value for the provided option value
+     * @param mixed $value Submitted value
+     * @return mixed Null for an inherited option, submitted values otherwise
+     */
+    public function getOptionValueFromForm($value) {
+        if ($value == self::OPTION_INHERITED || (is_array($value) && in_array(self::OPTION_INHERITED, $value))) {
+            return null;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Gets the form value for the theme option
+     * @param \ride\library\cms\node\Node $node
+     * @return string
+     */
+    public function getThemeValueFromNode(Node $node) {
+        $theme = $node->get(Node::PROPERTY_THEME, null, false);
+        if (!$theme && $node->hasParent()) {
+            $theme = self::OPTION_INHERITED;
+        }
+
+        return $theme;
+    }
+
+    /**
+     * Gets the available theme options
+     * @param \ride\library\cms\node\Node $node
+     * @param \ride\library\i18n\translator\Translator $translator
+     * @param array $themes
+     * @return array Array with the machine name as key and the display name as
+     * value
+     */
+    public function getThemeOptions(Node $node, Translator $translator, array $themes) {
+        $options = array();
+
+        $parentNode = $node->getParentNode();
+        if ($parentNode) {
+            $inheritedValue = $parentNode->get(Node::PROPERTY_THEME, null, true, true);
+
+            if (isset($themes[$inheritedValue])) {
+                $inheritedValue = $themes[$inheritedValue]->getDisplayName();
+            }
+
+            $options[self::OPTION_INHERITED] = $translator->translate('label.inherited') . ' (' . $inheritedValue . ')';
+        }
+
+        foreach ($themes as $id => $theme) {
+            $options[$id] = $theme->getDisplayName();
+        }
+
+        return $options;
+    }
+
+    /**
+     * Gets the form value for the available locales options
+     * @param \ride\library\cms\node\Node $node
+     * @return array
+     */
+    public function getLocalesValue($availableLocales, $hasParent) {
+        $value = array();
+
+        if ($availableLocales == Node::LOCALES_ALL || (!$availableLocales && !$hasParent)) {
+            $value[Node::LOCALES_ALL] = Node::LOCALES_ALL;
+        } elseif ($availableLocales && $availableLocales != Node::LOCALES_ALL) {
+            $locales = explode(NodeProperty::LIST_SEPARATOR, $availableLocales);
+
+            $value = array();
+            foreach ($locales as $locale) {
+                $locale = trim($locale);
+
+                $value[$locale] = $locale;
+            }
+        } else {
+            $value[self::OPTION_INHERITED] = self::OPTION_INHERITED;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Gets the available locales options
+     * @param \ride\library\i18n\translator\Translator $translator
+     * @param array $locales
+     * @param \ride\library\cms\node\Node $node Node containing inherited locales
+     * @return array Array with the publish code as key and the translation as
+     * value
+     */
+    public function getLocalesOptions(Translator $translator, array $locales, Node $node = null) {
+        $options = array();
+
+        if ($node) {
+            $inheritedValue = $node->get(Node::PROPERTY_LOCALES, Node::LOCALES_ALL);
+
+            $options[self::OPTION_INHERITED] = $translator->translate('label.inherited') . ' (' . $inheritedValue . ')';
+        }
+
+        $options[Node::LOCALES_ALL] = $translator->translate('label.locales.all');
+        foreach ($locales as $locale) {
+            $options[$locale] = $translator->translate('language.' . $locale);
+        }
+
+        return $options;
     }
 
 }

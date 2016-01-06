@@ -31,8 +31,7 @@ class FolderController extends AbstractNodeTypeController {
 
         $data = array(
             'name' => $node->getName($locale),
-            'theme' => $this->getThemeValueFromNode($node),
-            'availableLocales' => $this->getLocalesValueFromNode($node),
+            'theme' => $cms->getThemeValueFromNode($node),
         );
 
         $form = $this->createFormBuilder($data);
@@ -52,18 +51,6 @@ class FolderController extends AbstractNodeTypeController {
             'options' => $this->getThemeOptions($node, $translator, $themes),
         ));
 
-        if ($site->isLocalizationMethodCopy()) {
-            $form->addRow('availableLocales', 'select', array(
-                'label' => $translator->translate('label.locales'),
-                'description' => $translator->translate('label.locales.available.description'),
-                'options' => $this->getLocalesOptions($node, $translator, $locales),
-                'multiple' => true,
-                'validators' => array(
-                    'required' => array(),
-                )
-            ));
-        }
-
         $form = $form->build();
         if ($form->isSubmitted()) {
             try {
@@ -73,11 +60,6 @@ class FolderController extends AbstractNodeTypeController {
 
                 $node->setName($locale, $data['name']);
                 $node->setTheme($this->getOptionValueFromForm($data['theme']));
-                if ($site->isLocalizationMethodCopy()) {
-                    $node->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
-                } else {
-                    $node->setAvailableLocales($locale);
-                }
 
                 $cms->saveNode($node, (!$node->getId() ? 'Created new folder ' : 'Updated folder ') . $node->getName());
 
