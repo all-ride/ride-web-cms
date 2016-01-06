@@ -34,14 +34,12 @@ class ReferenceController extends AbstractNodeTypeController {
             unset($nodeList[$node->getId()]);
         }
 
-        $name = $node->getName($locale);
-        if ($node->getNode() && $node->getNode()->getName($locale) == $name) {
-            $name = '';
-        }
-
         // gather data
         $data = array(
-            'name' => $name,
+            'name' => $this->getName($node, $locale),
+            'name-title' => $this->getName($node, $locale, 'title'),
+            'name-menu' => $this->getName($node, $locale, 'menu'),
+            'name-breadcrumb' => $this->getName($node, 'breadcrumb'),
             'reference-node' => $node->getReferenceNode(),
         );
 
@@ -50,6 +48,27 @@ class ReferenceController extends AbstractNodeTypeController {
         $form->addRow('name', 'string', array(
             'label' => $translator->translate('label.reference'),
             'description' => $translator->translate('label.reference.name.description'),
+            'filters' => array(
+                'trim' => array(),
+            ),
+        ));
+        $form->addRow('name-title', 'string', array(
+            'label' => $translator->translate('label.name.title'),
+            'description' => $translator->translate('label.name.title.description'),
+            'filters' => array(
+                'trim' => array(),
+            ),
+        ));
+        $form->addRow('name-menu', 'string', array(
+            'label' => $translator->translate('label.name.menu'),
+            'description' => $translator->translate('label.name.menu.description'),
+            'filters' => array(
+                'trim' => array(),
+            ),
+        ));
+        $form->addRow('name-breadcrumb', 'string', array(
+            'label' => $translator->translate('label.name.breadcrumb'),
+            'description' => $translator->translate('label.name.breadcrumb.description'),
             'filters' => array(
                 'trim' => array(),
             ),
@@ -72,6 +91,9 @@ class ReferenceController extends AbstractNodeTypeController {
                 $data = $form->getData();
 
                 $node->setName($locale, $data['name']);
+                $node->setName($locale, $data['name-title'] ? $data['name-title'] : null, 'title');
+                $node->setName($locale, $data['name-menu'] ? $data['name-menu'] : null, 'menu');
+                $node->setName($locale, $data['name-breadcrumb'] ? $data['name-breadcrumb'] : null, 'breadcrumb');
                 $node->setReferenceNode($data['reference-node']);
                 if (!$node->getNode()) {
                     $node->setNode($cms->getNode($site->getId(), $revision, $data['reference-node']));
@@ -111,6 +133,15 @@ class ReferenceController extends AbstractNodeTypeController {
             'locale' => $locale,
             'locales' => $cms->getLocales(),
         ));
+    }
+
+    private function getName($node, $locale, $context = null) {
+        $name = $node->getName($locale, $context);
+        if ($node->getNode() && $node->getNode()->getName($locale, $context) == $name) {
+            $name = null;
+        }
+
+        return $name;
     }
 
 }
