@@ -37,6 +37,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
         $this->setContentLocale($locale);
         $cms->setLastAction(self::NAME);
 
+        $locales = $cms->getLocales();
         $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');
 
@@ -57,6 +58,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
         }
 
         $data = array(
+            'availableLocales' => $cms->getLocalesValue($node->get(Node::PROPERTY_LOCALES, '', false), $node->hasParent()),
             'published' => $node->get(Node::PROPERTY_PUBLISH, 'inherit', false),
             'publishStart' => $node->get(Node::PROPERTY_PUBLISH_START, null, false),
             'publishStop' => $node->get(Node::PROPERTY_PUBLISH_STOP, null, false),
@@ -86,6 +88,17 @@ class VisibilityNodeAction extends AbstractNodeAction {
         }
 
         $form = $this->createFormBuilder($data);
+        if ($site->isLocalizationMethodCopy()) {
+            $form->addRow('availableLocales', 'select', array(
+                'label' => $translator->translate('label.locales'),
+                'description' => $translator->translate('label.locales.available.description'),
+                'options' => $cms->getLocalesOptions($translator, $locales, $node->getParentNode()),
+                'multiple' => true,
+                'validators' => array(
+                    'required' => array(),
+                )
+            ));
+        }
         $form->addRow('published', 'option', array(
             'label' => $translator->translate('label.publish'),
             'options' => $this->getPublishedOptions($node, $translator),
@@ -157,7 +170,13 @@ class VisibilityNodeAction extends AbstractNodeAction {
 
                 $data = $form->getData();
 
-                $security = $this->getSecurityValue($data['security']);
+                if ($site->isLocalizationMethodCopy()) {
+                    $node->setAvailableLocales($cms->getOptionValueFromForm($data['availableLocales']));
+                } else {
+                    $node->setAvailableLocales($locale);
+                }
+
+                $security = $cms->getOptionValueFromForm($data['security']);
                 if ($security == Node::AUTHENTICATION_STATUS_AUTHENTICATED && $permissions && $data['permissions']) {
                     $security = implode(',', $data['permissions']);
                 }
@@ -225,7 +244,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
             'form' => $form->getView(),
             'referer' => $referer,
             'locale' => $locale,
-            'locales' => $cms->getLocales(),
+            'locales' => $locales,
         ));
 
         $form->processView($view);
@@ -285,19 +304,6 @@ class VisibilityNodeAction extends AbstractNodeAction {
         $suffix .= ')';
 
         return $suffix;
-    }
-
-    /**
-     * Gets the security value
-     * @param string $security Form value
-     * @return null|string
-     */
-    private function getSecurityValue($security) {
-        if ($security == 'inherit') {
-            return null;
-        } else {
-            return $security;
-        }
     }
 
     /**

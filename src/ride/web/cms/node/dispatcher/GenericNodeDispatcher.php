@@ -283,6 +283,12 @@ class GenericNodeDispatcher implements NodeDispatcher {
                             }
 
                             continue;
+                        } elseif (!$widgetProperties->isAvailableInLocale($this->locale)) {
+                            if ($this->log) {
+                                $this->log->logDebug('Widget ' . $widget->getName() . '#' . $widgetId . ' is not available in locale ' . $this->locale, null, ApplicationListener::LOG_SOURCE);
+                            }
+
+                            continue;
                         } elseif (!$widgetProperties->isAllowed($securityManager)) {
                             if ($this->log) {
                                 $this->log->logDebug('Widget ' . $widget->getName() . '#' . $widgetId . ' is not allowed', null, ApplicationListener::LOG_SOURCE);

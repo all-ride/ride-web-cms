@@ -26,8 +26,6 @@ class RedirectController extends AbstractNodeTypeController {
         $this->setContentLocale($locale);
 
         $translator = $this->getTranslator();
-        $locales = $cms->getLocales();
-
         $referer = $this->request->getQueryParameter('referer');
 
         // get available nodes
@@ -42,7 +40,6 @@ class RedirectController extends AbstractNodeTypeController {
             'redirect-node' => $node->getRedirectNode($locale),
             'redirect-url' => $node->getRedirectUrl($locale),
             'route' => $node->getRoute($locale, false),
-            'availableLocales' => $this->getLocalesValueFromNode($node),
         );
 
         if ($data['redirect-url']) {
@@ -93,18 +90,6 @@ class RedirectController extends AbstractNodeTypeController {
             ),
         ));
 
-        if ($site->isLocalizationMethodCopy()) {
-            $form->addRow('availableLocales', 'select', array(
-                'label' => $translator->translate('label.locales'),
-                'description' => $translator->translate('label.locales.available.description'),
-                'options' => $this->getLocalesOptions($node, $translator, $locales),
-                'multiple' => true,
-                'validators' => array(
-                    'required' => array(),
-                )
-            ));
-        }
-
         // process form
         $form = $form->build();
         if ($form->isSubmitted()) {
@@ -115,11 +100,6 @@ class RedirectController extends AbstractNodeTypeController {
 
                 $node->setName($locale, $data['name']);
                 $node->setRoute($locale, $data['route'] ? $data['route'] : null);
-                if ($site->isLocalizationMethodCopy()) {
-                    $node->setAvailableLocales($this->getOptionValueFromForm($data['availableLocales']));
-                } else {
-                    $node->setAvailableLocales($locale);
-                }
 
                 if ($data['redirect-type'] == 'node') {
                     $node->setRedirectNode($locale, $data['redirect-node']);
@@ -161,7 +141,7 @@ class RedirectController extends AbstractNodeTypeController {
             'referer' => $referer,
             'form' => $form->getView(),
             'locale' => $locale,
-            'locales' => $locales,
+            'locales' => $cms->getLocales(),
         ));
     }
 

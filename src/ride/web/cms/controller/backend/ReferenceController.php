@@ -26,8 +26,6 @@ class ReferenceController extends AbstractNodeTypeController {
         $this->setContentLocale($locale);
 
         $translator = $this->getTranslator();
-        $locales = $cms->getLocales();
-
         $referer = $this->request->getQueryParameter('referer');
 
         // get available nodes
@@ -111,7 +109,7 @@ class ReferenceController extends AbstractNodeTypeController {
             'referer' => $referer,
             'form' => $form->getView(),
             'locale' => $locale,
-            'locales' => $locales,
+            'locales' => $cms->getLocales(),
         ));
     }
 

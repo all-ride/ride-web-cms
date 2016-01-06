@@ -66,6 +66,7 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
         }
 
         $translator = $this->getTranslator();
+        $locales = $cms->getLocales();
         $referer = $this->request->getQueryParameter('referer');
 
         $security = $widgetProperties->getWidgetProperty(Node::PROPERTY_SECURITY, Node::AUTHENTICATION_STATUS_EVERYBODY);
@@ -85,6 +86,7 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
         }
 
         $data = array(
+            'availableLocales' => $cms->getLocalesValue($widgetProperties->getWidgetProperty(Node::PROPERTY_LOCALES), true),
             'published' => $widgetProperties->getWidgetProperty(Node::PROPERTY_PUBLISH, true),
             'publishStart' => $widgetProperties->getWidgetProperty(Node::PROPERTY_PUBLISH_START, null),
             'publishStop' => $widgetProperties->getWidgetProperty(Node::PROPERTY_PUBLISH_STOP, null),
@@ -93,15 +95,28 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
         );
 
         $permissions = $securityManager->getSecurityModel()->getPermissions();
-
         foreach ($permissions as $index => $permission) {
             $permissions[$index] = $translator->translate('permission.' . $permission->getCode()) . ' (<small>' . $permission->getCode() . '</small>)';
         }
 
         $form = $this->createFormBuilder($data);
+        if ($site->isLocalizationMethodCopy()) {
+            $form->addRow('availableLocales', 'select', array(
+                'label' => $translator->translate('label.locales'),
+                'description' => $translator->translate('label.locales.available.description'),
+                'options' => $cms->getLocalesOptions($translator, $locales, $node),
+                'multiple' => true,
+                'validators' => array(
+                    'required' => array(),
+                )
+            ));
+        }
         $form->addRow('published', 'option', array(
             'label' => $translator->translate('label.publish'),
             'options' => $this->getPublishedOptions($translator),
+            'validators' => array(
+                'required' => array(),
+            )
         ));
         $form->addRow('publishStart', 'string', array(
             'label' => $translator->translate('label.publish.start'),
@@ -132,6 +147,9 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
         ));
         $form->addRow('security', 'option', array(
             'label' => $translator->translate('label.allow'),
+            'attributes' => array(
+                'data-toggle-dependant' => 'option-security',
+            ),
             'options' => $this->getSecurityOptions($translator),
             'validators' => array(
                 'required' => array(),
@@ -159,9 +177,15 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
                     $data['security'] = implode(',', $data['permissions']);
                 }
 
+                if ($site->isLocalizationMethodCopy()) {
+                    $widgetProperties->setAvailableLocales($cms->getOptionValueFromForm($data['availableLocales']));
+                } else {
+                    $widgetProperties->setAvailableLocales(null);
+                }
+
                 $widgetProperties->setWidgetProperty(Node::PROPERTY_PUBLISH, $data['published']);
-                $widgetProperties->setWidgetProperty(Node::PROPERTY_PUBLISH_START, $data['publishStart']);
-                $widgetProperties->setWidgetProperty(Node::PROPERTY_PUBLISH_STOP, $data['publishStop']);
+                $widgetProperties->setWidgetProperty(Node::PROPERTY_PUBLISH_START, $data['publishStart'] ? $data['publishStart'] : null);
+                $widgetProperties->setWidgetProperty(Node::PROPERTY_PUBLISH_STOP, $data['publishStop'] ? $data['publishStop'] : null);
                 $widgetProperties->setWidgetProperty(Node::PROPERTY_SECURITY, $data['security']);
 
                 $cms->saveNode($node, 'Updated visibility properties for widget ' . $widgetId . ' in ' . $node->getName());
@@ -204,18 +228,20 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
 
         $referer = $this->request->getQueryParameter('referer');
 
-        $this->setTemplateView('cms/backend/widget.visibility', array(
+        $view = $this->setTemplateView('cms/backend/widget.visibility', array(
             'site' => $site,
             'node' => $node,
             'referer' => $referer,
             'locale' => $locale,
-            'locales' => $cms->getLocales(),
+            'locales' => $locales,
             'region' => $region,
             'widget' => $widget,
             'widgetId' => $widgetId,
             'widgetName' => $translator->translate('widget.' . $widget->getName()),
             'form' => $form->getView(),
         ));
+
+        $form->processView($view);
     }
 
     /**
