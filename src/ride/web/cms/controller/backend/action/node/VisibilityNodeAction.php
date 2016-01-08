@@ -41,9 +41,9 @@ class VisibilityNodeAction extends AbstractNodeAction {
         $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');
 
-        $security = $node->get(Node::PROPERTY_SECURITY, 'inherit', false);
+        $security = $node->get(Node::PROPERTY_SECURITY, Cms::OPTION_INHERITED, false);
         switch ($security) {
-            case 'inherit':
+            case Cms::OPTION_INHERITED:
             case Node::AUTHENTICATION_STATUS_EVERYBODY:
             case Node::AUTHENTICATION_STATUS_ANONYMOUS:
                 $permissions = null;
@@ -318,7 +318,7 @@ class VisibilityNodeAction extends AbstractNodeAction {
 
         $parentNode = $node->getParentNode();
         if ($parentNode) {
-            $options['inherit'] = $translator->translate('label.inherited') . $this->getSecurityInheritSuffix($parentNode, $translator);
+            $options[Cms::OPTION_INHERITED] = $translator->translate('label.inherited') . $this->getSecurityInheritSuffix($parentNode, $translator);
         }
 
         $options[Node::AUTHENTICATION_STATUS_EVERYBODY] = $translator->translate('label.allow.everybody');
