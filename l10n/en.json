@@ -225,5 +225,6 @@
     "title.widgets.content": "Content Area",
     "warning.layouts.none": "There are no layouts installed, add some layouts before you try this perform action.",
     "warning.site.delete": "Note: all your revisions of this site will be deleted and this action cannot be undone.",
+    "warning.widget.inherited": "An inherited widget.",
     "warning.widget.properties.inherited": "You're about to change the properties of an inherited widget."
 }
