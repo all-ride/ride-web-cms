@@ -47,7 +47,7 @@ class AdvancedNodeAction extends AbstractNodeAction {
             'description' => $translator->translate('label.node.properties.description'),
             'attributes' => array(
                 'rows' => count(explode("\n", $ini)),
-                'class' => 'auto-resize',
+                'wrap' => 'off',
             ),
             'filters' => array(
                 'trim' => array(),
