@@ -6,6 +6,7 @@ use ride\library\cms\exception\CmsException;
 use ride\library\cms\node\type\RedirectNodeType;
 use ride\library\cms\node\Node;
 use ride\library\http\Response;
+use ride\library\router\Router;
 use ride\library\security\exception\UnauthorizedException;
 use ride\library\template\TemplateFacade;
 
@@ -94,7 +95,7 @@ class PreviewNodeAction extends AbstractNodeAction {
      * @param string $locale Code of the locale
      * @return null
      */
-    public function previewAction(NodeDispatcherFactory $nodeDispatcherFactory, TemplateFacade $templateFacade, $site, $revision, $locale) {
+    public function previewAction(NodeDispatcherFactory $nodeDispatcherFactory, TemplateFacade $templateFacade, Router $router, $site, $revision, $locale) {
         $node = $site;
 
         if (!$this->cms->resolveNode($site, $revision, $node, null, true)) {
@@ -112,6 +113,7 @@ class PreviewNodeAction extends AbstractNodeAction {
             'revision' => $revision,
         ));
 
+        // requested root path
         $path = str_replace($routeUrl, '', $requestUrl);
 
         $node = $site->getChildByRoute($path, $locale, $this->cms->getLocales());
@@ -139,7 +141,18 @@ class PreviewNodeAction extends AbstractNodeAction {
             throw new UnauthorizedException();
         }
 
+        // update base url for upcoming url generations
         $this->request->setBaseScript($routeUrl);
+
+        $routeContainer = $router->getRouteContainer();
+        $routes = $routeContainer->getRoutes();
+        foreach ($routes as $route) {
+            if (strpos($route->getId(), 'cms.front.' . $site->getId() . '.') !== 0) {
+                continue;
+            }
+
+            $route->setBaseUrl($routeUrl);
+        }
 
         if ($node->getType() == RedirectNodeType::NAME) {
             $url = $node->getRedirectUrl($locale);
