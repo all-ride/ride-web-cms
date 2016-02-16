@@ -143,7 +143,7 @@ class ApplicationListener {
         $breadcrumbs = array();
 
         do {
-            $url = $web->getUrl('cms.node.default', array(
+            $url = (string) $web->getUrl('cms.node.default', array(
                 'site' => $node->getRootNodeId(),
                 'revision' => $node->getRevision(),
                 'locale' => $locale,
