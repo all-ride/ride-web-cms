@@ -539,7 +539,9 @@ class GenericNodeDispatcher implements NodeDispatcher {
             $path = '/' . implode('/', $this->routeArguments);
 
             $this->router->setRouteContainer($widgetRouteContainer);
+
             $routeResult = $this->router->route($request->getMethod(), $path, $widgetRoutes);
+
             $widgetRoute = $routeResult->getRoute();
             if ($widgetRoute) {
                 $callback = $widgetRoute->getCallback();
@@ -549,7 +551,9 @@ class GenericNodeDispatcher implements NodeDispatcher {
 
                 $routeArgumentsMatched = true;
             }
-        } else {
+        }
+
+        if (!$routeArgumentsMatched) {
             $route->setArguments(array());
             $route->setIsDynamic(false);
         }
