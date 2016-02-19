@@ -768,6 +768,25 @@
             ]
         },
         {
+            "class": "ride\\web\\cms\\Cms",
+            "id": "cms",
+            "calls": [
+                {
+                    "method": "setActions",
+                    "arguments": [
+                        {
+                            "name": "actions",
+                            "type": "call",
+                            "properties": {
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\NodeActionManager",
+                                "method": "getNodeActions"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "class": "ride\\web\\cms\\ApplicationListener",
             "calls": [
                 {
