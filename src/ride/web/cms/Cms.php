@@ -213,7 +213,6 @@ class Cms extends LibraryCms {
             'node' => $node->getId(),
             'locale' => $locale,
         );
-
         foreach ($this->actions as $actionName => $action) {
             if (!$action->isAvailableForNode($node)) {
                 continue;
