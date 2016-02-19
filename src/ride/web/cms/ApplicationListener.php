@@ -125,9 +125,9 @@ class ApplicationListener {
         $breadcrumbs = $this->getBreadcrumbs($web, $node, $locale);
         $collapsedNodes = $this->getCollapsedNodes($node);
 
-        $template->set('cms', $this->cms);
         $template->set('site', $site);
         $template->set('nodeCreateActions', $nodeCreateActions);
+        $template->set('nodeActions', $this->cms->getActions($node));
         $template->set('collapsedNodes', json_encode($collapsedNodes));
         $template->set('breadcrumbs', $breadcrumbs);
     }
