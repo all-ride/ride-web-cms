@@ -9,11 +9,13 @@ use ride\library\cms\node\Node;
 use ride\library\cms\theme\ThemeModel;
 use ride\library\cms\widget\WidgetModel;
 use ride\library\cms\Cms as LibraryCms;
+use ride\library\http\Response;
 use ride\library\i18n\translator\Translator;
 use ride\library\i18n\I18n;
-use ride\library\mvc\Request;
-use ride\library\mvc\Response;
 use ride\library\security\SecurityManager;
+
+use ride\web\cms\controller\backend\action\node\NodeAction;
+use ride\web\WebApplication;
 
 /**
  * Facade for the CMS
@@ -46,8 +48,7 @@ class Cms extends LibraryCms {
 
     /**
      * Constructs a new CMS facade
-     * @param \ride\library\http\Request $request
-     * @param \ride\library\http\Request $response
+     * @param \ride\web\WebApplication $web
      * @param \ride\library\i18n\I18n $i18n
      * @param \ride\library\cms\node\NodeModel $nodeModel
      * @param \ride\library\cms\theme\ThemeModel $themeModel
@@ -56,12 +57,13 @@ class Cms extends LibraryCms {
      * @param \ride\library\security\SecurityManager $securityManager
      * @return null
      */
-    public function __construct(Request $request, Response $response, I18n $i18n, NodeModel $nodeModel, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, SecurityManager $securityManager) {
+    public function __construct(WebApplication $web, I18n $i18n, NodeModel $nodeModel, ThemeModel $themeModel, LayoutModel $layoutModel, WidgetModel $widgetModel, SecurityManager $securityManager) {
         parent::__construct($nodeModel, $themeModel, $layoutModel, $widgetModel, $securityManager);
 
-        $this->request = $request;
-        $this->response = $response;
+        $this->web = $web;
+        $this->request = $web->getRequest();
         $this->i18n = $i18n;
+        $this->actions = array();
     }
 
     /**
@@ -87,7 +89,7 @@ class Cms extends LibraryCms {
         $result = parent::resolveNode($site, $revision, $node, $type, $children);
 
         if (!$result) {
-            $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
+            $this->web->getResponse()->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
         }
 
         return $result;
@@ -108,7 +110,7 @@ class Cms extends LibraryCms {
         $result = parent::resolveRegion($node, $locale, $region, $theme, $layout);
 
         if (!$result) {
-            $this->response->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
+            $this->web->getResponse()->setStatusCode(Response::STATUS_CODE_NOT_FOUND);
         }
 
         return $result;
@@ -141,7 +143,7 @@ class Cms extends LibraryCms {
             $isCollapsed = true;
         }
 
-        $this->request->getSession()->set(self::SESSION_COLLAPSED_NODES, $collapsedNodes);
+        $this->web->getRequest()->getSession()->set(self::SESSION_COLLAPSED_NODES, $collapsedNodes);
 
         $user = $this->securityManager->getUser();
         if ($user) {
@@ -166,11 +168,65 @@ class Cms extends LibraryCms {
             $collapsedNodes = array();
         }
 
-        if ($this->request->hasSession()) {
-            $collapsedNodes = $this->request->getSession()->get(self::SESSION_COLLAPSED_NODES, $collapsedNodes);
+        $request = $this->web->getRequest();
+        if ($request->hasSession()) {
+            $collapsedNodes = $request->getSession()->get(self::SESSION_COLLAPSED_NODES, $collapsedNodes);
         }
 
         return $collapsedNodes;
+    }
+
+    /**
+     * Sets the node actions
+     * @param array $actions Array with the name of the action as key and an
+     * instance of the action as value
+     * @return null
+     */
+    public function setActions(array $actions) {
+        foreach ($actions as $actionName => $action) {
+            $this->setAction($actionName, $action);
+        }
+    }
+
+    /**
+     * Sets a node action
+     * @param string $name Name of the action
+     * @param \ride\web\cms\controller\backend\action\node\NodeAction $action
+     * @return null
+     */
+    public function setAction($name, NodeAction $action) {
+        $this->actions[$name] = $action;
+    }
+
+    /**
+     * Gets the node actions for the provided node
+     * @param \ride\library\cms\node\Node $node
+     * @param string $locale
+     * @return array Array with the name of the action as key and the URL as
+     * value
+     */
+    public function getActions(Node $node, $locale) {
+        $actions = array();
+        $urlVars = array(
+            'site' => $node->getRootNodeId(),
+            'revision' => $node->getRevision(),
+            'node' => $node->getId(),
+            'locale' => $locale,
+        );
+        foreach ($this->actions as $actionName => $action) {
+            if (!$action->isAvailableForNode($node)) {
+                continue;
+            }
+
+            $actionUrl = $this->web->getUrl($action->getRoute(), $urlVars);
+            if (!$this->securityManager->isUrlAllowed($actionUrl)) {
+                continue;
+            }
+
+            $actions[$actionName] = $actionUrl;
+        }
+
+        return $actions;
     }
 
     /**
@@ -185,11 +241,12 @@ class Cms extends LibraryCms {
      * default value otherwise
      */
     public function getLastAction($default = null) {
-        if (!$this->request->hasSession()) {
+        $request = $this->web->getRequest();
+        if (!$request->hasSession()) {
             return $default;
         }
 
-        return $this->request->getSession()->get(self::SESSION_LAST_ACTION, $default);
+        return $request->getSession()->get(self::SESSION_LAST_ACTION, $default);
     }
 
     /**
@@ -198,7 +255,7 @@ class Cms extends LibraryCms {
      * @return null
      */
     public function setLastAction($type) {
-        $session = $this->request->getSession();
+        $session = $this->web->getRequest()->getSession();
         $session->set(self::SESSION_LAST_ACTION, $type);
     }
 
@@ -213,11 +270,12 @@ class Cms extends LibraryCms {
      * otherwise
      */
     public function getLastRegion($default = null) {
-        if (!$this->request->hasSession()) {
+        $request = $this->web->getRequest();
+        if (!$request->hasSession()) {
             return $default;
         }
 
-        return $this->request->getSession()->get(self::SESSION_LAST_REGION, $default);
+        return $request->getSession()->get(self::SESSION_LAST_REGION, $default);
     }
 
     /**
@@ -226,7 +284,7 @@ class Cms extends LibraryCms {
      * @return null
      */
     public function setLastRegion($region) {
-        $session = $this->request->getSession();
+        $session = $this->web->getRequest()->getSession();
         $session->set(self::SESSION_LAST_REGION, $region);
     }
 

@@ -39,7 +39,7 @@ class ReferenceController extends AbstractNodeTypeController {
             'name' => $this->getName($node, $locale),
             'name-title' => $this->getName($node, $locale, 'title'),
             'name-menu' => $this->getName($node, $locale, 'menu'),
-            'name-breadcrumb' => $this->getName($node, 'breadcrumb'),
+            'name-breadcrumb' => $this->getName($node, $locale, 'breadcrumb'),
             'reference-node' => $node->getReferenceNode(),
         );
 

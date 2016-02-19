@@ -127,6 +127,7 @@ class ApplicationListener {
 
         $template->set('site', $site);
         $template->set('nodeCreateActions', $nodeCreateActions);
+        $template->set('nodeActions', $this->cms->getActions($node, $locale));
         $template->set('collapsedNodes', json_encode($collapsedNodes));
         $template->set('breadcrumbs', $breadcrumbs);
     }
