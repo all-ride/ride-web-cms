@@ -314,6 +314,22 @@
             ]
         },
         {
+            "interfaces": ["ride\\web\\cms\\controller\\backend\\action\\node\\NodeAction", "ride\\web\\cms\\controller\\backend\\action\\node\\GoNodeAction"],
+            "class": "ride\\web\\cms\\controller\\backend\\action\\node\\GoNodeAction",
+            "id": "go",
+            "calls": [
+                "setCms"
+            ]
+        },
+        {
+            "interfaces": ["ride\\web\\cms\\controller\\backend\\action\\node\\NodeAction", "ride\\web\\cms\\controller\\backend\\action\\node\\PreviewNodeAction"],
+            "class": "ride\\web\\cms\\controller\\backend\\action\\node\\PreviewNodeAction",
+            "id": "preview",
+            "calls": [
+                "setCms"
+            ]
+        },
+        {
             "interfaces": ["ride\\web\\cms\\controller\\backend\\action\\node\\NodeAction", "ride\\web\\cms\\controller\\backend\\action\\node\\TemplateNodeAction"],
             "class": "ride\\web\\cms\\controller\\backend\\action\\node\\TemplateNodeAction",
             "id": "template",

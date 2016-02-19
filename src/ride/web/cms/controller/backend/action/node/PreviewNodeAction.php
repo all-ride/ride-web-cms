@@ -37,10 +37,10 @@ class PreviewNodeAction extends AbstractNodeAction {
     protected $cms;
 
     /**
-     * Constructs a new go action
+     * Sets the CMS
      * @param \ride\web\cms\Cms $cms
      */
-    public function __construct(Cms $cms) {
+    public function setCms(Cms $cms) {
         $this->cms = $cms;
     }
 
