@@ -200,11 +200,18 @@ class Cms extends LibraryCms {
     /**
      * Gets the node actions for the provided node
      * @param \ride\library\cms\node\Node $node
+     * @param string $locale
      * @return array Array with the name of the action as key and the URL as
      * value
      */
-    public function getActions(Node $node) {
+    public function getActions(Node $node, $locale) {
         $actions = array();
+        $urlVars = array(
+            'site' => $node->getRootNodeId(),
+            'revision' => $node->getRevision(),
+            'node' => $node->getId(),
+            'locale' => $locale,
+        );
 
         foreach ($this->actions as $actionName => $action) {
             if (!$action->isAvailableForNode($node)) {
