@@ -9,6 +9,7 @@ use ride\library\cms\node\Node;
 use ride\library\cms\theme\ThemeModel;
 use ride\library\cms\widget\WidgetModel;
 use ride\library\cms\Cms as LibraryCms;
+use ride\library\http\Response;
 use ride\library\i18n\translator\Translator;
 use ride\library\i18n\I18n;
 use ride\library\security\SecurityManager;
