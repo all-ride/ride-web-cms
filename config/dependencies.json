@@ -293,7 +293,6 @@
                 }
             ]
         },
-
         {
             "interfaces": ["ride\\web\\cms\\controller\\backend\\action\\node\\NodeAction", "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction"],
             "class": "ride\\web\\cms\\controller\\backend\\action\\node\\ContentNodeAction",
@@ -312,6 +311,14 @@
                         }
                     ]
                 }
+            ]
+        },
+        {
+            "interfaces": ["ride\\web\\cms\\controller\\backend\\action\\node\\NodeAction", "ride\\web\\cms\\controller\\backend\\action\\node\\TemplateNodeAction"],
+            "class": "ride\\web\\cms\\controller\\backend\\action\\node\\TemplateNodeAction",
+            "id": "template",
+            "calls": [
+                "setCms"
             ]
         },
         {

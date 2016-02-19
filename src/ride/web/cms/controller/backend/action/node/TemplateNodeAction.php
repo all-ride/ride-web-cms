@@ -34,11 +34,11 @@ class TemplateNodeAction extends AbstractNodeAction {
     protected $cms;
 
     /**
-     * Constructs a new template action
+     * Sets the CMS instance
      * @param \ride\web\cms\Cms $cms
      * @return null
      */
-    public function __construct(Cms $cms) {
+    public function setCms(Cms $cms) {
         $this->cms = $cms;
     }
 
