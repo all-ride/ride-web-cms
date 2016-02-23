@@ -537,15 +537,46 @@ class AbstractWidget extends AbstractController implements Widget {
     }
 
     /**
+     * Sets the provided data as a json view
+     * @param mixed $data
+     * @param integer $options Options for the json_encode function
+     * @return null
+     */
+    protected function setJsonView($data, $options = JSON_PRETTY_PRINT) {
+        parent::setJsonView($data, $options);
+
+        $this->setIsContent(true);
+    }
+
+    /**
+     * Sets a file view for the provided file to the response
+     * @param \ride\library\system\file\File $file File which needs to be
+     * offered for download
+     * @param string $name Name for the download
+     * @param boolean $cleanUp Set to true to add an event to delete the file
+     * after the response has been sent
+     * @param string $mime MIME type for the response headers, when not
+     * provided, it will be sniffed
+     * @return null
+     */
+    protected function setFileView(File $file, $name = null, $cleanUp = false, $mime = null) {
+        parent::setFileView($file, $name, $cleanUp, $mime);
+
+        $this->setIsContent(true);
+    }
+
+    /**
      * Sets a download view for the provided file to the response
      * @param \ride\library\system\file\File $file File which needs to be
      * offered for download
      * @param string $name Name for the download
      * @param boolean $cleanUp Set to true to register an event to clean up the
      * file after the response has been sent
+     * @param string $mime MIME type for the response headers, when not
+     * provided, it will be sniffed
      * @return null
      */
-    protected function setDownloadView(File $file, $name = null, $cleanUp = false) {
+    protected function setDownloadView(File $file, $name = null, $cleanUp = false, $mime = null) {
         parent::setDownloadView($file, $name, $cleanUp);
 
         $this->setIsContent(true);
