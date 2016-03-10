@@ -43,13 +43,14 @@ class AnalyticsNodeAction extends AbstractNodeAction {
         }
 
         $this->setContentLocale($locale);
+        $cms->setLastAction(self::NAME);
 
         $translator = $this->getTranslator();
         $referer = $this->request->getQueryParameter('referer');
 
         $data = array(
-            'gtm_id' => $site->get('analytics.gtm_id'),
-            'ga_id' => $site->get('analytics.ga_id')
+            'gtm_id' => $site->getLocalized($locale, 'analytics.gtm_id'),
+            'ga_id' => $site->getLocalized($locale, 'analytics.ga_id')
         );
 
         $form = $this->createFormBuilder($data);
@@ -88,7 +89,7 @@ class AnalyticsNodeAction extends AbstractNodeAction {
                 $data = $form->getData();
 
                 foreach ($data as $tag => $id) {
-                    $site->set('analytics.' . $tag, $id !== '' ? $id : null);
+                    $site->setLocalized($locale, 'analytics.' . $tag, $id ? $id : null);
                 }
 
                 $cms->saveNode($site, "Set analytics for " . $site->getName());
