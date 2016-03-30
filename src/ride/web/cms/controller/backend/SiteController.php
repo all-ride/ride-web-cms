@@ -107,11 +107,18 @@ class SiteController extends AbstractNodeTypeController {
             return;
         }
 
-        $this->setTemplateView('cms/backend/site.detail', array(
-            'site' => $site,
-            'locale' => $locale,
-            'locales' => $cms->getLocales(),
-        ));
+        $this->response->setRedirect($this->getUrl('cms.node.content', array(
+            "site" => $site->getId(),
+            "revision" => $revision,
+            "locale" => $locale,
+            "node" => $site->getId(),
+        )));
+
+        // $this->setTemplateView('cms/backend/site.detail', array(
+        //     'site' => $site,
+        //     'locale' => $locale,
+        //     'locales' => $cms->getLocales(),
+        // ));
     }
 
     /**
