@@ -21,11 +21,11 @@ use ride\web\cms\Cms;
  */
 class NodeController extends AbstractController {
 
-	/**
+    /**
      * Dispatches the frontend of a node
      * @return null
-	 */
-	public function indexAction(Cms $cms, CmsCacheControl $cacheControl, NodeDispatcherFactory $nodeDispatcherFactory, TemplateFacade $templateFacade, $site, $node, $locale = null) {
+     */
+     public function indexAction(Cms $cms, CmsCacheControl $cacheControl, NodeDispatcherFactory $nodeDispatcherFactory, TemplateFacade $templateFacade, $site, $node, $locale = null) {
         $cache = null;
         if ($cacheControl->isEnabled()) {
             $cache = $this->dependencyInjector->get('ride\\library\\cache\\pool\\CachePool', 'cms');
@@ -105,11 +105,11 @@ class NodeController extends AbstractController {
 
             switch ($name) {
                 case 'max-age':
-                    $this->response->setMaxAge((integer) $value);
+                    $this->response->setMaxAge($this->parseAgeValue($value));
 
                     break;
                 case 's-maxage':
-                    $this->response->setSharedMaxAge((integer) $value);
+                    $this->response->setSharedMaxAge($this->parseAgeValue($value));
 
                     break;
                 default:
@@ -117,6 +117,20 @@ class NodeController extends AbstractController {
 
                     break;
             }
+        }
+    }
+
+    /**
+     * Parses the age value to seconds
+     * @param mixed $value Value to parse
+     * @return integer Age in seconds
+     */
+    protected function parseAgeValue($value) {
+        switch ($value) {
+            case 'end-of-day':
+                return mktime(23, 59, 59) - time();
+            default:
+                return (integer) $value;
         }
     }
 
