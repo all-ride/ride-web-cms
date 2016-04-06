@@ -94,11 +94,15 @@ class PageController extends AbstractNodeTypeController {
             'label' => $translator->translate('label.image'),
             'description' => $translator->translate('label.image.node.description'),
         ));
-        $form->addRow('theme', 'select', array(
-            'label' => $translator->translate('label.theme'),
-            'description' => $translator->translate('label.theme.description'),
-            'options' => $this->getThemeOptions($node, $translator, $themes),
-        ));
+
+        if ($this->getSecurityManager()->isPermissionGranted('cms.page.theme')) {
+            $form->addRow('theme', 'select', array(
+                'label' => $translator->translate('label.theme'),
+                'description' => $translator->translate('label.theme.description'),
+                'options' => $this->getThemeOptions($node, $translator, $themes),
+            ));
+        }
+
 
         // process form
         $form = $form->build();
@@ -115,7 +119,10 @@ class PageController extends AbstractNodeTypeController {
                 $node->setDescription($locale, $data['description'] ? $data['description'] : null);
                 $node->setImage($locale, $data['image'] ? $data['image'] : null);
                 $node->setRoute($locale, $data['route'] ? $data['route'] : null);
-                $node->setTheme($this->getOptionValueFromForm($data['theme']));
+
+                if ($this->getSecurityManager()->isPermissionGranted('cms.page.theme')) {
+                    $node->setTheme($this->getOptionValueFromForm($data['theme']));
+                }
 
                 $cms->saveNode($node, (!$node->getId() ? 'Created new page ' : 'Updated page ') . $node->getName());
 
