@@ -272,6 +272,32 @@ class AbstractWidget extends AbstractController implements Widget {
     }
 
     /**
+     * Returns the name or translated name of the widget template
+     * @param $path
+     * @return string
+     * @throws \ride\library\dependency\exception\DependencyException
+     * @throws \ride\library\dependency\exception\DependencyNotFoundException
+     */
+    public function getTemplateName($path) {
+        $themeModel = $this->dependencyInjector->get('ride\\library\\cms\\theme\\ThemeModel');
+        $templateFacade = $this->dependencyInjector->get('ride\\library\\template\\TemplateFacade');
+
+        $templateFacade->setThemeModel($themeModel);
+        $theme = $this->properties->getNode()->getTheme();
+
+        $template = $templateFacade->createTemplate($path, null, $theme);
+        $meta = $templateFacade->getTemplateMeta($template);
+
+        if (isset($meta['translation'])) {
+            $translator = $this->getTranslator();
+
+            return $translator->translate($meta['translation']);
+        } else {
+            return $meta['name'];
+        }
+    }
+
+    /**
      * Sets the path for a template resource to the properties
      * @param string $template Path to the template resource
      * @param string $context Name of the template context
