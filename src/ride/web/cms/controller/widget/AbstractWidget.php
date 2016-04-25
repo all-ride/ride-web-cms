@@ -292,7 +292,7 @@ class AbstractWidget extends AbstractController implements Widget {
             $translator = $this->getTranslator();
 
             return $translator->translate($meta['translation']);
-        } else {
+        } elseif (isset($meta['name'])) {
             return $meta['name'];
         }
     }
