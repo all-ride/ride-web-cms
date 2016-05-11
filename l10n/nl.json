@@ -167,7 +167,7 @@
     "label.widget.action.templates": "Templates",
     "label.widget.action.visibility": "Zichtbaarheid",
     "label.widget.action.visibility.intro": "Determine whether the widget is published in the frontend. Optionally you can define a time interval when the widget becomes available.",
-    "label.widgets.available.description": "Selecteer een widget van de lijst en voeg deze toe aan je blok.",
+    "label.widgets.available.description": "Selecteer een widget van de lijst en voeg deze toe aan je sectie.",
     "label.widgets.content.description": "Klik op het icoon van een widget om het context menu te krijgen. Je kan de volgorde van de widgets wijzigen door drag en drop.",
     "success.node.cloned": "%node% werd gekloond",
     "success.node.deleted": "%node% werd verwijderd",

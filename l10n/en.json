@@ -168,7 +168,7 @@
     "label.widget.action.templates": "Templates",
     "label.widget.action.visibility": "Visibilty",
     "label.widget.action.visibility.intro": "Determine whether the widget is published in the frontend. Optionally you can define a time interval when the widget becomes available.",
-    "label.widgets.available.description": "Select a widget from this list and add it to the block.",
+    "label.widgets.available.description": "Select a widget from this list and add it to the section.",
     "label.widgets.content.description": "Click on the icon of a widget to get the context menu. You can reorder the widgets with drag and drop through the handle icon of a widget.",
     "label.url": "URL",
     "label.url.base": "Base URL",
