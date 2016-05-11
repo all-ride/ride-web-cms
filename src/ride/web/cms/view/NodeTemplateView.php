@@ -66,18 +66,6 @@ class NodeTemplateView extends TemplateView {
     }
 
     /**
-     * Sets the context to the view
-     * @param array $context
-     * @return null
-     */
-    public function setContext(array $context) {
-        $app = $this->template->get('app');
-        $app['cms']['context'] = $context;
-
-        $this->template->set('app', $app);
-    }
-
-    /**
      * Sets the available layouts to this view
      * @param array $layouts Array with the layout name as key and the layout
      * instance as value
@@ -152,6 +140,9 @@ class NodeTemplateView extends TemplateView {
         }
 
         $app = $this->template->get('app');
+        $app['cms']['context'] = $app['cms']['node']->getContext();
+
+        $this->template->set('app', $app);
 
         // single content view
         if ($this->contentView) {
