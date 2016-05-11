@@ -493,15 +493,7 @@ class AbstractWidget extends AbstractController implements Widget {
      * @return null
      */
     public function setContext($context, $value = null) {
-        if (is_array($context)) {
-            foreach ($context as $key => $value) {
-                $this->setContext($key, $value);
-            }
-        } elseif ($value !== null) {
-            $this->context[$context] = $value;
-        } elseif (isset($this->context[$context])) {
-            unset($this->context[$context]);
-        }
+        $this->properties->getNode()->setContext($context, $value);
     }
 
     /**
@@ -512,13 +504,7 @@ class AbstractWidget extends AbstractController implements Widget {
      * variable if set in the context, provided default value otherwise
      */
     public function getContext($name = null, $default = null) {
-        if ($name === null) {
-            return $this->context;
-        } elseif (isset($this->context[$name])) {
-            return $this->context[$name];
-        } else {
-            return $default;
-        }
+        return $this->properties->getNode()->getContext($name, $default);
     }
 
     /**
