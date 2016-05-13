@@ -454,7 +454,6 @@ class GenericNodeDispatcher implements NodeDispatcher {
             // }
         // }
 
-        $this->view->setContext($context);
         if (is_array($dispatchedViews)) {
             $this->view->setDispatchedViews($dispatchedViews);
             $this->view->setRegions($this->regions);
