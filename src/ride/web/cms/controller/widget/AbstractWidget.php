@@ -379,7 +379,7 @@ class AbstractWidget extends AbstractController implements Widget {
      * @return array Array with the URL as key and the label as value
      */
     public function getBreadcrumbs() {
-        return $this->context['breadcrumbs'];
+        return $this->getContext('breadcrumbs', array());
     }
 
     /**
@@ -389,16 +389,22 @@ class AbstractWidget extends AbstractController implements Widget {
      * @return null
      */
     protected function addBreadcrumb($url, $label) {
-        $this->context['breadcrumbs'][$url] = $label;
+        $breadcrumbs = $this->getBreadcrumbs();
+        $breadcrumbs[$url] = $label;
+
+        $this->setContext('breadcrumbs', $breadcrumbs);
     }
 
     /**
      * Sets the title of the page
-     * @param string $title
+     * @param string $pageTitle
      * @return null
      */
-    protected function setPageTitle($title) {
-        $this->context['title']['node'] = $title;
+    protected function setPageTitle($pageTitle) {
+        $title = $this->getContext('title', array());
+        $title['node'] = $pageTitle;
+
+        $this->setContext('title', $title);
     }
 
     /**
