@@ -397,14 +397,61 @@ class AbstractWidget extends AbstractController implements Widget {
 
     /**
      * Sets the title of the page
-     * @param string $pageTitle
+     * @param string $title
      * @return null
      */
-    protected function setPageTitle($pageTitle) {
-        $title = $this->getContext('title', array());
-        $title['node'] = $pageTitle;
+    protected function setPageTitle($title) {
+        $this->setContext('title.node', $title);
+    }
 
-        $this->setContext('title', $title);
+    /**
+     * Sets the title for the meta
+     * @param string $title
+     * @return null
+     */
+    protected function setMetaTitle($title) {
+        $this->setContext('title.meta', $title);
+    }
+
+    /**
+     * Sets the next time the published state changes
+     * @param integer|null $dateExpires A timestamp of the change or null when
+     * no change is coming
+     * @return null
+     */
+    public function setDateExpires($dateExpires) {
+        $this->properties->getNode()->setExpires($date);
+    }
+
+    /**
+     * Gets the next time the published state changes
+     * @return integer|null A timestamp of the change or null when no change is
+     * coming
+     */
+    public function getDateExpires() {
+        return $this->properties->getNode()->getDateExpires();
+    }
+
+    /**
+     * Sets the context of the node
+     * @param string|array $context Name of the context variable or an array
+     * of key-value pairs
+     * @param mixed $value Context value
+     * @return null
+     */
+    public function setContext($context, $value = null) {
+        $this->properties->getNode()->setContext($context, $value);
+    }
+
+    /**
+     * Gets the context of the node
+     * @param string $name Name of the context variable
+     * @param mixed $default Default value for when the variable is not set
+     * @return mixed Full context if no arguments provided, value of the
+     * variable if set in the context, provided default value otherwise
+     */
+    public function getContext($name = null, $default = null) {
+        return $this->properties->getNode()->getContext($name, $default);
     }
 
     /**
@@ -515,28 +562,6 @@ class AbstractWidget extends AbstractController implements Widget {
      */
     public function containsUserContent() {
         return $this->containsUserContent;
-    }
-
-    /**
-     * Sets the context of the node
-     * @param string|array $context Name of the context variable or an array
-     * of key-value pairs
-     * @param mixed $value Context value
-     * @return null
-     */
-    public function setContext($context, $value = null) {
-        $this->properties->getNode()->setContext($context, $value);
-    }
-
-    /**
-     * Gets the context of the node
-     * @param string $name Name of the context variable
-     * @param mixed $default Default value for when the variable is not set
-     * @return mixed Full context if no arguments provided, value of the
-     * variable if set in the context, provided default value otherwise
-     */
-    public function getContext($name = null, $default = null) {
-        return $this->properties->getNode()->getContext($name, $default);
     }
 
     /**

@@ -105,11 +105,11 @@ class NodeController extends AbstractController {
 
             switch ($name) {
                 case 'max-age':
-                    $this->response->setMaxAge($this->parseAgeValue($value));
+                    $this->response->setMaxAge($this->parseAgeValue($node, $value));
 
                     break;
                 case 's-maxage':
-                    $this->response->setSharedMaxAge($this->parseAgeValue($value));
+                    $this->response->setSharedMaxAge($this->parseAgeValue($node, $value));
 
                     break;
                 default:
@@ -125,13 +125,24 @@ class NodeController extends AbstractController {
      * @param mixed $value Value to parse
      * @return integer Age in seconds
      */
-    protected function parseAgeValue($value) {
+    protected function parseAgeValue(Node $node, $value) {
+        $time = time();
+
         switch ($value) {
             case 'end-of-day':
-                return mktime(23, 59, 59) - time();
+                $value = mktime(23, 59, 59) - $time;
             default:
-                return (integer) $value;
+                 $value = (integer) $value;
         }
+
+        $dateExpires = $node->getDateExpires();
+        if ($dateExpires) {
+            $maximum = $dateExpires - $time;
+
+            $value = min($value, $maximum);
+        }
+
+        return $value;
     }
 
 }
