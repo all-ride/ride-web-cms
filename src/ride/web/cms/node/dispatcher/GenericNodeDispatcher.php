@@ -25,6 +25,12 @@ use ride\web\cms\ApplicationListener;
 class GenericNodeDispatcher implements NodeDispatcher {
 
     /**
+     * Name of the event triggered before dispatch
+     * @var string
+     */
+    const EVENT_PRE_DISPATCH = 'cms.dispatch.pre';
+
+    /**
      * Node which is to be dispatched
      * @var \ride\library\cms\node\Node
      */
@@ -196,11 +202,22 @@ class GenericNodeDispatcher implements NodeDispatcher {
             'title' => array(
                 'site' => $this->node->getRootNode()->getName($this->locale, 'title'),
                 'node' => $this->node->getName($this->locale, 'title'),
+                'meta' => $this->node->getName($this->locale, 'meta'),
             ),
             'breadcrumbs' => $this->breadcrumbs,
+            'locale' => $this->locale,
             'styles' => array(),
             'scripts' => array(),
         );
+
+        $this->node->setContext($context);
+
+        // hook before dispatch
+        if ($this->eventManager) {
+            $this->eventManager->triggerEvent(self::EVENT_PRE_DISPATCH, array(
+                'node' => $this->node,
+            ));
+        }
 
         // prepare and process incoming route arguments
         $route = $request->getRoute();
@@ -277,6 +294,9 @@ class GenericNodeDispatcher implements NodeDispatcher {
                         }
 
                         $widgetProperties = $this->node->getWidgetProperties($widgetId);
+
+                        $this->node->setDateExpires($widgetProperties->getDateExpires());
+
                         if (!$widgetProperties->isPublished()) {
                             if ($this->log) {
                                 $this->log->logDebug('Widget ' . $widget->getName() . '#' . $widgetId . ' is not published', null, ApplicationListener::LOG_SOURCE);
@@ -308,6 +328,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
                                     $this->log->logDebug('Retrieved widget ' . $widget->getName() . '#' . $widgetId . ' from cache', null, ApplicationListener::LOG_SOURCE);
                                 }
 
+                                $context = $this->node->getContext();
                                 $cacheView = $cachedViews[$this->region][$this->section][$this->block][$widgetId];
 
                                 if ($cacheView->areRoutesMatched()) {
@@ -324,6 +345,8 @@ class GenericNodeDispatcher implements NodeDispatcher {
                                         }
                                     }
                                 }
+
+                                $this->node->setContext($context);
 
                                 if ($cacheView->isContent()) {
                                     $dispatchedViews = null;
@@ -351,7 +374,6 @@ class GenericNodeDispatcher implements NodeDispatcher {
                         }
 
                         $widget->setProperties($widgetProperties);
-                        $widget->setContext($context);
 
                         $widgetMatchedRouteArguments = $this->dispatchWidget($request, $response, $widgetId, $widget);
                         if ($widgetMatchedRouteArguments) {
