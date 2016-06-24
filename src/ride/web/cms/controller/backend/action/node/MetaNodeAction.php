@@ -88,11 +88,6 @@ class MetaNodeAction extends AbstractNodeAction {
             'filters' => array(
                 'trim' => array(),
             ),
-            'validators' => array(
-                'size' => array(
-                    'maximum' => 55
-                )
-            ),
             'attributes' => array(
                 'data-recommended-maxlength' => 55
             )
@@ -101,11 +96,6 @@ class MetaNodeAction extends AbstractNodeAction {
             'label' => $translator->translate('label.description'),
             'filters' => array(
                 'trim' => array(),
-            ),
-            'validators' => array(
-                'size' => array(
-                    'maximum' => 150
-                )
             ),
             'attributes' => array(
                 'data-recommended-maxlength' => 150
@@ -122,11 +112,6 @@ class MetaNodeAction extends AbstractNodeAction {
             'filters' => array(
                 'trim' => array(),
             ),
-            'validators' => array(
-                'size' => array(
-                    'maximum' => 60
-                )
-            ),
             'attributes' => array(
                 'data-recommended-maxlength' => 60
             )
@@ -135,11 +120,6 @@ class MetaNodeAction extends AbstractNodeAction {
             'label' => $translator->translate('label.description'),
             'filters' => array(
                 'trim' => array(),
-            ),
-            'validators' => array(
-                'size' => array(
-                    'maximum' => 200
-                )
             ),
             'attributes' => array(
                 'data-recommended-maxlength' => 200
