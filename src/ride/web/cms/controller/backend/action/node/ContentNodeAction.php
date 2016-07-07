@@ -258,7 +258,7 @@ class ContentNodeAction extends AbstractNodeAction {
         }
 
         $securityManager = $this->getSecurityManager();
-        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.section.manage')) {
             throw new UnauthorizedException();
         }
 
@@ -472,7 +472,7 @@ class ContentNodeAction extends AbstractNodeAction {
         }
 
         $securityManager = $this->getSecurityManager();
-        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.manage')) {
+        if (!$securityManager->isPermissionGranted('cms.region.' . $theme->getName() . '.' . $region . '.section.manage')) {
             throw new UnauthorizedException();
         }
 
