@@ -335,6 +335,13 @@
             "id": "cms.theme.delete"
         },
         {
+            "path": "/sitemap.xml",
+            "controller": "ride\\web\\cms\\controller\\frontend\\SiteMapController",
+            "action": "indexAction",
+            "methods": ["HEAD", "GET"],
+            "id": "cms.sitemap"
+        },
+        {
             "path": "/nodes/%node%",
             "controller": "ride\\web\\cms\\controller\\frontend\\FrontController",
             "action": "indexAction",
