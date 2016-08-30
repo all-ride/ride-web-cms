@@ -187,6 +187,18 @@ class AbstractWidget extends AbstractController implements Widget {
     }
 
     /**
+     * Gets all the URL's offered by this widget
+     * @param string $locale Code of the locale
+     * @param string $baseUrl Default base URL
+     * @return array Array with the URL as key and a SiteMapUrl instance as
+     * value. Prefix an URL key with ! to omit it from the site map
+     * @see \ride\library\cms\sitemap\SiteMapUrl
+     */
+    public function getSiteMapUrls($locale, $baseUrl) {
+        return array();
+    }
+
+    /**
      * Gets the templates used by this widget
      * @return array Array with the resource names of the templates
      */

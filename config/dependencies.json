@@ -94,6 +94,24 @@
         },
         {
             "class": "ride\\library\\system\\file\\File",
+            "id": "cms.sitemap",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "cms.directory.sitemap"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "ride\\library\\system\\file\\File",
             "id": "cache.cms.node",
             "calls": [
                 {
@@ -809,6 +827,7 @@
             ]
         },
         {
+            "interfaces": ["ride\\library\\cms\\Cms", "ride\\web\\cms\\Cms"],
             "class": "ride\\web\\cms\\Cms",
             "id": "cms",
             "calls": [
