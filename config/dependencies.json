@@ -94,6 +94,24 @@
         },
         {
             "class": "ride\\library\\system\\file\\File",
+            "id": "cms.robot",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "cms.directory.robot"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "ride\\library\\system\\file\\File",
             "id": "cms.sitemap",
             "calls": [
                 {
@@ -476,6 +494,18 @@
                             "type": "dependency",
                             "properties": {
                                 "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\ErrorNodeAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeAction",
+                    "arguments": [
+                        {
+                            "name": "nodeAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\RobotsNodeAction"
                             }
                         }
                     ]
