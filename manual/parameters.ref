@@ -1,3 +1,4 @@
 cms.default.layout          Machine name for the default layout of a new region/section.
 cms.directory.node          Directory which holds the nodes
+cms.directory.robot         Directory which holds the robots.txt files
 cms.directory.sitemap       Directory which holds the site maps

@@ -49,6 +49,12 @@
             "id": "cms.site.structure"
         },
         {
+            "path": "/sites/%site%/%revision%/%locale%/robots",
+            "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\RobotsNodeAction",
+            "action": "indexAction",
+            "id": "cms.site.robots"
+        },
+        {
             "path": "/sites/%site%/%revision%/%locale%/error",
             "controller": "ride\\web\\cms\\controller\\backend\\action\\node\\ErrorNodeAction",
             "action": "indexAction",
@@ -335,9 +341,16 @@
             "id": "cms.theme.delete"
         },
         {
+            "path": "/robots.txt",
+            "controller": "ride\\web\\cms\\controller\\frontend\\SeoController",
+            "action": "robotsAction",
+            "methods": ["HEAD", "GET"],
+            "id": "cms.robot"
+        },
+        {
             "path": "/sitemap.xml",
-            "controller": "ride\\web\\cms\\controller\\frontend\\SiteMapController",
-            "action": "indexAction",
+            "controller": "ride\\web\\cms\\controller\\frontend\\SeoController",
+            "action": "sitemapAction",
             "methods": ["HEAD", "GET"],
             "id": "cms.sitemap"
         },

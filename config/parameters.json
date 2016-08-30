@@ -1,6 +1,7 @@
 {
     "cms.directory.node": "%application%/data/cms",
     "cms.directory.sitemap": "%application%/data/sitemaps",
+    "cms.directory.robot": "%application%/data/robots",
     "system.cache.cms.node": "%application%/data/cache/cms-nodes.php",
     "system.cache.cms.pool": "%application%/data/cache/cms"
 }
