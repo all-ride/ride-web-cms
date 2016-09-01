@@ -205,6 +205,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
                 'meta' => $this->node->getName($this->locale, 'meta'),
             ),
             'breadcrumbs' => $this->breadcrumbs,
+            'canonical' => $this->node->getUrl($this->locale, $request->getBaseScript()),
             'locale' => $this->locale,
             'styles' => array(),
             'scripts' => array(),
