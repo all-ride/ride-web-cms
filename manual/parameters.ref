@@ -2,3 +2,5 @@ cms.default.layout          Machine name for the default layout of a new region/
 cms.directory.node          Directory which holds the nodes
 cms.directory.robot         Directory which holds the robots.txt files
 cms.directory.sitemap       Directory which holds the site maps
+cms.url.%site%              Override the base URL of the provided site (development/testing purposes)
+cms.url.%site%.%locale%     Override the base URL of the provided site for the provided locale (development/testing purposes)
