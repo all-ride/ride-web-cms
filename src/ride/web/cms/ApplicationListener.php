@@ -4,6 +4,7 @@ namespace ride\web\cms;
 
 use ride\library\cache\control\CacheControl;
 use ride\library\cms\node\Node;
+use ride\library\config\Config;
 use ride\library\event\EventManager;
 use ride\library\event\Event;
 use ride\library\http\Header;
@@ -302,7 +303,7 @@ class ApplicationListener {
      * Sets a error view to the response if a status code above 399 is set
      * @return null
      */
-    public function handleHttpError(Event $event, I18n $i18n) {
+    public function handleHttpError(Event $event, I18n $i18n, Config $config) {
         $web = $event->getArgument('web');
         $request = $web->getRequest();
         $response = $web->getResponse();
@@ -333,7 +334,15 @@ class ApplicationListener {
 
         $sites = $this->cms->getSites();
         foreach ($sites as $site) {
-            if ($site->getBaseUrl($locale) == $baseUrl) {
+            $siteBaseUrl = $config->get('cms.url.' . $site->getId() . '.' . $locale);
+            if (!is_string($siteBaseUrl)) {
+                $siteBaseUrl = $config->get('cms.url.' . $site->getId());
+            }
+            if (!is_string($siteBaseUrl)) {
+                $siteBaseUrl = $site->getBaseUrl($locale);
+            }
+
+            if ($siteBaseUrl == $baseUrl) {
                 break;
             }
 
