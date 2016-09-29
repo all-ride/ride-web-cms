@@ -93,7 +93,6 @@
     "label.node.action.robots.intro": "Met het <i>robots.txt</i> bestand kan je communiceren met internet robots. Je kan tegen hun zeggen welke pagina's ze mogen opzoeken en van waar ze weg moeten blijven. Voor meer informatie kijk je best op <a href=\"https://nl.wikipedia.org/wiki/Robots_Exclusion_Protocol\">https://nl.wikipedia.org/wiki/Robots_Exclusion_Protocol</a>",
     "label.node.action.structure": "Structuur",
     "label.node.action.structure.intro": "Enter a node tree in text format to create your structure quick and swift. Use spaces for hierarchy indentation.",
-    "label.node.action.settings": "Pagina instellingen",
     "label.node.action.templates": "Templates",
     "label.node.action.visibility": "Zichtbaarheid",
     "label.node.action.visibility.intro": "Determine whether the node is published in the frontend. Optionally you can define a time interval when the node becomes available.",
