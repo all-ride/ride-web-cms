@@ -44,13 +44,8 @@ class SettingsNodeAction extends AbstractNodeAction {
      * @return boolean True if available
      */
     public function isAvailableForNode(Node $node) {
-        if (!$node->getParent()) {
-            return true;
-        }
-
-        $nodeType = $this->cms->getNodeType($node);
-
-        return $nodeType->getFrontendCallback() ? true : false;
+           return $node->hasParent();
+    
     }
 
     /**
@@ -58,10 +53,11 @@ class SettingsNodeAction extends AbstractNodeAction {
      * @return null
      */
     public function indexAction($locale, $site, $revision, $node) {
+        
         if (!$this->cms->resolveNode($site, $revision, $node)) {
             return;
         }
-
+        
         if ($node->getType() === 'site') {
             $url = $node->getBaseUrl($locale);
             if (!$url) {
