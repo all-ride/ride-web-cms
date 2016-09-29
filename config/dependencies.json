@@ -366,6 +366,14 @@
             ]
         },
         {
+            "interfaces": ["ride\\web\\cms\\controller\\backend\\action\\node\\NodeAction", "ride\\web\\cms\\controller\\backend\\action\\node\\SettingsNodeAction"],
+            "class": "ride\\web\\cms\\controller\\backend\\action\\node\\SettingsNodeAction",
+            "id": "settings",
+            "calls": [
+                "setCms"
+            ]
+        },
+        {
             "interfaces": ["ride\\web\\cms\\controller\\backend\\action\\node\\NodeAction", "ride\\web\\cms\\controller\\backend\\action\\node\\TemplateNodeAction"],
             "class": "ride\\web\\cms\\controller\\backend\\action\\node\\TemplateNodeAction",
             "id": "template",
@@ -446,6 +454,18 @@
                             "type": "dependency",
                             "properties": {
                                 "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\AnalyticsNodeAction"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeAction",
+                    "arguments": [
+                        {
+                            "name": "nodeAction",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\web\\cms\\controller\\backend\\action\\node\\SettingsNodeAction"
                             }
                         }
                     ]
