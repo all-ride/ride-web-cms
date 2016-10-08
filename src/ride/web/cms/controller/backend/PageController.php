@@ -26,6 +26,8 @@ class PageController extends AbstractNodeTypeController {
 
         $this->setContentLocale($locale);
 
+        $hasThemePermission = $this->getSecurityManager()->isPermissionGranted(Cms::PERMISSION_THEME);
+
         $translator = $this->getTranslator();
         $themes = $cms->getThemes();
 
@@ -95,14 +97,13 @@ class PageController extends AbstractNodeTypeController {
             'description' => $translator->translate('label.image.node.description'),
         ));
 
-        if ($this->getSecurityManager()->isPermissionGranted('cms.page.theme')) {
+        if ($hasThemePermission) {
             $form->addRow('theme', 'select', array(
                 'label' => $translator->translate('label.theme'),
                 'description' => $translator->translate('label.theme.description'),
                 'options' => $this->getThemeOptions($node, $translator, $themes),
             ));
         }
-
 
         // process form
         $form = $form->build();
@@ -120,7 +121,7 @@ class PageController extends AbstractNodeTypeController {
                 $node->setImage($locale, $data['image'] ? $data['image'] : null);
                 $node->setRoute($locale, $data['route'] ? $data['route'] : null);
 
-                if ($this->getSecurityManager()->isPermissionGranted('cms.page.theme')) {
+                if ($hasThemePermission) {
                     $node->setTheme($this->getOptionValueFromForm($data['theme']));
                 }
 
