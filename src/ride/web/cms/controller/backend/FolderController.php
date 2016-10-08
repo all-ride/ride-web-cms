@@ -25,6 +25,8 @@ class FolderController extends AbstractNodeTypeController {
 
         $this->setContentLocale($locale);
 
+        $hasThemePermission = $this->getSecurityManager()->isPermissionGranted(Cms::PERMISSION_THEME);
+
         $translator = $this->getTranslator();
         $locales = $cms->getLocales();
         $themes = $cms->getThemes();
@@ -45,11 +47,13 @@ class FolderController extends AbstractNodeTypeController {
                 'required' => array(),
             )
         ));
-        $form->addRow('theme', 'select', array(
-            'label' => $translator->translate('label.theme'),
-            'description' => $translator->translate('label.theme.description'),
-            'options' => $this->getThemeOptions($node, $translator, $themes),
-        ));
+        if ($hasThemePermission) {
+            $form->addRow('theme', 'select', array(
+                'label' => $translator->translate('label.theme'),
+                'description' => $translator->translate('label.theme.description'),
+                'options' => $this->getThemeOptions($node, $translator, $themes),
+            ));
+        }
 
         $form = $form->build();
         if ($form->isSubmitted()) {
@@ -59,7 +63,10 @@ class FolderController extends AbstractNodeTypeController {
                 $data = $form->getData();
 
                 $node->setName($locale, $data['name']);
-                $node->setTheme($this->getOptionValueFromForm($data['theme']));
+
+                if ($hasThemePermission) {
+                    $node->setTheme($this->getOptionValueFromForm($data['theme']));
+                }
 
                 $cms->saveNode($node, (!$node->getId() ? 'Created new folder ' : 'Updated folder ') . $node->getName());
 

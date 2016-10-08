@@ -142,6 +142,8 @@ class SiteController extends AbstractNodeTypeController {
 
         $this->setContentLocale($locale);
 
+        $hasThemePermission = $this->getSecurityManager()->isPermissionGranted(Cms::PERMISSION_THEME);
+
         $locales = $cms->getLocales();
         $translator = $this->getTranslator();
         $themes = $cms->getThemes();
@@ -177,14 +179,16 @@ class SiteController extends AbstractNodeTypeController {
                 'trim' => array(),
             ),
         ));
-        $form->addRow('theme', 'select', array(
-            'label' => $translator->translate('label.theme'),
-            'description' => $translator->translate('label.theme.description'),
-            'options' => $this->getThemeOptions($site, $translator, $themes),
-            'validators' => array(
-                'required' => array(),
-            )
-        ));
+        if ($hasThemePermission) {
+            $form->addRow('theme', 'select', array(
+                'label' => $translator->translate('label.theme'),
+                'description' => $translator->translate('label.theme.description'),
+                'options' => $this->getThemeOptions($site, $translator, $themes),
+                'validators' => array(
+                    'required' => array(),
+                )
+            ));
+        }
         $form->addRow('autoPublish', 'boolean', array(
             'label' => $translator->translate('label.publish.auto'),
             'description' => $translator->translate('label.publish.auto.description'),
@@ -223,8 +227,11 @@ class SiteController extends AbstractNodeTypeController {
                 }
                 $site->setLocalizationMethod($data['localizationMethod']);
                 $site->setBaseUrl($locale, $data['baseUrl'] ? $data['baseUrl'] : null);
-                $site->setTheme($data['theme']);
                 $site->setIsAutoPublish($data['autoPublish'] ? 1 : 0);
+
+                if ($hasThemePermission) {
+                    $site->setTheme($data['theme']);
+                }
 
                 $cms->saveNode($site, (!$site->getId() ? 'Created new site ' : 'Updated site ') . $site->getName());
 
@@ -514,7 +521,7 @@ class SiteController extends AbstractNodeTypeController {
         $form->addRow('destination', 'select', array(
             'label' => $translator->translate('label.destination'),
             'description' => $translator->translate('label.destination.restore.description'),
-            'options' => $cms->getNodeList($site, $locale, true),
+            'options' => $cms->getNodeList($site, $locale, true, true, false),
         ));
 
         $form = $form->build();

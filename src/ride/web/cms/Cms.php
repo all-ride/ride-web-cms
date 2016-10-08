@@ -29,6 +29,12 @@ class Cms extends LibraryCms {
     const OPTION_INHERITED = 'inherited';
 
     /**
+     * Name of the theme permission
+     * @var string
+     */
+    const PERMISSION_THEME = 'cms.page.theme';
+
+    /**
      * Name of the session variable which holds the nodes which are collapsed
      * @var string
      */
