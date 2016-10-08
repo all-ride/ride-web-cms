@@ -67,8 +67,14 @@ class VisibilityNodeAction extends AbstractNodeAction {
         );
 
         $permissions = $securityManager->getSecurityModel()->getPermissions();
+        foreach ($permissions as $index => $permission) {
+            $permissions[$index] = $translator->translate('permission.' . $permission->getCode()) . ' (<small>' . $permission->getCode() . '</small>)';
+        }
+        ksort($permissions);
 
         $nodeType = $cms->getNodeType($node);
+
+        $inheritPublished = $node->get(Node::PROPERTY_PUBLISH, true, true, true);
 
         $isFrontendNode = $nodeType->getFrontendCallback() || $node->getLevel() === 0 ? true : false;
         if ($isFrontendNode) {
@@ -101,11 +107,17 @@ class VisibilityNodeAction extends AbstractNodeAction {
         }
         $form->addRow('published', 'option', array(
             'label' => $translator->translate('label.publish'),
+            'attributes' => array(
+                'data-toggle-dependant' => 'option-published',
+            ),
             'options' => $this->getPublishedOptions($node, $translator),
         ));
         $form->addRow('publishStart', 'string', array(
             'label' => $translator->translate('label.publish.start'),
             'description' => $translator->translate('label.publish.start.description'),
+            'attributes' => array(
+                'class' => 'option-published option-published-1' . ($inheritPublished ? ' option-published-inherit' : ''),
+            ),
             'filters' => array(
                 'trim' => array(),
             ),
@@ -119,6 +131,9 @@ class VisibilityNodeAction extends AbstractNodeAction {
         ));
         $form->addRow('publishStop', 'string', array(
             'label' => $translator->translate('label.publish.stop'),
+            'attributes' => array(
+                'class' => 'option-published option-published-1' . ($inheritPublished ? ' option-published-inherit' : ''),
+            ),
             'filters' => array(
                 'trim' => array(),
             ),

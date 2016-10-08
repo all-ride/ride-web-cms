@@ -99,6 +99,7 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
         foreach ($permissions as $index => $permission) {
             $permissions[$index] = $translator->translate('permission.' . $permission->getCode()) . ' (<small>' . $permission->getCode() . '</small>)';
         }
+        ksort($permissions);
 
         $form = $this->createFormBuilder($data);
         if ($site->isLocalizationMethodCopy()) {
@@ -115,6 +116,9 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
         $form->addRow('published', 'option', array(
             'label' => $translator->translate('label.publish'),
             'options' => $this->getPublishedOptions($translator),
+            'attributes' => array(
+                'data-toggle-dependant' => 'option-published',
+            ),
             'validators' => array(
                 'required' => array(),
             )
@@ -122,6 +126,9 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
         $form->addRow('publishStart', 'string', array(
             'label' => $translator->translate('label.publish.start'),
             'description' => $translator->translate('label.publish.start.description'),
+            'attributes' => array(
+                'class' => 'option-published option-published-1',
+            ),
             'filters' => array(
                 'trim' => array(),
             ),
@@ -135,6 +142,9 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
         ));
         $form->addRow('publishStop', 'string', array(
             'label' => $translator->translate('label.publish.stop'),
+            'attributes' => array(
+                'class' => 'option-published option-published-1',
+            ),
             'filters' => array(
                 'trim' => array(),
             ),
