@@ -41,21 +41,21 @@ class FrontController extends AbstractController {
             // fallback locale
             $locale = $i18n->getLocale()->getCode();
         }
-        
+
         // resolve the node
         $revision = $site->getRevision();
         $site = $site->getId();
-        
+
         if (!$cms->resolveNode($site, $revision, $node)) {
             return $this->chainWebRequest();
         }
 
         // chain a request to the frontend callback
         $nodeType = $cms->getNodeType($node);
-        
+
         $callback = $nodeType->getFrontendCallback();
         $arguments = ltrim($this->request->getBasePath(true), '/');
-                
+
         $route = new Route('/', $callback);
         $route->setIsDynamic(true);
         $route->setArguments(explode('/', $arguments));

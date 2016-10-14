@@ -162,9 +162,6 @@ class SiteController extends AbstractNodeTypeController {
         $form->addRow('name', 'string', array(
             'label' => $translator->translate('label.site'),
             'description' => $translator->translate('label.site.description'),
-            'attributes' => array(
-                'autofocus' => 'true',
-            ),
             'filters' => array(
                 'trim' => array(),
             ),
@@ -355,6 +352,112 @@ class SiteController extends AbstractNodeTypeController {
             'referer' => $referer,
             'locale' => $locale,
         ));
+    }
+
+    /**
+     * Action to validate a route
+     * @param \ride\web\cms\Cms $cms Facade to the CMS
+     * @param string $site Id of the site
+     * @param string $revision Name of the revision to work with
+     * @param string $locale Code of the locale
+     * @return null
+     */
+    public function validateRouteAction(Cms $cms, $site, $revision, $locale) {
+        $node = $this->request->getBodyParameter('node');
+
+        $baseRoute = $this->request->getBodyParameter('route');
+        if (!$baseRoute) {
+            return $this->response->setBadRequest();
+        }
+
+        if ($node) {
+            if (!$cms->resolveNode($site, $revision, $node, 'page')) {
+                return;
+            }
+        } else {
+            if (!$cms->resolveNode($site, $revision)) {
+                return;
+            }
+
+            $node = $cms->createNode('page', $site);
+            $node->setName($locale, 'dummy');
+        }
+
+        $route = $baseRoute;
+        $index = 1;
+        $max = 20;
+
+        $result = array(
+            'isValid' => true,
+        );
+
+        do {
+            $node->setRoute($locale, $route);
+
+            try {
+                $cms->validateNode($node);
+
+                $result['route'] = $node->getRoute($locale);
+
+                $this->setJsonView($result);
+
+                return;
+            } catch (ValidationException $exception) {
+                if ($index == 1) {
+                    $result['isValid'] = false;
+                    foreach ($exception->getErrors('route') as $error) {
+                        $parameters = $error->getParameters();
+
+                        if (isset($parameters['node'])) {
+                            $existingNode = $cms->getNode($site->getId(), $revision, $parameters['node']);
+                            if ($existingNode) {
+                                $parameters['node'] = $existingNode->getName($locale);
+                            }
+                        }
+
+                        $result['error'] = $this->getTranslator()->translate($error->getCode(), $parameters);
+                    }
+                }
+
+                $route = $baseRoute . '-' . $index;
+                $index++;
+            }
+        } while ($index < $max);
+
+        $this->response->setBadRequest();
+        $this->setJsonView($result);
+    }
+
+    /**
+     * Action to store the collapse status of multiple nodes
+     * @param \ride\web\cms\Cms $cms
+     * @param string $locale
+     * @param string $site
+     * @param string $revision
+     * @return null
+     */
+    public function collapseAction(Cms $cms, $locale, $site, $revision) {
+        if (!$cms->resolveNode($site, $revision)) {
+            return;
+        }
+
+        $nodes = $this->request->getBodyParameter('nodes', array());
+        if (!is_array($nodes)) {
+            return $this->response->setBadRequest();
+        }
+
+        foreach ($nodes as $index => $node) {
+            $node = $cms->getNode($site->getId(), $revision, $node);
+            if (!$node) {
+                $this->response->setNotFound();
+            }
+
+            $nodes[$index] = $node;
+        }
+
+        foreach ($nodes as $node) {
+            $cms->collapseNode($node);
+        }
     }
 
     /**
