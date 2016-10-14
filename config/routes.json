@@ -25,6 +25,12 @@
             "id": "cms.site.detail.locale"
         },
         {
+            "path": "/sites/%site%/%revision%/%locale%/validate-route",
+            "controller": "ride\\web\\cms\\controller\\backend\\SiteController",
+            "action": "validateRouteAction",
+            "id": "cms.site.validate-route"
+        },
+        {
             "path": "/sites/%site%/%revision%/%locale%/edit",
             "controller": "ride\\web\\cms\\controller\\backend\\SiteController",
             "action": "formAction",
@@ -79,6 +85,13 @@
             "controller": "ride\\web\\cms\\controller\\backend\\SiteController",
             "action": "treeAction",
             "id": "cms.site.tree"
+        },
+        {
+            "path": "/sites/%site%/%revision%/%locale%/collapse",
+            "controller": "ride\\web\\cms\\controller\\backend\\SiteController",
+            "action": "collapseAction",
+            "id": "cms.site.collapse",
+            "methods": "post"
         },
         {
             "path": "/sites/%site%/%revision%/%locale%/order",
