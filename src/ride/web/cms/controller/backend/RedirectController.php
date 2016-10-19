@@ -109,6 +109,10 @@ class RedirectController extends AbstractNodeTypeController {
                     $node->setRedirectUrl($locale, $data['redirect-url'] ? $data['redirect-url'] : null);
                 }
 
+                if (!$site->isLocalizationMethodCopy()) {
+                    $node->setAvailableLocales($locale);
+                }
+
                 $cms->saveNode($node, (!$node->getId() ? 'Created new redirect ' : 'Updated redirect ') . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(

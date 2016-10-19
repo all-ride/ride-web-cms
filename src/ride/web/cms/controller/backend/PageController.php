@@ -121,6 +121,10 @@ class PageController extends AbstractNodeTypeController {
                 $node->setImage($locale, $data['image'] ? $data['image'] : null);
                 $node->setRoute($locale, $data['route'] ? $data['route'] : null);
 
+                if (!$site->isLocalizationMethodCopy()) {
+                    $node->setAvailableLocales($locale);
+                }
+
                 if ($hasThemePermission) {
                     $node->setTheme($this->getOptionValueFromForm($data['theme']));
                 }

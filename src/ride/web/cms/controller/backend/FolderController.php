@@ -68,6 +68,10 @@ class FolderController extends AbstractNodeTypeController {
                     $node->setTheme($this->getOptionValueFromForm($data['theme']));
                 }
 
+                if (!$site->isLocalizationMethodCopy()) {
+                    $node->setAvailableLocales($locale);
+                }
+
                 $cms->saveNode($node, (!$node->getId() ? 'Created new folder ' : 'Updated folder ') . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(
