@@ -2,6 +2,7 @@
 
 ## 1.0.1
 - fixed setting locale of new nodes in a tree with the unique localization method
+- added changelog
 
 ## 1.0.0
 - added action to validate the route of a node
