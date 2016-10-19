@@ -99,6 +99,10 @@ class ReferenceController extends AbstractNodeTypeController {
                     $node->setNode($cms->getNode($site->getId(), $revision, $data['reference-node']));
                 }
 
+                if (!$site->isLocalizationMethodCopy()) {
+                    $node->setAvailableLocales($locale);
+                }
+
                 $cms->saveNode($node, (!$node->getId() ? 'Created new reference ' : 'Updated reference ') . $node->getName());
 
                 $this->addSuccess('success.node.saved', array(
