@@ -29,6 +29,12 @@ class Cms extends LibraryCms {
     const OPTION_INHERITED = 'inherited';
 
     /**
+     * Name of the advanced permission
+     * @var string
+     */
+    const PERMISSION_ADVANCED = 'cms.advanced';
+
+    /**
      * Name of the theme permission
      * @var string
      */
