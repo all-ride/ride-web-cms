@@ -2,12 +2,16 @@
 
 namespace ride\web\cms\controller\backend\action\node;
 
+use ride\library\cms\node\NodeProperty;
 use ride\library\cms\node\Node;
 use ride\library\i18n\translator\Translator;
 use ride\library\security\SecurityManager;
 use ride\library\validation\exception\ValidationException;
 
+use ride\web\base\form\DateTimeComponent;
 use ride\web\cms\Cms;
+
+use \DateTime;
 
 /**
  * Controller of the visibility node action
@@ -66,6 +70,20 @@ class VisibilityNodeAction extends AbstractNodeAction {
             'permissions' => $permissions,
         );
 
+        if ($data['publishStart']) {
+            $data['publishStart'] = DateTime::createFromFormat(NodeProperty::DATE_FORMAT, $data['publishStart']);
+            if ($data['publishStart']) {
+                $data['publishStart'] = $data['publishStart']->getTimestamp();
+            }
+        }
+
+        if ($data['publishStop']) {
+            $data['publishStop'] = DateTime::createFromFormat(NodeProperty::DATE_FORMAT, $data['publishStop']);
+            if ($data['publishStop']) {
+                $data['publishStop'] = $data['publishStop']->getTimestamp();
+            }
+        }
+
         $permissions = $securityManager->getSecurityModel()->getPermissions();
         foreach ($permissions as $index => $permission) {
             $permissions[$index] = $translator->translate('permission.' . $permission->getCode()) . ' (<small>' . $permission->getCode() . '</small>)';
@@ -112,38 +130,19 @@ class VisibilityNodeAction extends AbstractNodeAction {
             ),
             'options' => $this->getPublishedOptions($node, $translator),
         ));
-        $form->addRow('publishStart', 'string', array(
+        $form->addRow('publishStart', 'component', array(
             'label' => $translator->translate('label.publish.start'),
-            'description' => $translator->translate('label.publish.start.description'),
             'attributes' => array(
                 'class' => 'option-published option-published-1' . ($inheritPublished ? ' option-published-inherit' : ''),
             ),
-            'filters' => array(
-                'trim' => array(),
-            ),
-            'validators' => array(
-                'regex' => array(
-                    'required' => false,
-                    'regex' => '/2([0-9]){3}-([0-9]){2}-([0-9]){2} ([0-9]){2}:([0-9]){2}:([0-9]){2}/',
-                    'error.regex' => 'error.validation.date.cms',
-                ),
-            ),
+            'component' => new DateTimeComponent(),
         ));
-        $form->addRow('publishStop', 'string', array(
+        $form->addRow('publishStop', 'component', array(
             'label' => $translator->translate('label.publish.stop'),
             'attributes' => array(
                 'class' => 'option-published option-published-1' . ($inheritPublished ? ' option-published-inherit' : ''),
             ),
-            'filters' => array(
-                'trim' => array(),
-            ),
-            'validators' => array(
-                'regex' => array(
-                    'required' => false,
-                    'regex' => '/2([0-9]){3}-([0-9]){2}-([0-9]){2} ([0-9]){2}:([0-9]){2}:([0-9]){2}/',
-                    'error.regex' => 'error.validation.date.cms',
-                ),
-            ),
+            'component' => new DateTimeComponent(),
         ));
         $form->addRow('security', 'option', array(
             'label' => $translator->translate('label.allow'),
@@ -196,9 +195,19 @@ class VisibilityNodeAction extends AbstractNodeAction {
                     $security = implode(',', $data['permissions']);
                 }
 
+                $publishStart = $data['publishStart'] ? $data['publishStart'] : null;
+                if ($publishStart) {
+                    $publishStart = date('Y-m-d H:i:s', $publishStart);
+                }
+
+                $publishStop = $data['publishStop'] ? $data['publishStop'] : null;
+                if ($publishStop) {
+                    $publishStop = date('Y-m-d H:i:s', $publishStop);
+                }
+
                 $node->set(Node::PROPERTY_PUBLISH, $this->getPublishedValue($data['published']));
-                $node->set(Node::PROPERTY_PUBLISH_START, $data['publishStart'] ? $data['publishStart'] : null);
-                $node->set(Node::PROPERTY_PUBLISH_STOP, $data['publishStop'] ? $data['publishStop'] : null);
+                $node->set(Node::PROPERTY_PUBLISH_START, $publishStart);
+                $node->set(Node::PROPERTY_PUBLISH_STOP, $publishStop);
                 $node->set(Node::PROPERTY_SECURITY, $security);
 
                 if ($isFrontendNode) {

@@ -2,6 +2,7 @@
 
 namespace ride\web\cms\controller\backend\action\widget;
 
+use ride\library\cms\node\NodeProperty;
 use ride\library\cms\node\Node;
 use ride\library\cms\widget\Widget;
 use ride\library\i18n\translator\Translator;
@@ -9,10 +10,13 @@ use ride\library\security\exception\UnauthorizedException;
 use ride\library\security\SecurityManager;
 use ride\library\validation\exception\ValidationException;
 
+use ride\web\base\form\DateTimeComponent;
 use ride\web\cms\Cms;
 
+use \DateTime;
+
 /**
- * Controller of the style widget action
+ * Controller of the visbility widget action
  */
 class VisibilityWidgetAction extends AbstractWidgetAction {
 
@@ -95,6 +99,20 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
             'permissions' => $permissions,
         );
 
+        if ($data['publishStart']) {
+            $data['publishStart'] = DateTime::createFromFormat(NodeProperty::DATE_FORMAT, $data['publishStart']);
+            if ($data['publishStart']) {
+                $data['publishStart'] = $data['publishStart']->getTimestamp();
+            }
+        }
+
+        if ($data['publishStop']) {
+            $data['publishStop'] = DateTime::createFromFormat(NodeProperty::DATE_FORMAT, $data['publishStop']);
+            if ($data['publishStop']) {
+                $data['publishStop'] = $data['publishStop']->getTimestamp();
+            }
+        }
+
         $permissions = $securityManager->getSecurityModel()->getPermissions();
         foreach ($permissions as $index => $permission) {
             $permissions[$index] = $translator->translate('permission.' . $permission->getCode()) . ' (<small>' . $permission->getCode() . '</small>)';
@@ -123,38 +141,19 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
                 'required' => array(),
             )
         ));
-        $form->addRow('publishStart', 'string', array(
+        $form->addRow('publishStart', 'component', array(
             'label' => $translator->translate('label.publish.start'),
-            'description' => $translator->translate('label.publish.start.description'),
             'attributes' => array(
                 'class' => 'option-published option-published-1',
             ),
-            'filters' => array(
-                'trim' => array(),
-            ),
-            'validators' => array(
-                'regex' => array(
-                    'required' => false,
-                    'regex' => '/2([0-9]){3}-([0-9]){2}-([0-9]){2} ([0-9]){2}:([0-9]){2}:([0-9]){2}/',
-                    'error.regex' => 'error.validation.date.cms',
-                ),
-            ),
+            'component' => new DateTimeComponent(),
         ));
-        $form->addRow('publishStop', 'string', array(
+        $form->addRow('publishStop', 'component', array(
             'label' => $translator->translate('label.publish.stop'),
             'attributes' => array(
                 'class' => 'option-published option-published-1',
             ),
-            'filters' => array(
-                'trim' => array(),
-            ),
-            'validators' => array(
-                'regex' => array(
-                    'required' => false,
-                    'regex' => '/2([0-9]){3}-([0-9]){2}-([0-9]){2} ([0-9]){2}:([0-9]){2}:([0-9]){2}/',
-                    'error.regex' => 'error.validation.date.cms',
-                ),
-            ),
+            'component' => new DateTimeComponent(),
         ));
         $form->addRow('security', 'option', array(
             'label' => $translator->translate('label.allow'),
@@ -188,6 +187,16 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
                     $data['security'] = implode(',', $data['permissions']);
                 }
 
+                $publishStart = $data['publishStart'] ? $data['publishStart'] : null;
+                if ($publishStart) {
+                    $publishStart = date('Y-m-d H:i:s', $publishStart);
+                }
+
+                $publishStop = $data['publishStop'] ? $data['publishStop'] : null;
+                if ($publishStop) {
+                    $publishStop = date('Y-m-d H:i:s', $publishStop);
+                }
+
                 if ($site->isLocalizationMethodCopy()) {
                     $widgetProperties->setAvailableLocales($cms->getOptionValueFromForm($data['availableLocales']));
                 } else {
@@ -195,8 +204,8 @@ class VisibilityWidgetAction extends AbstractWidgetAction {
                 }
 
                 $widgetProperties->setWidgetProperty(Node::PROPERTY_PUBLISH, $data['published']);
-                $widgetProperties->setWidgetProperty(Node::PROPERTY_PUBLISH_START, $data['publishStart'] ? $data['publishStart'] : null);
-                $widgetProperties->setWidgetProperty(Node::PROPERTY_PUBLISH_STOP, $data['publishStop'] ? $data['publishStop'] : null);
+                $widgetProperties->setWidgetProperty(Node::PROPERTY_PUBLISH_START, $publishStart);
+                $widgetProperties->setWidgetProperty(Node::PROPERTY_PUBLISH_STOP, $publishStop);
                 $widgetProperties->setWidgetProperty(Node::PROPERTY_SECURITY, $data['security']);
 
                 $cms->saveNode($node, 'Updated visibility properties for widget ' . $widgetId . ' in ' . $node->getName());

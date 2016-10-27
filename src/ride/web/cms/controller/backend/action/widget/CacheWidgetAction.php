@@ -5,6 +5,7 @@ namespace ride\web\cms\controller\backend\action\widget;
 use ride\library\cms\node\Node;
 use ride\library\cms\widget\NodeWidgetProperties;
 use ride\library\cms\widget\Widget;
+use ride\library\security\exception\UnauthorizedException;
 use ride\library\validation\exception\ValidationException;
 
 use ride\web\cms\Cms;
