@@ -4,6 +4,7 @@ namespace ride\web\cms\controller\backend\action\widget;
 
 use ride\library\cms\node\Node;
 use ride\library\cms\widget\Widget;
+use ride\library\security\exception\UnauthorizedException;
 use ride\library\system\file\browser\FileBrowser;
 use ride\library\template\TemplateFacade;
 use ride\library\validation\exception\ValidationException;
