@@ -1,5 +1,10 @@
 # ride-web-cms
 
+## [Unreleased]
+
+### Updated
+- perform default node redirect to the previous content region in 1 redirect instead of 2
+
 ## [1.1.0]
 
 ### Added

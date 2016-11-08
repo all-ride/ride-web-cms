@@ -44,7 +44,13 @@ class NodeController extends AbstractController {
         } else {
             $nodeAction = $nodeActionManager->getNodeAction($action);
             if ($nodeAction->isAvailableForNode($node)) {
-                $redirectUrl = $this->getUrl($nodeAction->getRoute(), $urlVars);
+                if ($action == 'content') {
+                    $urlVars['region'] = $cms->getLastRegion();
+
+                    $redirectUrl = $this->getUrl('cms.node.content.region', $urlVars);
+                } else {
+                    $redirectUrl = $this->getUrl($nodeAction->getRoute(), $urlVars);
+                }
             } else {
                 $redirectUrl = $this->getUrl($nodeType->getRouteEdit(), $urlVars);
             }
