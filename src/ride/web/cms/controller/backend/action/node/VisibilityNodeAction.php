@@ -84,11 +84,14 @@ class VisibilityNodeAction extends AbstractNodeAction {
             }
         }
 
-        $permissions = $securityManager->getSecurityModel()->getPermissions();
-        foreach ($permissions as $index => $permission) {
-            $permissions[$index] = $translator->translate('permission.' . $permission->getCode()) . ' (<small>' . $permission->getCode() . '</small>)';
+        $securityModel = $securityManager->getSecurityModel(false);
+        if ($securityModel) {
+            $permissions = $securityModel->getPermissions();
+            foreach ($permissions as $index => $permission) {
+                $permissions[$index] = $translator->translate('permission.' . $permission->getCode()) . ' (<small>' . $permission->getCode() . '</small>)';
+            }
+            ksort($permissions);
         }
-        ksort($permissions);
 
         $nodeType = $cms->getNodeType($node);
 
