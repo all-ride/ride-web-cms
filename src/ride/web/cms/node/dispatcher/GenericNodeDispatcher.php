@@ -260,8 +260,6 @@ class GenericNodeDispatcher implements NodeDispatcher {
 
             if ($isCacheable) {
                 $parameters = $this->routeArguments ? '-' . implode('-', $this->routeArguments) : '';
-                $parameters .= $request->getQueryParametersAsString();
-
                 $nodeCacheTtl = 0;
 
                 $cacheKey = 'node.view.' . $this->node->getId() . '.' . $this->node->getRevision() . '.' . $this->locale . '.' . substr(md5($parameters), 0, 10);
