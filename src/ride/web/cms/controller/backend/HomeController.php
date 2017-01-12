@@ -38,7 +38,7 @@ class HomeController extends AbstractNodeTypeController {
         // gather data
         $data = array(
             'name' => $node->getName($locale),
-            'default-node' => $node->getDefaultNode($locale),
+            'default-node' => $node->getDefaultHomePage($locale),
         );
 
         // build form
@@ -58,6 +58,7 @@ class HomeController extends AbstractNodeTypeController {
         ));
         $form->addRow('nodes', 'collection', array(
             'label' => $translator->translate('label.home.nodes'),
+            'description' => $translator->translate('label.home.nodes.description'),
             'type' => 'component',
             'options' => array(
                 'component' => $homeComponent,
@@ -74,7 +75,7 @@ class HomeController extends AbstractNodeTypeController {
 
                 $node->setName($locale, $this->getTranslator($locale)->translate('label.homepage'));
                 $node->setRoute($locale, '/');
-                $node->setDefaultNode($locale, $data['default-node']);
+                $node->setDefaultHomePage($locale, $data['default-node']);
 
                 $cms->saveNode($node, (!$node->getId() ? 'Created new homepage ' : 'Updated homepage ') . $node->getName());
 

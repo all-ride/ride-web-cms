@@ -4,6 +4,7 @@ namespace ride\web\cms\form;
 
 use ride\library\form\component\AbstractComponent;
 use ride\library\form\FormBuilder;
+use ride\library\validation\constraint\OrConstraint;
 
 use ride\web\base\form\DateTimeComponent;
 
@@ -44,6 +45,13 @@ class HomeComponent extends AbstractComponent {
             'description' => $translator->translate('label.home.date.stop.description'),
             'component' => new DateTimeComponent(),
         ));
+
+        $constraint = new OrConstraint();
+        $constraint->setError('error.validation.date.home');
+        $constraint->addProperty('dateStart');
+        $constraint->addProperty('dateStop');
+
+        $builder->addValidationConstraint($constraint);
     }
 
 }
