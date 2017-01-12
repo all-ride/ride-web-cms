@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Fixed permission issue on visibility page when there is no security model
+
 ### Updated
 - perform default node redirect to the previous content region in 1 redirect instead of 2
 
@@ -30,5 +33,5 @@
 - action to collapse multiple nodes at once
 - README.md
 
-### Updated 
+### Updated
 - composer.json for 1.0
