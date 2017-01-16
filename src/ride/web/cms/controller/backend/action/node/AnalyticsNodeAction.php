@@ -61,7 +61,6 @@ class AnalyticsNodeAction extends AbstractNodeAction {
             ),
             'validators' => array(
                 'regex' => array(
-                    'regex' => '/^((GTM-[A-Z0-9]{6}))$/',
                     'error.regex' => 'label.analytics.gtm_id.error',
                     'required' => false,
                 ),
@@ -74,7 +73,6 @@ class AnalyticsNodeAction extends AbstractNodeAction {
             ),
             'validators' => array(
                 'regex' => array(
-                    'regex' => '/^(UA-[0-9]+-[0-9][0-9]??)$/',
                     'error.regex' => 'label.analytics.ga_id.error',
                     'required' => false,
                 ),
