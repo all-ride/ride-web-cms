@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.1.2]
+### Updated
+- removed all regex validation for Google Analytics and Google Tag Manager fields
+
 ## [1.1.1]
 ### Updated
 - perform default node redirect to the previous content region in 1 redirect instead of 2

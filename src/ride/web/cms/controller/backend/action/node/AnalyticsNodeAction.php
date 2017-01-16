@@ -59,23 +59,11 @@ class AnalyticsNodeAction extends AbstractNodeAction {
             'filters' => array(
                 'trim' => array(),
             ),
-            'validators' => array(
-                'regex' => array(
-                    'error.regex' => 'label.analytics.gtm_id.error',
-                    'required' => false,
-                ),
-            ),
         ));
         $form->addRow('ga_id', 'string', array(
             'label' => $translator->translate('label.analytics.ga_id'),
             'filters' => array(
                 'trim' => array(),
-            ),
-            'validators' => array(
-                'regex' => array(
-                    'error.regex' => 'label.analytics.ga_id.error',
-                    'required' => false,
-                ),
             ),
         ));
 
