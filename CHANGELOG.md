@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.2.0] - 2017-01-17
+### Added
+- instead of a whoopsie: catch widget exceptions and ignore or show depending on the cms error permission
+
 ## [1.1.2]
 ### Updated
 - removed all regex validation for Google Analytics and Google Tag Manager fields
