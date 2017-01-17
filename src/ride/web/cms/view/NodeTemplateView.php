@@ -6,17 +6,27 @@ use ride\library\cache\pool\CachePool;
 use ride\library\cache\CacheItem;
 use ride\library\cms\node\Node;
 use ride\library\cms\theme\Theme;
+use ride\library\log\Log;
 use ride\library\mvc\exception\MvcException;
 use ride\library\mvc\view\HtmlView;
 use ride\library\mvc\view\View;
 use ride\library\template\GenericThemedTemplate;
 
+use ride\web\cms\Cms;
 use ride\web\mvc\view\TemplateView;
+
+use \Exception;
 
 /**
  * Frontend view for a node
  */
 class NodeTemplateView extends TemplateView {
+
+    /**
+     * Instance of the log
+     * @var \ride\library\log\Log
+     */
+    private $log;
 
     /**
      * Constructs a new template view
@@ -63,6 +73,15 @@ class NodeTemplateView extends TemplateView {
         $app = $this->template->get('app');
 
         return $app['locale'];
+    }
+
+    /**
+     * Sets the log
+     * @param \ride\library\log\Log $log
+     * @return null
+     */
+    public function setLog(Log $log) {
+        $this->log = $log;
     }
 
     /**
@@ -165,7 +184,22 @@ class NodeTemplateView extends TemplateView {
                             }
 
                             // render the widget
-                            $renderedWidget = $this->renderWidget($widgetId, $widgetView, $app);
+                            try {
+                                $renderedWidget = $this->renderWidget($widgetId, $widgetView, $app);
+                            } catch (Exception $exception) {
+                                if ($this->log) {
+                                    $this->log->logException($exception);
+                                }
+
+                                if ($app['security']->isPermissionGranted(Cms::PERMISSION_ERROR)) {
+                                    $errorView = new WidgetErrorTemplateView($this->template->getTheme(), $this->region, $this->section, $this->block, $widgetId, $app['cms']['node']->getRootNode()->get('widget.' . $widgetId), $exception);
+                                    $errorView->setTemplateFacade($this->templateFacade);
+
+                                    $renderedWidget = $errorView->render(true);
+                                } else {
+                                    $renderedWidget = '';
+                                }
+                            }
 
                             if ($this->cache && isset($this->cachedViews[$this->region][$this->section][$this->block][$widgetId])) {
                                 // cache the rendered view

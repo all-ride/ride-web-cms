@@ -35,6 +35,12 @@ class Cms extends LibraryCms {
     const PERMISSION_ADVANCED = 'cms.advanced';
 
     /**
+     * Name of the error permission
+     * @var string
+     */
+    const PERMISSION_ERROR = 'cms.error';
+
+    /**
      * Name of the theme permission
      * @var string
      */

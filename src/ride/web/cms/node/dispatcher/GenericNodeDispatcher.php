@@ -17,7 +17,11 @@ use ride\library\security\SecurityManager;
 use ride\library\StringHelper;
 
 use ride\web\cms\view\NodeTemplateView;
+use ride\web\cms\view\WidgetErrorTemplateView;
 use ride\web\cms\ApplicationListener;
+use ride\web\cms\Cms;
+
+use \Exception;
 
 /**
  * Dispatcher for the frontend of a node
@@ -197,6 +201,10 @@ class GenericNodeDispatcher implements NodeDispatcher {
     public function dispatch(Request $request, Response $response, SecurityManager $securityManager, CachePool $cache = null) {
         $this->locale = $this->view->getLocale();
 
+        if ($this->log) {
+            $this->view->setLog($this->log);
+        }
+
         // initialize context
         $context = array(
             'title' => array(
@@ -374,7 +382,25 @@ class GenericNodeDispatcher implements NodeDispatcher {
 
                         $widget->setProperties($widgetProperties);
 
-                        $widgetMatchedRouteArguments = $this->dispatchWidget($request, $response, $widgetId, $widget);
+                        try {
+                            $widgetMatchedRouteArguments = $this->dispatchWidget($request, $response, $widgetId, $widget);
+                        } catch (Exception $exception) {
+                            if ($this->log) {
+                                $this->log->logWarning('Skipped widget ' . $widget->getName() . '#' . $widgetId . ' due to exception', null, ApplicationListener::LOG_SOURCE);
+                                $this->log->logException($exception);
+                            }
+
+                            if ($securityManager->isPermissionGranted(Cms::PERMISSION_ERROR)) {
+                                $view = new WidgetErrorTemplateView($this->node->getTheme(), $this->region, $this->section, $this->block, $widgetId, $widget->getName(), $exception);
+                            } else {
+                                $view = null;
+                            }
+
+                            $dispatchedViews[$this->region][$this->section][$this->block][$widgetId] = $view;
+
+                            continue;
+                        }
+
                         if ($widgetMatchedRouteArguments) {
                             $routeArgumentsMatched = true;
                         }

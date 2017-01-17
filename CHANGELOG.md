@@ -1,6 +1,8 @@
 # ride-web-cms
 
-## [Unreleased]
+## [1.2.0] - 2017-01-17
+### Added
+- instead of a whoopsie: catch widget exceptions and ignore or show depending on the cms error permission
 ### Updated
 - perform default node redirect to the previous content region in 1 redirect instead of 2
 - remove query parameters from node cache key
