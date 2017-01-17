@@ -3,9 +3,16 @@
 ## [1.2.0] - 2017-01-17
 ### Added
 - instead of a whoopsie: catch widget exceptions and ignore or show depending on the cms error permission
+
+## [1.1.2]
+### Updated
+- removed all regex validation for Google Analytics and Google Tag Manager fields
+
+## [1.1.1]
 ### Updated
 - perform default node redirect to the previous content region in 1 redirect instead of 2
 - remove query parameters from node cache key
+- remove format validation from Google Analytics and Google Tag Manager fields
 
 ## [1.1.0]
 ### Added
@@ -26,5 +33,5 @@
 - action to validate the route of a node
 - action to collapse multiple nodes at once
 - README.md
-### Updated 
+### Updated
 - composer.json for 1.0
