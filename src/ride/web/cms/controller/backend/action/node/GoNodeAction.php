@@ -3,6 +3,7 @@
 namespace ride\web\cms\controller\backend\action\node;
 
 use ride\library\cms\node\Node;
+use ride\library\router\exception\RouterException;
 
 use ride\web\cms\Cms;
 
@@ -68,7 +69,23 @@ class GoNodeAction extends AbstractNodeAction {
                 $url = $this->request->getBaseScript();
             }
         } else {
-            $url = $this->getUrl('cms.front.' . $site->getId() . '.' . $node->getId() . '.' . $locale);
+            try {
+                $url = $this->getUrl('cms.front.' . $site->getId() . '.' . $node->getId() . '.' . $locale);
+            } catch (RouterException $exception) {
+                $this->getLog()->logException($exception);
+
+                $url = $this->getUrl('cms.node.default', array(
+                    'site' => $site->getId(),
+                    'node' => $node->getId(),
+                    'revision' => $revision,
+                    'locale' => $locale,
+                ));
+
+                $this->addWarning('warning.node.go', array(
+                    'page' => $node->getName($locale),
+                    'locale' => $locale
+                ));
+            }
         }
 
         $this->response->setRedirect($url);

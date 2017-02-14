@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.2.1] - 2017-02-14
+### Updated
+- catch exception when using the view action of an unlocalized page 
+
 ## [1.2.0] - 2017-01-17
 ### Added
 - instead of a whoopsie: catch widget exceptions and ignore or show depending on the cms error permission
