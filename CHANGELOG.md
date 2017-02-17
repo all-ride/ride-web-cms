@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.3.0] - 2017-02-17
+### Added
+- added all locales to the content templates
+
 ## [1.2.1] - 2017-02-14
 ### Updated
 - catch exception when using the view action of an unlocalized page 
