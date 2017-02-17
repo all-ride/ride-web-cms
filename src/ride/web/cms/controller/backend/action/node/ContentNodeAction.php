@@ -525,6 +525,7 @@ class ContentNodeAction extends AbstractNodeAction {
 
         $this->setTemplateView('cms/backend/widget.content', array(
             'locale' => $locale,
+            'locales' => $cms->getLocales(),
             'site' => $site,
             'node' => $node,
             'region' => $region,
@@ -647,6 +648,7 @@ class ContentNodeAction extends AbstractNodeAction {
         $this->setTemplateView('cms/backend/section.content', array(
             'site' => $site,
             'node' => $node,
+            'locales' => $cms->getLocales(),
             'locale' => $locale,
             'region' => $region,
             'section' => $section,
