@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.4.0] - 2017-03-01
+### Added
+- implemented prepend query parameter when adding a section
+
 ## [1.3.0] - 2017-02-17
 ### Added
 - added all locales to the content templates
