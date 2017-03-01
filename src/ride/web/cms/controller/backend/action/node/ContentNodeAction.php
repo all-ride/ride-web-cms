@@ -262,11 +262,14 @@ class ContentNodeAction extends AbstractNodeAction {
             throw new UnauthorizedException();
         }
 
-        $section = $node->addSection($region, $this->defaultLayout);
+        $sectionName = null;
+        $prepend = $this->request->getQueryParameter('prepend', false);
 
-        $cms->saveNode($node, 'Added section ' . $section . ' to region ' . $region . ' on node ' . $node->getName());
+        $section = $node->addSection($region, $this->defaultLayout, $sectionName, $prepend);
 
-        $this->setSectionView($cms, $widgetActionManager, $site, $node, $locale, $region, $section);
+        $cms->saveNode($node, ($prepend ? 'Prepended' : 'Appended') . ' section ' . $section . ' to region ' . $region . ' on node ' . $node->getName());
+
+        $this->setSectionView($cms, $widgetActionManager, $site, $node, $locale, $theme, $region, $section);
     }
 
     /**
