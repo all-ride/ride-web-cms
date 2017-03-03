@@ -21,5 +21,11 @@
             "interface": "ride\\web\\cms\\ApplicationListener",
             "method": "handleCache"
         }
+    ],
+    "cms.widget.exception": [
+        {
+            "interface": "ride\\web\\cms\\ApplicationListener",
+            "method": "handleWidgetException"
+        }
     ]
 }

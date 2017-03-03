@@ -6,12 +6,13 @@ use ride\library\cache\pool\CachePool;
 use ride\library\cache\CacheItem;
 use ride\library\cms\node\Node;
 use ride\library\cms\theme\Theme;
-use ride\library\log\Log;
+use ride\library\event\EventManager;
 use ride\library\mvc\exception\MvcException;
 use ride\library\mvc\view\HtmlView;
 use ride\library\mvc\view\View;
 use ride\library\template\GenericThemedTemplate;
 
+use ride\web\cms\ApplicationListener;
 use ride\web\cms\Cms;
 use ride\web\mvc\view\TemplateView;
 
@@ -23,10 +24,10 @@ use \Exception;
 class NodeTemplateView extends TemplateView {
 
     /**
-     * Instance of the log
-     * @var \ride\library\log\Log
+     * Instance of the event manager
+     * @var \ride\library\event\EventManager
      */
-    private $log;
+    private $eventManager;
 
     /**
      * Constructs a new template view
@@ -76,12 +77,12 @@ class NodeTemplateView extends TemplateView {
     }
 
     /**
-     * Sets the log
-     * @param \ride\library\log\Log $log
+     * Sets the event manager
+     * @param \ride\library\event\EventManager $eventManager
      * @return null
      */
-    public function setLog(Log $log) {
-        $this->log = $log;
+    public function setEventManager(EventManager $eventManager) {
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -187,8 +188,11 @@ class NodeTemplateView extends TemplateView {
                             try {
                                 $renderedWidget = $this->renderWidget($widgetId, $widgetView, $app);
                             } catch (Exception $exception) {
-                                if ($this->log) {
-                                    $this->log->logException($exception);
+                                if ($this->eventManager) {
+                                    $this->eventManager->triggerEvent(ApplicationListener::EVENT_WIDGET_EXCEPTION, array(
+                                        'exception' => $exception,
+                                        'widgetId' => $widgetId,
+                                    ));
                                 }
 
                                 if ($app['security']->isPermissionGranted(Cms::PERMISSION_ERROR)) {

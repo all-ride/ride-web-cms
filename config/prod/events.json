@@ -1,0 +1,8 @@
+{
+    "cms.widget.exception": [
+        {
+            "interface": "ride\\web\\cms\\ApplicationListener",
+            "method": "handleWidgetExceptionReport"
+        }
+    ]
+}

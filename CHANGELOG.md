@@ -1,5 +1,10 @@
 # ride-web-cms
 
+## [1.5.0] - 2017-03-03
+### Updated
+- implemented events to act on widget exceptions
+- use ExceptionService, when available, to mail the widget exceptions
+
 ## [1.4.0] - 2017-03-01
 ### Added
 - implemented prepend query parameter when adding a section
