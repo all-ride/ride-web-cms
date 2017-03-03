@@ -201,8 +201,8 @@ class GenericNodeDispatcher implements NodeDispatcher {
     public function dispatch(Request $request, Response $response, SecurityManager $securityManager, CachePool $cache = null) {
         $this->locale = $this->view->getLocale();
 
-        if ($this->log) {
-            $this->view->setLog($this->log);
+        if ($this->eventManager) {
+            $this->view->setEventManager($this->eventManager);
         }
 
         // initialize context
@@ -385,9 +385,11 @@ class GenericNodeDispatcher implements NodeDispatcher {
                         try {
                             $widgetMatchedRouteArguments = $this->dispatchWidget($request, $response, $widgetId, $widget);
                         } catch (Exception $exception) {
-                            if ($this->log) {
-                                $this->log->logWarning('Skipped widget ' . $widget->getName() . '#' . $widgetId . ' due to exception', null, ApplicationListener::LOG_SOURCE);
-                                $this->log->logException($exception);
+                            if ($this->eventManager) {
+                                $this->eventManager->triggerEvent(ApplicationListener::EVENT_WIDGET_EXCEPTION, array(
+                                    'exception' => $exception,
+                                    'widgetId' => $widgetId,
+                                ));
                             }
 
                             if ($securityManager->isPermissionGranted(Cms::PERMISSION_ERROR)) {

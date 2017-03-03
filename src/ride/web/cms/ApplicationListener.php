@@ -5,11 +5,14 @@ namespace ride\web\cms;
 use ride\library\cache\control\CacheControl;
 use ride\library\cms\node\Node;
 use ride\library\config\Config;
+use ride\library\dependency\exception\DependencyNotFoundException;
+use ride\library\dependency\DependencyInjector;
 use ride\library\event\EventManager;
 use ride\library\event\Event;
 use ride\library\http\Header;
 use ride\library\http\Response;
 use ride\library\i18n\I18n;
+use ride\library\log\Log;
 use ride\library\mvc\message\Message;
 use ride\library\mvc\Request;
 use ride\library\security\exception\UnauthorizedException;
@@ -26,6 +29,12 @@ use ride\web\WebApplication;
  * Event listener for the CMS application
  */
 class ApplicationListener {
+
+    /**
+     * Name of the event to perform extra actions on an exception
+     * @var string
+     */
+    const EVENT_WIDGET_EXCEPTION = 'cms.widget.exception';
 
     /**
      * Name of the event to prepare the content menu
@@ -297,6 +306,38 @@ class ApplicationListener {
         $menu->addMenuItem($menuItem);
 
         $applicationMenu->addMenu($menu);
+    }
+
+    /**
+     * Logs the occured widget exception
+     * @param \ride\library\event\Event $event
+     * @param \ride\library\log\Log $log
+     * @return null
+     */
+    public function handleWidgetException(Event $event, Log $log) {
+        $exception = $event->getArgument('exception');
+        $widgetId = $event->getArgument('widgetId');
+
+        $log->logWarning('Skipped widget #' . $widgetId . ' due to exception', null, ApplicationListener::LOG_SOURCE);
+        $log->logException($exception);
+    }
+
+    /**
+     * Reports the occured widget exception through the exception module if
+     * installed
+     * @param \ride\library\event\Event $event
+     * @param \ride\library\dependency\DependencyInjector $dependencyInjector
+     * @return null
+     */
+    public function handleWidgetExceptionReport(Event $event, DependencyInjector $dependencyInjector) {
+        $exception = $event->getArgument('exception');
+
+        try {
+            $exceptionService = $dependencyInjector->get('ride\service\ExceptionService');
+            $exceptionService->sendReport($exception);
+        } catch (DependencyNotFoundException $exception) {
+            // exception module not installed
+        }
     }
 
     /**
