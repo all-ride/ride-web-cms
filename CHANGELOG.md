@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.5.1] - 2017-03-10
+### Added
+- added check to prevent double taskbar items when another view is rendered
+
 ## [1.5.0] - 2017-03-03
 ### Updated
 - implemented events to act on widget exceptions

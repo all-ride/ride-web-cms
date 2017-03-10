@@ -223,6 +223,13 @@ class ApplicationListener {
         $applicationMenu = $taskbar->getApplicationsMenu();
         $referer = '?referer=' . urlencode($request->getUrl());
 
+        if ($applicationMenu->getItem('sites.menu')) {
+            // when a template causes an error, the exception module will render
+            // the taskbar again, prevent double menu items by checking if the
+            // sites menu exists
+            return;
+        }
+
         // site menu
         $menu = new Menu();
         $menu->setId('sites.menu');
