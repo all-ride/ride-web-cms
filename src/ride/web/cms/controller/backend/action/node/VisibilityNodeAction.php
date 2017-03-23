@@ -2,6 +2,8 @@
 
 namespace ride\web\cms\controller\backend\action\node;
 
+use ride\library\cms\node\type\HomeNodeType;
+use ride\library\cms\node\type\ReferenceNodeType;
 use ride\library\cms\node\NodeProperty;
 use ride\library\cms\node\Node;
 use ride\library\i18n\translator\Translator;
@@ -29,6 +31,15 @@ class VisibilityNodeAction extends AbstractNodeAction {
      * @var string
      */
     const ROUTE = 'cms.node.visibility';
+
+    /**
+     * Checks if this action is available for the node
+     * @param \ride\library\cms\node\Node $node
+     * @return boolean true if available
+     */
+    public function isAvailableForNode(Node $node) {
+        return $node->getType() !== HomeNodeType::NAME && $node->getType() !== ReferenceNodeType::NAME;
+    }
 
     /**
      * Perform the advanced node action

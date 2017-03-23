@@ -322,6 +322,18 @@
                             "name": "nodeType",
                             "type": "dependency",
                             "properties": {
+                                "interface": "ride\\web\\cms\\node\\type\\HomeNodeType"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addNodeType",
+                    "arguments": [
+                        {
+                            "name": "nodeType",
+                            "type": "dependency",
+                            "properties": {
                                 "interface": "ride\\web\\cms\\node\\type\\ReferenceNodeType"
                             }
                         }
@@ -532,7 +544,22 @@
         {
             "interfaces": "ride\\library\\cms\\node\\validator\\NodeValidator",
             "class": "ride\\library\\cms\\node\\validator\\GenericNodeValidator",
-            "id": "generic"
+            "id": "generic",
+            "calls": [
+                {
+                    "method": "setLocales",
+                    "arguments": [
+                        {
+                            "name": "locales",
+                            "type": "call",
+                            "properties": {
+                                "interface": "ride\\library\\i18n\\I18n",
+                                "method": "getLocales"
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
             "interfaces": "ride\\web\\router\\io\\RouteContainerIO",

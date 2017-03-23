@@ -5,7 +5,7 @@ namespace ride\web\cms\node\type;
 use ride\library\cms\node\type\ReferenceNodeType as LibraryReferenceNodeType;
 
 /**
- * Interface for a node type
+ * Frontend implementation for a reference node type
  */
 class ReferenceNodeType extends LibraryReferenceNodeType implements NodeType {
 

@@ -5,7 +5,7 @@ namespace ride\web\cms\node\type;
 use ride\library\cms\node\type\SiteNodeType as LibrarySiteNodeType;
 
 /**
- * Interface for a node type
+ * Frontend implementation for a site node type
  */
 class SiteNodeType extends LibrarySiteNodeType implements NodeType {
 

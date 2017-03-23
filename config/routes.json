@@ -131,6 +131,18 @@
             "id": "cms.page.edit"
         },
         {
+            "path": "/sites/%site%/%revision%/%locale%/add/home",
+            "controller": "ride\\web\\cms\\controller\\backend\\HomeController",
+            "action": "formAction",
+            "id": "cms.home.add"
+        },
+        {
+            "path": "/sites/%site%/%revision%/%locale%/home/%node%/edit",
+            "controller": "ride\\web\\cms\\controller\\backend\\HomeController",
+            "action": "formAction",
+            "id": "cms.home.edit"
+        },
+        {
             "path": "/sites/%site%/%revision%/%locale%/add/redirect",
             "controller": "ride\\web\\cms\\controller\\backend\\RedirectController",
             "action": "formAction",

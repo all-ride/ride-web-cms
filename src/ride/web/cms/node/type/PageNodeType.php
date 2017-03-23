@@ -5,7 +5,7 @@ namespace ride\web\cms\node\type;
 use ride\library\cms\node\type\PageNodeType as LibraryPageNodeType;
 
 /**
- * Interface for a node type
+ * Frontend implementation for a page node type
  */
 class PageNodeType extends LibraryPageNodeType implements NodeType {
 

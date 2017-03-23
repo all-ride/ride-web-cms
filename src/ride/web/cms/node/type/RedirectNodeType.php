@@ -5,7 +5,7 @@ namespace ride\web\cms\node\type;
 use ride\library\cms\node\type\RedirectNodeType as LibraryRedirectNodeType;
 
 /**
- * Interface for a node type
+ * Frontend implementation for a redirect node type
  */
 class RedirectNodeType extends LibraryRedirectNodeType implements NodeType {
 
