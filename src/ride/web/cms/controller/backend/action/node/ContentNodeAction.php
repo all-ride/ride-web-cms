@@ -4,6 +4,8 @@ namespace ride\web\cms\controller\backend\action\node;
 
 use ride\library\cms\layout\Layout;
 use ride\library\cms\layout\LayoutModel;
+use ride\library\cms\node\type\HomeNodeType;
+use ride\library\cms\node\type\ReferenceNodeType;
 use ride\library\cms\node\Node;
 use ride\library\cms\node\NodeProperty;
 use ride\library\cms\theme\Theme;
@@ -44,6 +46,15 @@ class ContentNodeAction extends AbstractNodeAction {
      */
     public function setDefaultLayout($defaultLayout) {
         $this->defaultLayout = $defaultLayout;
+    }
+
+    /**
+     * Checks if this action is available for the node
+     * @param \ride\library\cms\node\Node $node
+     * @return boolean true if available
+     */
+    public function isAvailableForNode(Node $node) {
+        return $node->getType() !== HomeNodeType::NAME && $node->getType() !== ReferenceNodeType::NAME;
     }
 
     /**

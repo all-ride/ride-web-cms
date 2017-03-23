@@ -2,6 +2,8 @@
 
 namespace ride\web\cms\controller\backend\action\node;
 
+use ride\library\cms\node\type\HomeNodeType;
+use ride\library\cms\node\type\ReferenceNodeType;
 use ride\library\cms\node\Node;
 use ride\library\system\file\browser\FileBrowser;
 use ride\library\template\TemplateFacade;
@@ -48,7 +50,7 @@ class TemplateNodeAction extends AbstractNodeAction {
      * @return boolean True if available
      */
     public function isAvailableForNode(Node $node) {
-        if (!parent::isAvailableForNode($node)) {
+        if (!($node->getType() !== HomeNodeType::NAME && $node->getType() !== ReferenceNodeType::NAME)) {
             return false;
         } elseif (!$node->getParent()) {
             return true;
