@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.6.1] - 2017-03-28
+### Updated
+- fixed add section
+
 ## [1.6.0] - 2017-03-23
 ### Added
 - added manual page for CMS variables
