@@ -280,7 +280,7 @@ class ContentNodeAction extends AbstractNodeAction {
 
         $cms->saveNode($node, ($prepend ? 'Prepended' : 'Appended') . ' section ' . $section . ' to region ' . $region . ' on node ' . $node->getName());
 
-        $this->setSectionView($cms, $widgetActionManager, $site, $node, $locale, $theme, $region, $section);
+        $this->setSectionView($cms, $widgetActionManager, $site, $node, $locale, $region, $section);
     }
 
     /**
