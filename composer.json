@@ -12,7 +12,7 @@
         "ride/app": "^1.0.0",
         "ride/lib-cache": "^1.0.0",
         "ride/lib-common": "^1.0.0",
-        "ride/lib-cms": "^1.4.0",
+        "ride/lib-cms": "^1.5.0",
         "ride/lib-dependency": "^1.0.0",
         "ride/lib-event": "^1.0.0",
         "ride/lib-form": "^1.0.0",

@@ -884,6 +884,11 @@
             ]
         },
         {
+            "interfaces": ["ride\\library\\cms\\sitemap\\SiteMapGenerator", "ride\\web\\cms\\sitemap\\SiteMapGenerator"],
+            "class": "ride\\web\\cms\\sitemap\\SiteMapGenerator",
+            "id": "cms"
+        },
+        {
             "interfaces": ["ride\\library\\cms\\Cms", "ride\\web\\cms\\Cms"],
             "class": "ride\\web\\cms\\Cms",
             "id": "cms",
