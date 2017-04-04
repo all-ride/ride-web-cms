@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.6.2] - 2017-04-04
+### Updated
+- fixed initialization of widgets when generating sitemap
+
 ## [1.6.1] - 2017-03-28
 ### Updated
 - fixed add section
