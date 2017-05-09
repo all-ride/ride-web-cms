@@ -3,6 +3,7 @@
 namespace ride\web\cms\router;
 
 use ride\library\cms\expired\ExpiredRouteModel;
+use ride\library\cms\node\type\HomeNodeType;
 use ride\library\cms\node\type\ReferenceNodeType;
 use ride\library\cms\node\NodeModel;
 use ride\library\config\Config;
@@ -69,6 +70,8 @@ class CmsRouteContainerIO implements RouteContainerIO {
         $registeredPaths = array();
         $expiredCallback = array('ride\\web\\cms\\controller\\frontend\\ExpiredController', 'indexAction');
 
+        $home = null;
+
         $sites = $this->nodeModel->getSites();
         foreach ($sites as $siteId => $site) {
             $nodes = $this->nodeModel->getNodes($siteId, $defaultRevision);
@@ -109,6 +112,10 @@ class CmsRouteContainerIO implements RouteContainerIO {
                         continue;
                     }
 
+                    if ($home === null && $type === HomeNodeType::NAME) {
+                        $home = $node;
+                    }
+
                     $route = $container->createRoute($path, $callback, 'cms.front.' . $siteId . '.' . $nodeId . '.' . $locale);
                     $route->setIsDynamic(true);
                     $route->setPredefinedArguments(array(
@@ -124,6 +131,27 @@ class CmsRouteContainerIO implements RouteContainerIO {
                     $container->setRoute($route);
 
                     $registeredPaths[$path] = true;
+                }
+
+                if ($home !== null && $home !== true) {
+                    $nodeType = $nodeTypes[$home->getType()];
+                    $callback = $nodeType->getFrontendCallback();
+
+                    $route = $container->createRoute('/', $callback, 'cms.front.' . $siteId . '.' . $home->getId() . '.' . $locale);
+                    $route->setIsDynamic(true);
+                    $route->setPredefinedArguments(array(
+                        'site' => $siteId,
+                        'node' => $home->getId(),
+                    ));
+                    $route->setLocale($locale);
+
+                    if ($baseUrl) {
+                        $route->setBaseUrl($baseUrl);
+                    }
+
+                    $container->setRoute($route);
+
+                    $home = true;
                 }
             }
 
