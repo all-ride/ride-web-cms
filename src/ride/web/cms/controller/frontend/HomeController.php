@@ -5,6 +5,7 @@ namespace ride\web\cms\controller\frontend;
 use ride\library\http\Response;
 use ride\library\i18n\I18n;
 use ride\library\router\Route;
+use ride\library\StringHelper;
 
 use ride\web\cms\node\type\HomeNodeType;
 use ride\web\cms\Cms;
@@ -58,7 +59,12 @@ class HomeController extends AbstractController {
             'locale' => $locale,
         ));
 
-        $arguments = ltrim($this->request->getBasePath(true), '/');
+        $basePath = $this->request->getBasePath(true);
+        if (StringHelper::startsWith($basePath, $path)) {
+            $basePath = substr($basePath, strlen($path));
+        }
+
+        $arguments = ltrim($basePath, '/');
         if ($arguments) {
             $route->setArguments(explode('/', $arguments));
         }

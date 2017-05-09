@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.6.3] - 2017-05-09
+### Updated
+- use localized homepage urls
+
 ## [1.6.2] - 2017-04-04
 ### Updated
 - fixed initialization of widgets when generating sitemap
