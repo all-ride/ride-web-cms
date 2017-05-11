@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.6.4] - 2017-05-10
+### Updated
+- fixed localized homepage urls
+
 ## [1.6.3] - 2017-05-09
 ### Updated
 - use localized homepage urls
