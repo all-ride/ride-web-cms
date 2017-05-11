@@ -34,7 +34,7 @@ class HomeController extends AbstractController {
 
         // chain request if we are not literally on /
         $path = $this->request->getBasePath(true);
-        if (!$path || $path !== $node->getRoute($locale)) {
+        if (!$path || ($path !== $node->getRoute($locale) && $path != '/')) {
             return $this->chainWebRequest();
         }
 
