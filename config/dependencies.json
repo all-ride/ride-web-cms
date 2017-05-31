@@ -9,6 +9,34 @@
             ]
         },
         {
+            "interfaces": ["ride\\library\\form\\row\\Row"],
+            "class": "ride\\web\\cms\\form\\row\\SiteRow",
+            "id": "site",
+            "calls": [
+                "setCms"
+            ]
+        },
+        {
+            "interfaces": ["ride\\library\\form\\row\\Row"],
+            "class": "ride\\web\\cms\\form\\row\\SiteRow",
+            "id": "sites",
+            "calls": [
+                "setCms",
+                {
+                    "method": "setIsMultiple",
+                    "arguments": [
+                        {
+                            "name": "isMultiple",
+                            "type": "scalar",
+                            "properties": {
+                                "value": true
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "interfaces": ["ride\\library\\cache\\control\\CacheControl", "ride\\application\\cache\\control\\CmsCacheControl"],
             "class": "ride\\application\\cache\\control\\CmsCacheControl",
             "id": "cms",

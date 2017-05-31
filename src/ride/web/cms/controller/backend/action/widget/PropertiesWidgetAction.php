@@ -76,6 +76,8 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
             return;
         }
 
+        $this->dependencyInjector->setInstance($node, 'ride\\library\\cms\\node\\Node');
+
         if ($invoker->invoke($propertiesCallback)) {
             $cms->saveNode($node, 'Updated properties for widget ' . $widgetId . ' in ' . $node->getName());
 

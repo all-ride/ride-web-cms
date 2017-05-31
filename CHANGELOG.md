@@ -1,5 +1,11 @@
 # ride-web-cms
 
+## [1.7.0] - 2017-05-31
+### Added
+- form row to ask site or sites
+### Updated
+- set current node to dependency injector
+
 ## [1.6.4] - 2017-05-10
 ### Updated
 - fixed localized homepage urls

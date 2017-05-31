@@ -76,6 +76,8 @@ class NodeController extends AbstractController {
                 $templateFacade->setThemeModel($cms->getThemeModel());
                 $templateFacade->setDefaultTheme($nodeView->getTemplate()->getTheme());
 
+                $this->dependencyInjector->setInstance($node, 'ride\\library\\cms\\node\\Node');
+
                 $nodeDispatcher->dispatch($this->request, $this->response, $securityManager, $cache);
                 if ($this->response->getStatusCode() != Response::STATUS_CODE_NOT_FOUND) {
                     $this->setHeaders($node, $locale);
