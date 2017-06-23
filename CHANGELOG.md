@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.8.0] - 2017-06-23
+### Added
+- implemented cms.archive option to enable/disable the node archive
+
 ## [1.7.0] - 2017-05-31
 ### Added
 - form row to ask site or sites
