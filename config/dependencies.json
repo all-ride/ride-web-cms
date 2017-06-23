@@ -193,6 +193,19 @@
                     ]
                 },
                 {
+                    "method": "setKeepArchive",
+                    "arguments": [
+                        {
+                            "name": "keepArchive",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "cms.archive",
+                                "default": true
+                            }
+                        }
+                    ]
+                },
+                {
                     "method": "setWidgetIdOffset",
                     "arguments": [
                         {
