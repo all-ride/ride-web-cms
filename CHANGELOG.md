@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.9.0] - 2017-08-16
+### Added
+- debug mode to see whoopsies in a development environment
+
 ## [1.8.0] - 2017-06-23
 ### Added
 - implemented cms.archive option to enable/disable the node archive

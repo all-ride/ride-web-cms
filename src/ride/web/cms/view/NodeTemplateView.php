@@ -30,6 +30,12 @@ class NodeTemplateView extends TemplateView {
     private $eventManager;
 
     /**
+     * Flag to see if debugging is enabled. When true, exceptions are thrown
+     * instead of catched
+     */
+    private $isDebug;
+
+    /**
      * Constructs a new template view
      * @param \ride\library\template\Template $template Instance of the
      * template to render
@@ -54,6 +60,15 @@ class NodeTemplateView extends TemplateView {
         $this->cacheItem = null;
         $this->cachedViews = null;
         $this->contentView = null;
+    }
+
+    /**
+     * Sets whether debug is enabled
+     * @param boolean $isDebug True to throw exceptions, false to catch them all
+     * @return null
+     */
+    public function setIsDebug($isDebug) {
+        $this->isDebug = $isDebug;
     }
 
     /**
@@ -188,6 +203,10 @@ class NodeTemplateView extends TemplateView {
                             try {
                                 $renderedWidget = $this->renderWidget($widgetId, $widgetView, $app);
                             } catch (Exception $exception) {
+                                if ($this->isDebug) {
+                                    throw $exception;
+                                }
+
                                 if ($this->eventManager) {
                                     $this->eventManager->triggerEvent(ApplicationListener::EVENT_WIDGET_EXCEPTION, array(
                                         'exception' => $exception,

@@ -1,4 +1,5 @@
 cms.archive                 Flag to see if the archive directory should be maintained, set to 0 to disable.
+cms.debug                   Flag to see if exceptions should be thrown or logged.
 cms.default.layout          Machine name for the default layout of a new region/section.
 cms.directory.node          Directory which holds the nodes
 cms.directory.robot         Directory which holds the robots.txt files

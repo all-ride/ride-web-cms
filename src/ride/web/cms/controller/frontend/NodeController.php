@@ -65,6 +65,8 @@ class NodeController extends AbstractController {
                     throw new UnauthorizedException();
                 }
 
+                $nodeDispatcher->setIsDebug($this->getConfig()->get('cms.debug'));
+
                 $nodeView = $nodeDispatcher->getView();
                 $nodeView->setTemplateFacade($templateFacade);
                 $nodeView->setLayouts($cms->getLayouts());

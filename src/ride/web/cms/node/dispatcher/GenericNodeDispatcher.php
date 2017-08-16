@@ -84,6 +84,12 @@ class GenericNodeDispatcher implements NodeDispatcher {
     private $breadcrumbs;
 
     /**
+     * Flag to see if debugging is enabled. When true, exceptions are thrown
+     * instead of catched
+     */
+    private $isDebug;
+
+    /**
      * Construct the dispatcher
      * @param \ride\library\cms\node\Node $node
      * @param \ride\web\cms\view\NodeTemplateView $view View for the node
@@ -141,6 +147,17 @@ class GenericNodeDispatcher implements NodeDispatcher {
      */
     public function setLog(Log $log) {
         $this->log = $log;
+    }
+
+    /**
+     * Sets whether debug is enabled
+     * @param boolean $isDebug True to throw exceptions, false to catch them all
+     * @return null
+     */
+    public function setIsDebug($isDebug) {
+        $this->isDebug = $isDebug;
+
+        $this->view->setIsDebug($isDebug);
     }
 
     /**
@@ -385,6 +402,10 @@ class GenericNodeDispatcher implements NodeDispatcher {
                         try {
                             $widgetMatchedRouteArguments = $this->dispatchWidget($request, $response, $widgetId, $widget);
                         } catch (Exception $exception) {
+                            if ($this->isDebug) {
+                                throw $exception;
+                            }
+
                             if ($this->eventManager) {
                                 $this->eventManager->triggerEvent(ApplicationListener::EVENT_WIDGET_EXCEPTION, array(
                                     'exception' => $exception,
