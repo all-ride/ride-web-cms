@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.9.1] - 2017-10-11
+### Updated
+- remove null widget views from the response
+
 ## [1.9.0] - 2017-08-16
 ### Added
 - debug mode to see whoopsies in a development environment
