@@ -196,6 +196,8 @@ class NodeTemplateView extends TemplateView {
                     foreach ($blocks as $this->block => $widgets) {
                         foreach ($widgets as $widgetId => $widgetView) {
                             if (!$widgetView) {
+                                unset($regions[$this->region][$this->section][$this->block][$widgetId]);
+
                                 continue;
                             }
 
