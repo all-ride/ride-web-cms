@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.9.2] - 2017-12-06
+### Updated
+- fixed home node not in routing table for more then 1 site
+
 ## [1.9.1] - 2017-10-11
 ### Updated
 - remove null widget views from the response

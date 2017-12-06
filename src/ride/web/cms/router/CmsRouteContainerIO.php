@@ -70,11 +70,11 @@ class CmsRouteContainerIO implements RouteContainerIO {
         $registeredPaths = array();
         $expiredCallback = array('ride\\web\\cms\\controller\\frontend\\ExpiredController', 'indexAction');
 
-        $home = null;
-
         $sites = $this->nodeModel->getSites();
         foreach ($sites as $siteId => $site) {
             $nodes = $this->nodeModel->getNodes($siteId, $defaultRevision);
+
+            $home = null;
 
             // look for an overriden base url of the site
             $siteBaseUrl = $this->config->get('cms.url.' . $siteId);
