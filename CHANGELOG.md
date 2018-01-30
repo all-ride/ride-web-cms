@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.9.3] - 2018-01-30
+### Updated
+- don't send error report for unauthorized exception
+
 ## [1.9.2] - 2017-12-06
 ### Updated
 - fixed home node not in routing table for more then 1 site

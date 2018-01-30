@@ -338,6 +338,9 @@ class ApplicationListener {
      */
     public function handleWidgetExceptionReport(Event $event, DependencyInjector $dependencyInjector) {
         $exception = $event->getArgument('exception');
+        if ($exception instanceof UnauthorizedException) {
+            return;
+        }
 
         try {
             $exceptionService = $dependencyInjector->get('ride\service\ExceptionService');
