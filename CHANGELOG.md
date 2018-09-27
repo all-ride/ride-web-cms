@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.9.4] - 2018-09-27
+### Updated
+- throw unauthorized exception
+
 ## [1.9.3] - 2018-01-30
 ### Updated
 - don't send error report for unauthorized exception
