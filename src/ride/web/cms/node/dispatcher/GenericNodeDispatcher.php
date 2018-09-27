@@ -13,6 +13,7 @@ use ride\library\mvc\Request;
 use ride\library\mvc\Response;
 use ride\library\router\RouteContainer;
 use ride\library\router\Router;
+use ride\library\security\exception\UnauthorizedException;
 use ride\library\security\SecurityManager;
 use ride\library\StringHelper;
 
@@ -402,7 +403,7 @@ class GenericNodeDispatcher implements NodeDispatcher {
                         try {
                             $widgetMatchedRouteArguments = $this->dispatchWidget($request, $response, $widgetId, $widget);
                         } catch (Exception $exception) {
-                            if ($this->isDebug) {
+                            if ($this->isDebug || $exception instanceof UnauthorizedException) {
                                 throw $exception;
                             }
 
