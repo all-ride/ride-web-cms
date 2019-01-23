@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.9.5] - 2019-01-23
+### Updated
+- fixed expired node route with dynamic arguments
+
 ## [1.9.4] - 2018-09-27
 ### Updated
 - throw unauthorized exception
