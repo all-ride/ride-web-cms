@@ -31,6 +31,7 @@ class ExpiredController extends AbstractController {
 	        $arguments = func_get_args();
 	        array_shift($arguments);
 	        array_shift($arguments);
+	        array_shift($arguments);
 
 	        $redirectUrl .= '/' . implode('/', $arguments);
 	    }
