@@ -241,7 +241,6 @@
     "title.widgets.available": "Beschikbare widgets",
     "title.widgets.content": "Inhoud",
     "warning.layouts.none": "Er zijn geen layout geïnstalleerd, voeg een layout toe voor je deze actie uitvoert.",
-    "warning.node.go": "Kan pagina %page% niet bekijken omdat deze niet beschikbaar is in taal %locale%.",
     "warning.site.delete": "Opgepast: alle versies van deze site worden verwijderd en kan niet ongedaan worden.",
     "warning.widget.inherited": "Een overgeërfde widget.",
     "warning.widget.properties.inherited": "Je gaat de eigenschappen van een overgeërfde widget aanpassen."

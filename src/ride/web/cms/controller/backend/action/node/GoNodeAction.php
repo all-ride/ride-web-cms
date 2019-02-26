@@ -72,19 +72,7 @@ class GoNodeAction extends AbstractNodeAction {
             try {
                 $url = $this->getUrl('cms.front.' . $site->getId() . '.' . $node->getId() . '.' . $locale);
             } catch (RouterException $exception) {
-                $this->getLog()->logException($exception);
-
-                $url = $this->getUrl('cms.node.default', array(
-                    'site' => $site->getId(),
-                    'node' => $node->getId(),
-                    'revision' => $revision,
-                    'locale' => $locale,
-                ));
-
-                $this->addWarning('warning.node.go', array(
-                    'page' => $node->getName($locale),
-                    'locale' => $locale
-                ));
+                $url = $this->getUrl('cms.node.frontend.locale', array('node' => $node->getId(), 'locale' => $locale));
             }
         }
 
