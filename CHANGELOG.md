@@ -1,5 +1,9 @@
 # ride-web-cms
 
+## [1.9.6] - 2019-02-26
+### Updated
+- added fallback when invoking go action and node had no route set
+
 ## [1.9.5] - 2019-01-23
 ### Updated
 - fixed expired node route with dynamic arguments
