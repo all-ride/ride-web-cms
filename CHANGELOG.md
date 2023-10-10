@@ -1,5 +1,7 @@
 # ride-web-cms
-
+## [1.10.0] - 2023-10-10
+### Updated
+- Fixed  bug when section was 0 -> set to null
 ## [1.9.6] - 2019-02-26
 ### Updated
 - added fallback when invoking go action and node had no route set

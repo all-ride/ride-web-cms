@@ -520,6 +520,8 @@ class ContentNodeAction extends AbstractNodeAction {
         }
 
         $widgetId = $site->createWidget($widget);
+        //Set default section 0 -> to 0 because comes through as NULL
+        $section = $section ?? 0;
         $node->addWidget($region, $section, $block, $widgetId);
 
         $cms->saveNode($site, 'Created new instance for widget ' . $widget . ' in ' . $site->getName());
