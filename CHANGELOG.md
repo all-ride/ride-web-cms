@@ -1,4 +1,7 @@
 # ride-web-cms
+## [1.10.1] - 2023-10-12
+### Updated
+- Fixed more section is null issues..
 ## [1.10.0] - 2023-10-10
 ### Updated
 - Fixed  bug when section was 0 -> set to null
