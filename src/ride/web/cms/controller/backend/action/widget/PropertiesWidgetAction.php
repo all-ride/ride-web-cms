@@ -49,6 +49,9 @@ class PropertiesWidgetAction extends AbstractWidgetAction {
 
         $widgetId = $widget;
 
+        //Set default section 0 -> to 0 because comes through as NULL
+        $section = $section ?? 0;
+
         $widget = $site->getWidget($widgetId);
         if (!$this->getSecurityManager()->isPermissionGranted('cms.widget.' . $widget . '.' . self::NAME)) {
             throw new UnauthorizedException();

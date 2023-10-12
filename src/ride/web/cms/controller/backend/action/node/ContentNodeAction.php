@@ -578,6 +578,10 @@ class ContentNodeAction extends AbstractNodeAction {
         }
 
         $widgetClass = $site->getWidget($widget);
+
+        //Set default section 0 -> to 0 because comes through as NULL
+        $section = $section ?? 0;
+        
         if (!$securityManager->isPermissionGranted('cms.widget.' . $widgetClass . '.manage')) {
             throw new UnauthorizedException();
         }
