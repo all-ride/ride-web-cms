@@ -35,6 +35,8 @@ class CmsRouteContainerIO implements RouteContainerIO {
      */
     private $expiredRouteModel;
 
+    private $config;
+
     /**
      * Available locales
      * @var array

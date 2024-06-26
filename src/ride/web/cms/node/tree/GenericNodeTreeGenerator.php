@@ -14,6 +14,15 @@ use ride\web\WebApplication;
  * Generic implementation to generate a tree for a site
  */
 class GenericNodeTreeGenerator implements NodeTreeGenerator {
+    protected $cms;
+    protected $securityManager;
+    protected $web;
+    protected $translator;
+    protected $actions;
+    protected $locale;
+    protected $node;
+    protected $nodeId;
+    protected $rootNodeId;
 
     /**
      * Constructs a new generic tree generator

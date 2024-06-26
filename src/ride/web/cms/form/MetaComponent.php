@@ -16,7 +16,7 @@ class MetaComponent extends AbstractComponent {
      * @return array $data
      */
     public function parseSetData($data) {
-        if (strpos($data, '=') !== false) {
+        if ($data && strpos($data, '=') !== false) {
             list($property, $content) = explode('=', $data, 2);
 
             $data = array(

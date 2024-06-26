@@ -30,6 +30,8 @@ class CmsCacheControl extends AbstractCacheControl {
      */
     private $config;
 
+    private $cache;
+
     /**
      * Constructs a new CMS cache control
      * @param \ride\library\cms\node\io\NodeIO $io

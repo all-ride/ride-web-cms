@@ -5,6 +5,9 @@ namespace ride\web\cms\controller\rest;
 use ride\library\reflection\ReflectionHelper;
 
 class Rest {
+    protected $reflectionHelper;
+    protected $sortField;
+    protected $sortDirection;
 
     public function __construct(ReflectionHelper $reflectionHelper) {
         $this->reflectionHelper = $reflectionHelper;

@@ -91,6 +91,21 @@ class GenericNodeDispatcher implements NodeDispatcher {
     private $isDebug;
 
     /**
+     * @var array|mixed
+     */
+    private $widgets;
+
+    private $locale;
+    private $routeArguments;
+
+    private $region;
+
+    private $section;
+
+    private $block;
+    private $cacheTtl;
+
+    /**
      * Construct the dispatcher
      * @param \ride\library\cms\node\Node $node
      * @param \ride\web\cms\view\NodeTemplateView $view View for the node
