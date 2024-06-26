@@ -1,4 +1,7 @@
 # ride-web-cms
+## [1.11.0] - 2024-05-26
+### Updated
+- Updated to be compatible with php 8.3
 ## [1.10.1] - 2023-10-12
 ### Updated
 - Fixed more section is null issues..
