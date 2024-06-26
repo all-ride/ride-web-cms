@@ -13,6 +13,7 @@ use ride\web\base\form\DateTimeComponent;
  * Form component to edit the home page
  */
 class HomeComponent extends AbstractComponent {
+    protected $nodeList;
 
     /**
      * Sets the list of the available nodes

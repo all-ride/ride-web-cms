@@ -60,6 +60,10 @@ class ApplicationListener {
      */
     private $isCacheClearRegistered = false;
 
+    private $cms;
+
+    private $securityManager;
+
     /**
      * Sets the instance of the CMS
      * @param \ride\web\cms\Cms $cms Instance of the CMS facade

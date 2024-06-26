@@ -12,6 +12,8 @@ use \Exception;
  */
 class DependencyContentMapperIO implements ContentMapperIO {
 
+    protected $dependencyInjector;
+
     /**
      * Constructs a new dependency content mapper io
      * @param \ride\library\dependency\DependencyInjector $dependencyInjector

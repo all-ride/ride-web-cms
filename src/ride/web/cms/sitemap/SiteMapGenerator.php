@@ -15,6 +15,9 @@ use ride\web\base\controller\AbstractController;
  * Generator of the site map files
  */
 class SiteMapGenerator extends LibSiteMapGenerator {
+    protected $config;
+    protected $dependencyInjector;
+    protected $request;
 
     /**
      * Constructs a new site map generator

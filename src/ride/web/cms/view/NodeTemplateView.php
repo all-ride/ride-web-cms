@@ -35,6 +35,28 @@ class NodeTemplateView extends TemplateView {
      */
     private $isDebug;
 
+    private $cache;
+
+    private $cacheItem;
+
+    private $cachedViews;
+
+    private $contentView;
+
+    private $contentViewId;
+
+    private $contentViewRegion;
+
+    private $contentViewBlock;
+
+    private $contentViewSection;
+
+    private $block;
+
+    private $section;
+
+    private $region;
+
     /**
      * Constructs a new template view
      * @param \ride\library\template\Template $template Instance of the
@@ -55,11 +77,6 @@ class NodeTemplateView extends TemplateView {
         ));
 
         parent::__construct($template);
-
-        $this->cache = null;
-        $this->cacheItem = null;
-        $this->cachedViews = null;
-        $this->contentView = null;
     }
 
     /**

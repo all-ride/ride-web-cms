@@ -11,6 +11,7 @@ use ride\web\cms\Cms;
  * Controller for the REST service of the CMS sites
  */
 class SiteController extends AbstractRestController {
+    protected $cms;
 
     public function __construct(RestHelper $restHelper, Cms $cms) {
         $defaultIndexFields = 'name,revision';

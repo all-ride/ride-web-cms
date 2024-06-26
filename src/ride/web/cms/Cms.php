@@ -64,6 +64,14 @@ class Cms extends LibraryCms {
      */
     const SESSION_LAST_REGION = 'cms.region.last';
 
+    protected $web;
+
+    protected $request;
+
+    protected $i18n;
+
+    protected $actions;
+
     /**
      * Constructs a new CMS facade
      * @param \ride\web\WebApplication $web
